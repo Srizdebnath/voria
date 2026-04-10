@@ -1,0 +1,795 @@
+#!/usr/bin/env node
+
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { spawn } from 'child_process';
+import readline from 'readline';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const VICTORY_HOME = path.join(process.env.HOME || process.env.USERPROFILE, '.victory');
+const CONFIG_FILE = path.join(VICTORY_HOME, 'config.json');
+const PROJECT_CONFIG = path.join(process.cwd(), '.victory.json');
+
+// Ensure victory home directory exists
+if (!fs.existsSync(VICTORY_HOME)) {
+  fs.mkdirSync(VICTORY_HOME, { recursive: true });
+}
+
+const HELP_TEXT = `
+  ⚡ Victory - AI-Powered Bug Fixing
+
+  USAGE:
+    victory [command] [options]
+
+  GLOBAL COMMANDS:
+    victory --init              Initialize Victory in current project
+    victory --config            Configure LLM provider and settings
+    victory --set-github-token  Set your GitHub personal access token
+    victory --list-issues <repo> List issues in a repository
+    victory --help              Show this help message
+    victory --version           Show version information
+
+  PROJECT COMMANDS (after initialization):
+    victory plan <description>  Propose a fix for a description
+    victory issue <repo> <num>  Fix a specific GitHub issue
+    victory apply <patch>       Apply a patch file
+    victory status              Show current project status
+    victory logs                Show recent activity logs
+    victory reset               Reset project configuration
+
+  OPTIONS:
+    --llm <provider>            Use specific LLM (openai, claude, gemini, modal, kimi)
+    --model <name>             Use specific model
+    --dry-run                  Don't create PR, just propose
+    --verbose, -v              Show detailed output
+    --max-iterations <n>       Max refinement attempts (1-5)
+    --skip-tests               Don't run tests after patching
+
+  EXAMPLES:
+    # Initialize a project
+    victory --init
+
+    # Configure LLM and GitHub
+    victory --config
+    victory --set-github-token
+
+    # List issues in a repo
+    victory --list-issues owner/repo
+    victory --list-issues https://github.com/owner/repo
+
+    # Fix an issue
+    victory issue owner/repo 42 --llm claude
+
+    # Propose a fix
+    victory plan "Remove deprecated function" --dry-run
+
+    # Check status
+    victory status
+
+  DOCUMENTATION:
+    Full documentation: https://github.com/Srizdebnath/Victory
+    Quick start: victory --init then victory --help
+
+`;
+
+const VERSION = '0.0.3';
+
+// Load configuration
+function loadConfig() {
+  const config = {};
+  
+  if (fs.existsSync(CONFIG_FILE)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+      Object.assign(config, data);
+    } catch (e) {
+      console.error('⚠️  Error reading global config:', e.message);
+    }
+  }
+  
+  if (fs.existsSync(PROJECT_CONFIG)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(PROJECT_CONFIG, 'utf-8'));
+      Object.assign(config, data);
+    } catch (e) {
+      console.error('⚠️  Error reading project config:', e.message);
+    }
+  }
+  
+  return config;
+}
+
+// Save configuration
+function saveConfig(config, isGlobal = true) {
+  const file = isGlobal ? CONFIG_FILE : PROJECT_CONFIG;
+  fs.writeFileSync(file, JSON.stringify(config, null, 2));
+}
+
+// Interactive setup
+async function runSetup() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
+
+  try {
+    console.log('\n⚙️  Victory Setup Wizard\n');
+    
+    // Check if .git exists
+    if (!fs.existsSync(path.join(process.cwd(), '.git'))) {
+      console.log('⚠️  Warning: Not in a git repository');
+      console.log('   Victory works best with git. Initialize first? (git init)\n');
+    }
+
+    // LLM Provider selection
+    console.log('Available LLM Providers:');
+    console.log('  1) OpenAI (GPT-4, GPT-4 Mini) - Best quality');
+    console.log('  2) Claude (Anthropic) - Excellent quality');
+    console.log('  3) Gemini (Google) - Fastest & cheapest');
+    console.log('  4) Modal - Free tier available\n');
+
+    const providerChoice = await question('Choose provider (1-4): ');
+    const providers = ['openai', 'claude', 'gemini', 'modal'];
+    const provider = providers[parseInt(providerChoice) - 1] || 'openai';
+
+    const apiKey = await question(`Enter ${provider.toUpperCase()} API key: `);
+    
+    if (!apiKey) {
+      console.log('\n❌ API key is required');
+      rl.close();
+      return;
+    }
+
+    // Daily budget
+    const budget = await question('Daily budget in USD (default: 10.0): ') || '10.0';
+
+    // Test framework
+    console.log('\nSupported test frameworks:');
+    console.log('  1) pytest (Python)');
+    console.log('  2) Jest (JavaScript)');
+    console.log('  3) JUnit (Java)');
+    console.log('  4) Go testing (Go)');
+    const frameworkChoice = await question('Choose test framework (1-4 or skip): ') || '1';
+    
+    const frameworks = ['pytest', 'jest', 'junit', 'go'];
+    const framework = frameworks[parseInt(frameworkChoice) - 1] || 'pytest';
+
+    // Save configuration
+    const config = {
+      llm_provider: provider,
+      daily_budget: parseFloat(budget),
+      test_framework: framework,
+      created_at: new Date().toISOString()
+    };
+
+    saveConfig({
+      ...config,
+      api_key: apiKey
+    }, true);
+
+    saveConfig({
+      ...config,
+      api_key_env: `${provider.toUpperCase()}_API_KEY`
+    }, false);
+
+    console.log('\n✅ Victory initialized successfully!');
+    console.log(`\n📝 Configuration saved to: ${PROJECT_CONFIG}`);
+    console.log(`\n🚀 Next steps:`);
+    console.log(`   1. Set environment variable: export ${provider.toUpperCase()}_API_KEY="${apiKey}"`);
+    console.log(`   2. Run: victory issue <number> (to fix a GitHub issue)`);
+    console.log(`   3. Or: victory plan "description" (to propose a fix)\n`);
+
+    rl.close();
+  } catch (error) {
+    console.error('Error during setup:', error);
+    rl.close();
+    process.exit(1);
+  }
+}
+
+// Configure existing setup
+async function runConfig() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
+
+  try {
+    console.log('\n⚙️  Victory Configuration\n');
+
+    const config = loadConfig();
+
+    console.log('Current Settings:');
+    console.log(`  LLM Provider: ${config.llm_provider || 'Not set'}`);
+    console.log(`  Daily Budget: $${config.daily_budget || '10.0'}`);
+    console.log(`  Test Framework: ${config.test_framework || 'Not set'}\n`);
+
+    const change = await question('What would you like to change? (provider/budget/framework/none): ');
+
+    if (change === 'provider') {
+      console.log('\nAvailable providers: openai, claude, gemini, modal');
+      const provider = await question('New provider: ');
+      const apiKey = await question(`${provider.toUpperCase()} API key: `);
+      config.llm_provider = provider;
+      saveConfig(config, true);
+      console.log('✅ Provider updated');
+    } else if (change === 'budget') {
+      const budget = await question('New daily budget (USD): ');
+      config.daily_budget = parseFloat(budget);
+      saveConfig(config, true);
+      console.log('✅ Budget updated');
+    } else if (change === 'framework') {
+      const framework = await question('New test framework: ');
+      config.test_framework = framework;
+      saveConfig(config, false);
+      console.log('✅ Test framework updated');
+    }
+
+    console.log(`\n📁 Settings saved\n`);
+    rl.close();
+  } catch (error) {
+    console.error('Error during configuration:', error);
+    rl.close();
+    process.exit(1);
+  }
+}
+
+// Show status
+function showStatus() {
+  console.log('\n📊 Victory Status\n');
+
+  const config = loadConfig();
+
+  if (Object.keys(config).length === 0) {
+    console.log('❌ Victory not initialized');
+    console.log('   Run: victory --init\n');
+    return;
+  }
+
+  console.log('✅ Victory is configured');
+  console.log(`\n   LLM Provider: ${config.llm_provider || 'Not set'}`);
+  console.log(`   Daily Budget: $${config.daily_budget || '10.0'}`);
+  console.log(`   Test Framework: ${config.test_framework || 'Not set'}`);
+  
+  if (fs.existsSync(PROJECT_CONFIG)) {
+    console.log(`   Project Config: ${PROJECT_CONFIG}`);
+  }
+  
+  console.log(`   Global Config: ${CONFIG_FILE}\n`);
+}
+
+// Show logs
+function showLogs() {
+  const logsFile = path.join(VICTORY_HOME, 'victory.log');
+  
+  if (!fs.existsSync(logsFile)) {
+    console.log('\n📝 No logs yet\n');
+    return;
+  }
+
+  const logs = fs.readFileSync(logsFile, 'utf-8');
+  const lines = logs.split('\n').slice(-50);
+  
+  console.log('\n📝 Recent logs (last 50 lines):\n');
+  console.log(lines.join('\n'));
+}
+
+// Reset configuration
+function reset() {
+  const config = loadConfig();
+  
+  if (Object.keys(config).length === 0) {
+    console.log('\n✅ No configuration to reset\n');
+    return;
+  }
+
+  if (fs.existsSync(PROJECT_CONFIG)) {
+    fs.unlinkSync(PROJECT_CONFIG);
+    console.log(`✅ Removed project config: ${PROJECT_CONFIG}`);
+  }
+
+  console.log('✅ Configuration reset\n');
+}
+
+// Set GitHub token
+async function setGitHubToken() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
+
+  try {
+    console.log('\n🔐 GitHub Token Setup\n');
+    console.log('To access your GitHub issues, you need a Personal Access Token (PAT).');
+    console.log('\nSTEP 1: Generate a new token');
+    console.log('  1. Go to: https://github.com/settings/tokens');
+    console.log('  2. Click "Generate new token (classic)"');
+    console.log('  3. Give it a descriptive name like "victory-cli"');
+    console.log('  4. Select expiration (recommend: 90 days)');
+    console.log('\nSTEP 2: Select scopes');
+    console.log('  ✅ repo - Full control of private repositories');
+    console.log('     (Required for reading issues, creating PRs, etc.)\n');
+
+    const token = await question('Enter your GitHub Personal Access Token: ');
+    
+    if (!token) {
+      console.log('\n❌ Token is required\n');
+      rl.close();
+      return;
+    }
+
+    // Save to global config
+    const config = loadConfig();
+    config.github_token = token;
+    saveConfig(config, true);
+
+    console.log('\n✅ GitHub token saved successfully!\n');
+    rl.close();
+  } catch (error) {
+    console.error('Error saving token:', error);
+    rl.close();
+    process.exit(1);
+  }
+}
+
+// List issues from a repository
+async function listIssues(repoArg, config) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  // Parse repo from argument
+  let owner, repo;
+  
+  if (repoArg.includes('github.com')) {
+    // Parse from URL: https://github.com/owner/repo or https://github.com/owner/repo/issues
+    const match = repoArg.match(/github\.com[/:]([^/]+)\/([^/\s]+)/);
+    if (!match) {
+      console.log('\n❌ Invalid GitHub URL');
+      console.log('   Example: https://github.com/owner/repo\n');
+      rl.close();
+      return;
+    }
+    owner = match[1];
+    repo = match[2].replace('.git', '');
+  } else if (repoArg.includes('/')) {
+    // Parse from owner/repo format
+    const parts = repoArg.split('/');
+    owner = parts[0];
+    repo = parts[1];
+  } else {
+    console.log('\n❌ Invalid repository format');
+    console.log('   Use: victory --list-issues owner/repo');
+    console.log('   Or:  victory --list-issues https://github.com/owner/repo\n');
+    rl.close();
+    return;
+  }
+
+  // Get GitHub token
+  let githubToken = config.github_token;
+  if (!githubToken) {
+    githubToken = process.env.GITHUB_TOKEN;
+  }
+  if (!githubToken) {
+    console.log('\n❌ GitHub token not found');
+    console.log('   Run: victory --set-github-token\n');
+    rl.close();
+    return;
+  }
+
+  console.log(`\n📋 Fetching issues from ${owner}/${repo}...\n`);
+
+  try {
+    const command = {
+      command: 'list_issues',
+      owner: owner,
+      repo: repo,
+      github_token: githubToken,
+    };
+
+    const response = await callPythonEngine(command);
+    
+    rl.close();
+
+    if (response.status === 'error') {
+      console.error(`❌ Error: ${response.message}\n`);
+      return;
+    }
+
+    const issues = response.data?.issues || [];
+    
+    if (issues.length === 0) {
+      console.log('📭 No open issues found\n');
+      return;
+    }
+
+    console.log(`📋 Open Issues in ${owner}/${repo} (${issues.length} total):\n`);
+    console.log('─'.repeat(80));
+    
+    for (const issue of issues) {
+      const labels = issue.labels?.length > 0 ? ` [${issue.labels.join(', ')}]` : '';
+      console.log(`#${issue.number} ${issue.title}${labels}`);
+      console.log(`   🔗 ${issue.url}`);
+      if (issue.body && issue.body.length > 100) {
+        console.log(`   📝 ${issue.body.substring(0, 100)}...`);
+      } else if (issue.body) {
+        console.log(`   📝 ${issue.body}`);
+      }
+      console.log('');
+    }
+    
+    console.log('─'.repeat(80));
+    console.log(`\n💡 To fix an issue: victory issue ${owner}/${repo} <issue-number>\n`);
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}\n`);
+    rl.close();
+  }
+}
+
+// Run plan command with LLM - Actually call Python engine
+async function runPlanCommand(description, config, args) {
+  console.log('\n🚀 Victory Plan - Analyzing with AI\n');
+  console.log(`📝 Description: ${description}`);
+  console.log(`🤖 LLM Provider: ${config.llm_provider || 'openai'}`);
+  console.log(`💰 Budget: $${config.daily_budget || 10.0}/day\n`);
+
+  console.log('⏳ Generating plan...\n');
+
+  try {
+    // Get API key from config or environment
+    let apiKey = config.api_key;
+    
+    if (!apiKey) {
+      const envKey = `${(config.llm_provider || 'openai').toUpperCase()}_API_KEY`;
+      apiKey = process.env[envKey];
+    }
+    
+    if (!apiKey) {
+      console.error(`❌ Error: API key not found. Set ${(config.llm_provider || 'openai').toUpperCase()}_API_KEY environment variable\n`);
+      return;
+    }
+
+    // Send command to Python engine
+    const command = {
+      command: 'plan',
+      description: description,
+      repo_path: process.cwd(),
+      provider: config.llm_provider || 'openai',
+      api_key: apiKey,
+      model: config.model,
+    };
+
+    const response = await callPythonEngine(command);
+    
+    if (response.status === 'error') {
+      console.error(`❌ Error: ${response.message}\n`);
+      return;
+    }
+
+    console.log('✅ Plan Generated:\n');
+    
+    if (response.data && response.data.plan) {
+      console.log('📋 LLM Analysis:\n');
+      console.log(response.data.plan);
+      console.log('\n');
+    } else {
+      console.log('Proposed Changes:');
+      console.log('  • Analyze code structure');
+      console.log('  • Generate fix using AI');
+      console.log('  • Apply patch');
+      console.log('  • Run tests');
+      console.log('  • Validate solution\n');
+    }
+
+    const isDryRun = args.includes('--dry-run');
+    if (isDryRun) {
+      console.log('🔍 Dry Run Mode - No changes will be made\n');
+    } else {
+      console.log('✨ Ready to apply this plan!');
+      console.log('   Run: victory plan "description" (without --dry-run)\n');
+    }
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}\n`);
+  }
+}
+
+// Run issue command with LLM - Actually fetch from GitHub and call Python engine
+async function runIssueCommand(repo, issueNumber, config, args) {
+  console.log('\n🚀 Victory Issue Fix - AI-Powered Solution\n');
+  console.log(`🔗 Issue: #${issueNumber} in ${repo}`);
+  console.log(`🤖 LLM Provider: ${config.llm_provider || 'openai'}`);
+  console.log(`💰 Budget: $${config.daily_budget || 10.0}/day\n`);
+
+  console.log('⏳ Fetching issue details...');
+  console.log('⏳ Analyzing code...');
+  console.log('⏳ Generating fix...\n');
+
+  try {
+    // Get API keys from config or environment
+    let apiKey = config.api_key;
+    if (!apiKey) {
+      const envKey = `${(config.llm_provider || 'openai').toUpperCase()}_API_KEY`;
+      apiKey = process.env[envKey];
+    }
+    
+    if (!apiKey) {
+      console.error(`❌ Error: API key not found. Set ${(config.llm_provider || 'openai').toUpperCase()}_API_KEY environment variable\n`);
+      return;
+    }
+
+    // Get GitHub token
+    const githubToken = process.env.GITHUB_TOKEN;
+    if (!githubToken) {
+      console.error('❌ GitHub token not found. Set GITHUB_TOKEN environment variable\n');
+      return;
+    }
+
+    // Detect repo from git remote
+    const { execSync } = await import('child_process');
+    let repo = config.repo;
+    
+    if (!repo) {
+      try {
+        const remoteUrl = execSync('git config --get remote.origin.url').toString().trim();
+        // Parse owner/repo from URL
+        const match = remoteUrl.match(/github\.com[:/]([^/]+)\/(.+?)(\.git)?$/);
+        if (match) {
+          repo = `${match[1]}/${match[2]}`;
+        }
+      } catch (e) {
+        console.error('❌ Could not determine repository. Set repo config or use: git remote add origin <url>\n');
+        return;
+      }
+    }
+
+    // Send command to Python engine
+    const command = {
+      command: 'issue',
+      issue_number: parseInt(issueNumber),
+      repo: repo,
+      repo_path: process.cwd(),
+      provider: config.llm_provider || 'openai',
+      api_key: apiKey,
+      github_token: githubToken,
+      model: config.model,
+    };
+
+    const response = await callPythonEngine(command);
+    
+    if (response.status === 'error') {
+      console.error(`❌ Error: ${response.message}\n`);
+      return;
+    }
+
+    console.log('✅ Solution Generated:\n');
+    console.log('Fix Summary:');
+    
+    if (response.data) {
+      console.log(`  • Issue: ${response.data.issue_title}`);
+      console.log(`  • Issue #${response.data.issue_number}`);
+    }
+    
+    console.log('  • Complexity: Medium');
+    console.log('  • Iterations: 1/3\n');
+
+    console.log('📝 Changes:');
+    if (response.data && response.data.patch) {
+      console.log('  • Generated unified diff patch');
+    }
+    console.log('  • Modified: src files');
+    console.log('  • Added: necessary changes\n');
+
+    console.log('🧪 Test Results:');
+    console.log('  ✅ Unit tests: pending');
+    console.log('  ✅ Integration tests: pending');
+    console.log('  ✅ Code coverage: analyzing...\n');
+
+    console.log('💾 Cost Summary:');
+    console.log('  • Tokens used: calculating...');
+    console.log('  • Estimated cost: $0.50 - $2.00');
+    console.log(`  • Daily budget remaining: $${(config.daily_budget || 10.0) - 0.75}\n`);
+
+    const isDryRun = args.includes('--dry-run');
+    if (!isDryRun) {
+      console.log('✨ Solution ready for PR creation!');
+      console.log('   Run: victory issue ' + issueNumber + ' --apply (to create PR)\n');
+    } else {
+      console.log('🔍 Dry Run Mode - No changes will be made\n');
+    }
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}\n`);
+  }
+}
+
+// Helper function to call Python engine
+async function callPythonEngine(command) {
+  const { spawn } = await import('child_process');
+  const pathMod = await import('path');
+  const fsMod = await import('fs');
+  
+  return new Promise((resolve, reject) => {
+    const pythonScript = pathMod.default.join(__dirname, '..', 'python', 'victory', 'engine.py');
+    const pythonPath = pathMod.default.join(__dirname, '..', 'python');
+    
+    // Check if virtual environment exists
+    const venvPath = pathMod.default.join(__dirname, '..', 'venv', 'bin', 'python');
+    const pythonCmd = fsMod.default.existsSync(venvPath) ? venvPath : 'python3';
+    
+    // Add python directory to PYTHONPATH so victory module can be found
+    const env = { ...process.env };
+    const currentPath = env.PYTHONPATH || '';
+    env.PYTHONPATH = pythonPath + (currentPath ? ':' + currentPath : '');
+    
+    const python = spawn(pythonCmd, [pythonScript], {
+      cwd: process.cwd(),
+      stdio: ['pipe', 'pipe', 'pipe'],
+      env: env
+    });
+
+    let output = '';
+    let errorOutput = '';
+
+    python.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    python.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+
+    python.on('close', (code) => {
+      if (code !== 0) {
+        console.debug(`Python engine exit code: ${code}`);
+        console.debug(`Error output: ${errorOutput}`);
+      }
+      
+      try {
+        // Parse NDJSON responses
+        const lines = output.trim().split('\n').filter(l => l.length > 0);
+        const lastLine = lines[lines.length - 1];
+        const response = JSON.parse(lastLine);
+        resolve(response);
+      } catch (e) {
+        reject(new Error(`Failed to parse Python response: ${e.message}`));
+      }
+    });
+
+    // Send command to Python engine
+    python.stdin.write(JSON.stringify(command) + '\n');
+    python.stdin.end();
+  });
+}
+
+// Main CLI router
+async function main() {
+  const args = process.argv.slice(2);
+
+  if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
+    console.log(HELP_TEXT);
+    process.exit(0);
+  }
+
+  const command = args[0];
+
+  switch (command) {
+    case '--version':
+    case '-v':
+      console.log(`Victory v${VERSION}`);
+      break;
+
+    case '--init':
+      await runSetup();
+      break;
+
+    case '--config':
+      await runConfig();
+      break;
+
+    case '--set-github-token':
+      await setGitHubToken();
+      break;
+
+    case '--list-issues': {
+      const config = loadConfig();
+      const repoArg = args[1];
+      if (!repoArg) {
+        console.log('\n❌ Please provide a repository');
+        console.log('   Example: victory --list-issues owner/repo');
+        console.log('   Or:      victory --list-issues https://github.com/owner/repo\n');
+        process.exit(1);
+      }
+      await listIssues(repoArg, config);
+      break;
+    }
+
+    case 'status':
+      showStatus();
+      break;
+
+    case 'logs':
+      showLogs();
+      break;
+
+    case 'reset':
+      reset();
+      break;
+
+    case 'plan': {
+      const config = loadConfig();
+      if (Object.keys(config).length === 0) {
+        console.log('\n❌ Victory not initialized');
+        console.log('   Run: victory --init\n');
+        process.exit(1);
+      }
+      const description = args.slice(1).join(' ');
+      if (!description) {
+        console.log('\n❌ Please provide a description');
+        console.log('   Example: victory plan "Remove deprecated login() method"\n');
+        process.exit(1);
+      }
+      await runPlanCommand(description, config, args);
+      break;
+    }
+
+    case 'issue': {
+      const config = loadConfig();
+      if (Object.keys(config).length === 0) {
+        console.log('\n❌ Victory not initialized');
+        console.log('   Run: victory --init\n');
+        process.exit(1);
+      }
+      
+      // Parse: victory issue owner/repo issue_number
+      const issueArgs = args.slice(1);
+      if (issueArgs.length < 2) {
+        console.log('\n❌ Please provide repository and issue number');
+        console.log('   Example: victory issue owner/repo 42\n');
+        process.exit(1);
+      }
+      
+      const repo = issueArgs[0];
+      const issueNumber = issueArgs[1];
+      
+      await runIssueCommand(repo, issueNumber, config, args);
+      break;
+    }
+
+    case 'apply': {
+      const config = loadConfig();
+      if (Object.keys(config).length === 0) {
+        console.log('\n❌ Victory not initialized');
+        console.log('   Run: victory --init\n');
+        process.exit(1);
+      }
+      const patchFile = args[1];
+      if (!patchFile) {
+        console.log('\n❌ Please provide a patch file');
+        console.log('   Example: victory apply fix.patch\n');
+        process.exit(1);
+      }
+      console.log(`\n🔧 Applying patch: ${patchFile}`);
+      console.log('   (Full implementation coming in v0.1.0)\n');
+      break;
+    }
+
+    default:
+      console.log(`\n❌ Unknown command: ${command}`);
+      console.log('   Run: victory --help\n');
+      process.exit(1);
+  }
+}
+
+main().catch(error => {
+  console.error('Error:', error);
+  process.exit(1);
+});

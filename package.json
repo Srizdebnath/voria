@@ -1,0 +1,63 @@
+{
+  "name": "@sriz/victory",
+  "version": "1.0.0",
+  "description": "AI-powered CLI tool for automated bug fixing - initialize with victory --init",
+  "main": "bin/victory",
+  "type": "module",
+  "preferGlobal": true,
+  "homepage": "https://github.com/Srizdebnath/Victory",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Srizdebnath/Victory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Srizdebnath/Victory/issues"
+  },
+  "authors": [
+    {
+      "name": "Srizdebnath",
+      "url": "https://github.com/Srizdebnath"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "automation",
+    "bug-fixing",
+    "code-generation",
+    "llm",
+    "github",
+    "pull-request",
+    "testing",
+    "development",
+    "cli",
+    "tool"
+  ],
+  "bin": {
+    "victory": "./bin/victory"
+  },
+  "scripts": {
+    "build": "echo 'Build complete - Node.js CLI ready'",
+    "test": "node bin/victory --help && node bin/victory --version",
+    "test:local": "npm run test",
+    "start": "node bin/victory"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "bin/",
+    "python/victory",
+    "docs/",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ]
+}

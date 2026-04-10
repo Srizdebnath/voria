@@ -1,245 +1,184 @@
 # Quick Start Guide
 
-## Installation
+Get Victory running in 5 minutes or less!
 
-### Option 1: Automated Setup
+##  5-Minute Setup
+
+### 1. Install (2 minutes)
 
 ```bash
-bash install.sh
+# Install globally from npm
+npm install -g @sriz/victory
+
+# Verify
+victory --version
 ```
 
-### Option 2: Manual Setup
+### 2. Configure LLM Provider (1 minute)
 
-**Prerequisites:**
-- Rust 1.70+ (install from https://rustup.rs)
-- Python 3.9+
-- Git
-
-**Build:**
 ```bash
-# Build Rust CLI
-cd rust
-cargo build --release
-cd ..
+# Setup Modal (FREE and easy!)
+victory setup-modal your_modal_api_key
 
-# Setup Python
-python3 -m venv venv
-source venv/bin/activate
+# Or get prompted for token
+victory setup-modal
+```
 
+### 3. Setup GitHub Access (1 minute)
+
+```bash
+victory set-github-token
+# Paste your GitHub Personal Access Token
+```
+
+### 4. List Issues (1 minute)
+
+```bash
+# List issues from any repository
+victory list-issues owner/repo
+
+# Or with full GitHub URL
+victory list-issues https://github.com/owner/repo
+```
+
+**✅ That's it! Victory is ready.**
+
+##  Common Commands
+
+### List Issues in a Repository
+
+```bash
+# Using owner/repo format
+victory list-issues ansh/victory
+
+# Using GitHub URL
+victory list-issues https://github.com/ansh/victory
+
+# Interactive mode
+victory list-issues  # Will prompt for repo
+```
+
+### Fix a GitHub Issue
+
+```bash
+# Fix issue with repo specified
+victory fix 42 ansh/victory
+
+# Fix with GitHub URL
+victory fix 42 https://github.com/ansh/victory
+
+# Interactive mode
+victory fix 42  # Will prompt for repo
+```
+
+### Plan out a Fix
+
+```bash
+# Plan how to fix an issue by ID
+victory plan 123
+
+# Apply a patch after planning
+victory apply /path/to/patch.diff
+```
+
+### Show Help
+
+```bash
+victory --help              # General help
+victory fix --help          # Command-specific help
+victory list-issues --help  # List issues help
+```
+
+##  LLM Providers
+
+Victory supports multiple providers. Set one up during setup:
+
+### 1. Modal (Easiest - Free tier)
+
+```bash
+# Get key from https://platform.openai.com/
+export OPENAI_API_KEY="sk-..."
+```
+
+### 3. Google Gemini (Fast & Affordable)
+
+```bash
+# Get key from https://makersuite.google.com/app/apikey
+export GOOGLE_API_KEY="..."
+```
+
+### 4. Anthropic Claude (Highest Quality)
+
+```bash
+# Get key from https://console.anthropic.com/
+export ANTHROPIC_API_KEY="..."
+```
+
+##  Project Structure (What You Got)
+
+```
+victory/
+├── rust/              # CLI (Rust)
+├── python/            # Engine (Python)
+├── docs/              # Documentation (You are here!)
+└── target/            # Build output
+```
+
+##  Verify Everything Works
+
+```bash
+# Test CLI
+./target/release/victory --version
+./target/release/victory --help
+
+# Test Python engine
+python3 -m victory.engine
+
+# Test end-to-end
+./target/release/victory plan 1
+```
+
+##  Next Steps
+
+1. **Learn usage** → Read [USER_GUIDE.md](USER_GUIDE.md)
+2. **See examples** → Check [EXAMPLES.md](EXAMPLES.md)
+3. **Understand it** → Study [ARCHITECTURE.md](ARCHITECTURE.md)
+4. **Contribute** → Follow [CONTRIBUTING.md](CONTRIBUTING.md)
+
+##  Quick Links
+
+- [Full Installation](INSTALL.md)
+- [User Guide](USER_GUIDE.md)
+- [Examples](EXAMPLES.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
+- [GitHub](https://github.com/Srizdebnath/Victory)
+
+## ❓ Common Issues
+
+### Command not found
+```bash
+# Make sure you're in the right directory
+cd victory
+./target/release/victory --version
+```
+
+### LLM not working
+```bash
+# Verify configuration
+python3 -m victory.core.setup
+
+# Or set environment variable
+export OPENAI_API_KEY="your-key-here"
+```
+
+### Python import error
+```bash
+# Reinstall Python package
 cd python
 pip install -e .
 cd ..
-
-# Add to PATH
-export PATH=$PATH:$PWD/target/release
 ```
 
-## First Steps
+---
 
-### 1. View Help
-
-```bash
-./target/debug/victory --help
-```
-
-Output:
-```
-AI-powered CLI tool for open source contributors
-
-Usage: victory [OPTIONS] <COMMAND>
-
-Commands:
-  plan   Plan how to fix an issue
-  issue  Run full agent loop on an issue
-  apply  Apply an existing plan
-  help   Print this message or the subcommand(s)
-
-Options:
-  -v, --verbose          Verbose logging
-  -c, --config <CONFIG>  Configuration file path
-  -h, --help             Print help
-  -V, --version          Print version
-```
-
-### 2. Test the CLI (Stub Version)
-
-Plan an issue (shows stub response):
-
-```bash
-./target/debug/victory plan 1
-```
-
-Expected output:
-```
-[i] Planning fix for issue #1
-[✓] Plan generated for issue #1
-```
-
-With verbose logging:
-
-```bash
-./target/debug/victory -v plan 1
-```
-
-This shows:
-- [i] Planning fix for issue #1
-- Timestamp logs from Rust and Python
-- [✓] Plan generated for issue #1
-
-### 3. Run Direct Python Engine Test
-
-```bash
-source venv/bin/activate
-echo '{"command":"plan","issue_id":1}' | python3 -m victory.engine
-```
-
-Expected output (on stdout):
-```
-{"status": "success", "action": "stop", "message": "Plan generated for issue #1"}
-```
-
-Debug output (on stderr):
-```
-2026-04-10 09:36:35,232 [INFO] __main__: Victory Python Engine started
-2026-04-10 09:36:35,232 [DEBUG] __main__: Command received: {...}
-```
-
-## Architecture Overview
-
-**Component Flow:**
-```
-User runs: victory plan 1
-    ↓
-Rust CLI (main.rs)
-    ↓
-Spawns: python -m victory.engine (subprocess)
-    ↓
-Sends NDJSON: {"command":"plan","issue_id":1}
-    ↓
-Python engine receives on stdin
-    ↓
-Processes command
-    ↓
-Sends NDJSON response on stdout
-    ↓
-Rust parses response
-    ↓
-Displays colored output
-    ↓
-Stops Python subprocess
-```
-
-## Key Files
-
-- **rust/src/main.rs** - Rust CLI entry point
-- **rust/src/ipc/mod.rs** - NDJSON communication protocol
-- **python/victory/engine.py** - Python engine main loop
-- **docs/ARCHITECTURE.md** - System design details
-- **docs/IPC_PROTOCOL.md** - Protocol specification
-
-## Development
-
-### Rust Development
-
-```bash
-cd rust
-cargo build          # Debug build
-cargo build --release  # Optimized build
-cargo test           # Run tests
-cargo check          # Quick check without building
-cargo fmt            # Format code
-cargo clippy         # Lint
-```
-
-### Python Development
-
-```bash
-source venv/bin/activate
-cd python
-pip install -e .     # Editable install
-python -m victory.engine  # Run engine directly
-python -m pytest     # Run tests
-black .              # Format code
-```
-
-### Running End-to-End
-
-```bash
-# Terminal 1: Watch Rust/Python communication
-RUST_LOG=debug ./target/debug/victory -v plan 1
-
-# Terminal 2: Only see Python output
-./venv/bin/python -c "import sys; print('test')" 2>&1 | grep -v "DEBUG"
-```
-
-## Debugging
-
-### Enable All Logging
-
-```bash
-RUST_LOG=debug,victory=debug ./target/debug/victory -v plan 1 2>&1
-```
-
-### Test Python Engine Directly
-
-```bash
-# Multiple commands
-(
-  echo '{"command":"plan","issue_id":1}'
-  sleep 0.5
-  echo '{"command":"plan","issue_id":2}'
-) | python3 -m victory.engine
-```
-
-### Check Process Communication
-
-```bash
-# Start CLI with strace to see subprocess calls
-strace -e trace=execve ./target/debug/victory plan 1
-
-# Watch stdin/stdout
-strace -e trace=write ./target/debug/victory plan 1
-```
-
-## Common Issues
-
-### "Python process closed the connection"
-
-- Python engine crashed or exited unexpectedly
-- Check stderr output for Python errors
-- Run with `-v` flag for verbose logging
-
-### "Process timeout (30s)"
-
-- Python engine hung on LLM call
-- Check network connectivity
-- Verify API keys are set (future)
-
-### "Command not found: victory"
-
-- Add to PATH: `export PATH=$PATH:$PWD/target/release`
-- Or use absolute path: `./target/debug/victory plan 1`
-
-## Next Steps
-
-1. **Explore the code:**
-   - `rust/src/cli/mod.rs` - CLI commands
-   - `rust/src/orchestrator/mod.rs` - Command coordination
-   - `python/victory/engine.py` - Engine loop
-
-2. **Read documentation:**
-   - [ARCHITECTURE.md](../docs/ARCHITECTURE.md)
-   - [IPC_PROTOCOL.md](../docs/IPC_PROTOCOL.md)
-
-3. **Start implementing:**
-   - Add LLM integration to `python/victory/core/llm/`
-   - Add GitHub integration to `python/victory/core/github/`
-   - Implement agent loop in `python/victory/core/agent/`
-
-## Support
-
-For issues or questions:
-1. Check the documentation
-2. Review the code comments
-3. Search existing issues
-4. Create a new issue with details
+**Ready to go deeper?** → [USER_GUIDE.md](USER_GUIDE.md) 🚀

@@ -1,8 +1,10 @@
 # IPC Protocol Specification
 
-## Overview
+Complete specification of Victory's NDJSON-based inter-process communication protocol.
 
-Victory uses **NDJSON** (newline-delimited JSON) for inter-process communication between the Rust CLI and Python engine.
+##  Protocol Overview
+
+Victory uses **NDJSON** (Newline-Delimited JSON) for communication between Rust CLI and Python engine.
 
 ## Format Rules (MANDATORY)
 

@@ -80,6 +80,18 @@ Thumbs.db
 
 # Project-specific
 .victory/
+.victory.json
 config.local.yaml
 secrets/
 test_repos/
+
+# NPM
+node_modules/
+package-lock.json
+.npmrc
+npm-debug.log
+
+# Build outputs
+dist/
+build/
+

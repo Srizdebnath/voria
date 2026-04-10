@@ -1,185 +1,421 @@
-# Architecture Documentation
+# Architecture
 
-## System Overview
+Victory's system design and component overview.
 
-Victory follows a **hybrid Rust + Python** architecture designed for performance, maintainability, and scalability.
+##  High-Level Architecture
 
 ```
-Rust CLI (Performance)  ←→  Python Engine (Intelligence)
-    main.rs                    engine.py
-    cli/                       core/
-    ipc/                       plugins/
-    orchestrator/
+┌─────────────────────────────────────────────────────────────┐
+│                      Victory CLI                             │
+│                    (Rust - Binary)                           │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │ Command Parser (plan, issue, apply)                   │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ Orchestrator (coordinates workflow)                   │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ Process Manager (spawn Python, manage lifecycle)      │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ IPC Protocol (NDJSON serdes, message handling)        │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ UI Layer (colored output, progress display)           │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                      │                                       │
+│                      │ NDJSON (stdin/stdout)               │
+│                      ▼                                       │
+└─────────────────────────────────────────────────────────────┘
+                        │
+                        │ Persistent Child Process
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Victory Engine                            │
+│                  (Python - Interpreter)                      │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │ Command Dispatcher (routes to handlers)               │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ LLM Integrations (OpenAI, Gemini, Claude, Modal)    │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ GitHub Integration (issues, PRs, comments)           │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ Code Patcher (diff parsing, application)             │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ Test Executor (framework detection, execution)       │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ Agent Loop (orchestration, iteration logic)          │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ Token Manager (cost tracking, budget enforcement)    │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                      │                                       │
+│                      │ NDJSON responses
+│                      │ (plan, patch, results)
+│                      ▼                                       │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## Component Design
+##  Request-Response Flow
+
+### 1. Plan Command
+
+```
+Command: victory plan 42
+    ↓
+[Rust] Parse args, spawn Python
+    ↓
+[Rust] Send NDJSON: {"command":"plan","issue_id":42}
+    ↓
+[Python] Receive command on stdin
+    ↓
+[Python] Dispatch to plan handler
+    ↓
+[Python] Call LLM to analyze issue
+    ↓
+[Python] Return NDJSON: {"status":"success","plan":"..."}
+    ↓
+[Rust] Parse response
+    ↓
+[Rust] Display: [✓] Plan generated for issue #42
+    ↓
+[Rust] Stop Python process
+```
+
+### 2. Full Issue Command
+
+```
+Command: victory issue 123
+    ↓
+[Rust] Spawn Python (stays alive)
+    ↓
+[Orchestrator] Step 1: PLAN
+    ↓ LLM generates strategy
+    ↓
+[Orchestrator] Step 2: PATCH
+    ↓ LLM generates unified diff
+    ↓
+[Orchestrator] Step 3: APPLY
+    ↓ CodePatcher applies changes
+    ↓
+[Orchestrator] Step 4: TEST
+    ↓ TestExecutor runs suite
+    ↓
+[Orchestrator] Evaluate results
+    ├─ If pass → SUCCESS
+    └─ If fail → ANALYZE & ITERATE (max 5x)
+    ↓
+[Rust] Display results
+    ↓
+[Rust] Optional: Create PR
+```
+
+##  Component Details
 
 ### Rust CLI Layer
 
-**Purpose**: Command-line interface, process management, system integration
+**Responsibilities:**
+- User interface and argument parsing
+- Process lifecycle management
+- System command execution (git, pytest, etc.)
+- File I/O operations
+- Terminal UI rendering
 
-**Key Modules**:
+**Key Modules:**
+- `main.rs` - Entry point and main loop
+- `cli/mod.rs` - Command dispatch
+- `ipc/mod.rs` - NDJSON protocol handling
+- `orchestrator/mod.rs` - Workflow coordination
+- `ui/mod.rs` - Colored output
+- `config/mod.rs` - Configuration loading
 
-- **main.rs**: Entry point, argument parsing, logging setup
-- **cli/mod.rs**: Subcommand dispatch (plan, issue, apply)
-- **orchestrator/mod.rs**: Orchestrates Rust-Python communication
-- **ipc/mod.rs**: NDJSON protocol implementation, process management
-- **config/mod.rs**: Configuration loading
-- **ui/mod.rs**: Colored terminal output (Blue/Green/Red)
-
-**Responsibility**:
-- ✅ Execute system commands (git, pytest, npm, etc.)
-- ✅ File I/O and manipulation
-- ✅ Process spawning and management
-- ✅ UI rendering with colors
+**Why Rust:**
+- High performance
+- Compiled binary (single distribution)
+- Excellent async I/O (Tokio)
+- Safe system operations
+- Type safety prevents bugs
 
 ### Python Engine Layer
 
-**Purpose**: AI intelligence, LLM integration, complex analysis
+**Responsibilities:**
+- AI/LLM integration
+- GitHub API interaction
+- Code analysis and patching
+- Test result parsing
+- Agent loop orchestration
+- Decision making
 
-**Key Modules**:
+**Key Modules:**
+- `engine.py` - Main NDJSON listener loop
+- `llm/` - LLM provider adapters
+- `github/` - GitHub API client
+- `patcher/` - Diff parser and applier
+- `executor/` - Test framework integration
+- `agent/` - Orchestration logic
+- `token_manager/` - Cost tracking
 
-- **engine.py**: Main NDJSON listener and dispatcher
-- **core/agent/**: AI agent loop implementation
-- **core/llm/**: LLM provider integrations
-- **core/planner/**: Issue analysis and planning
-- **core/patcher/**: Code patch generation
-- **core/github/**: GitHub API integration
-- **core/token_manager/**: Token usage tracking
-- **plugins/**: Language-specific support
+**Why Python:**
+- Rich LLM ecosystem (openai, anthropic, etc.)
+- Fast development and iteration
+- Extensive data science libraries
+- Strong text processing (regex, parsing)
+- Easy testing frameworks
 
-**Responsibility**:
-- ✅ Read NDJSON from stdin
-- ✅ Parse and analyze code/issues
-- ✅ Call LLM APIs
-- ✅ Generate patches algorithmically
-- ✅ Log debug info to stderr
-- ❌ NO system command execution
-- ❌ NO direct file writes (except via Rust)
+### NDJSON Protocol
 
----
+**Design Principle:** One JSON object per line
 
-## 🔗 IPC Protocol (NDJSON)
+```
+Message Format:
+  [JSON object]
+  \n
+  [JSON object]
+  \n
 
-### Format Rules
-
-1. **One JSON object per line** (exactly - no wrapping)
-2. **No multi-line JSON** in protocol messages
-3. **Always flush** after write (`sys.stdout.flush()`)
-4. **Line-by-line reading** on both sides
-
-### Stdout vs Stderr Rule
-
-- **Python `stdout`:** EXCLUSIVELY NDJSON protocol messages (one JSON per line)
-- **Python `stderr`:** All logs, debug info, print statements, error traces
-- **Rust:** Parse stdout only; pipe stderr to console
-
-This separation ensures debug output cannot corrupt the protocol.
-
----
-
-## ⏱ Process Management
-
-Rust spawns and manages the Python subprocess:
-
-**Lifecycle**:
-1. Rust calls `python -m victory.engine`
-2. Python process stays alive (persistent loop)
-3. Rust sends NDJSON requests via stdin
-4. Python sends NDJSON responses via stdout
-5. If no response for 30 seconds → timeout detection
-6. Rust kills Python and restarts (retries once)
-7. On CLI exit → graceful process termination
-
-**Timeout Detection**:
-- Monitor thread detects when 30 seconds pass without response
-- Kills Python subprocess immediately
-- Retries last request one time
-- Exits with error if retry fails
-
----
-
----
-
-## 🔄 Agent Lifecycle (The Loop)
-
-Victory operates in a loop capped at **5 iterations**:
-1. **Plan:** LLM analyzes files and issue description to create an implementation strategy.
-2. **Patch:** LLM generates a Unified Diff.
-3. **Execute:** Rust applies the patch to the local filesystem.
-4. **Test:** Rust executes the project's test suite (e.g., `pytest`, `jest`).
-5. **Analyze:** results are fed back to Python. If tests fail, the agent refines the plan and repeats.
-6. **Finalize:** Upon success, Rust handles the final commit and push.
-
----
-
-## 🔗 JSON Communication Contract
-
-### Request (Rust → Python)
-```json
-{
-  "command": "issue | plan | apply | graph",
-  "issue_id": 123,
-  "repo_path": "/path/to/repo",
-  "iteration": 1,
-  "context": {
-    "files": [],
-    "dependencies": {},
-    "ci_logs": ""
-  },
-  "config": {
-    "llm_provider": "gemini",
-    "api_keys_present": true
-  }
-}
+Example:
+  {"command":"plan","issue_id":1}
+  \n
+  {"status":"success","plan":"..."}
+  \n
 ```
 
-### Response (Python → Rust)
-```json
-{
-  "status": "success | error | pending",
-  "action": "run_tests | apply_patch | continue | stop",
-  "message": "Reasoning string",
-  "patch": "diff data...",
-  "logs": "Detailed agent logs",
-  "token_usage": {
-    "used": 1000,
-    "max": 128000,
-    "cost": 0.01
-  }
-}
+**Advantages:**
+- Human-readable (debuggable)
+- No complex parsing
+- Streaming-friendly
+- Natural line-buffering
+- Works with standard Unix tools
+
+##  Plugin Architecture
+
+### Language Support
+
+Victory supports multiple programming languages via plugins:
+
+```
+python/
+├── plugins/
+│   ├── python/
+│   │   ├── __init__.py
+│   │   ├── parser.py      # AST parsing
+│   │   ├── executor.py    # pytest runner
+│   │   └── formatter.py   # black/autopep8
+│   ├── typescript/
+│   │   ├── __init__.py
+│   │   ├── parser.ts      # TypeScript-specific
+│   │   ├── executor.ts    # Jest runner
+│   │   └── formatter.ts   # Prettier
+│   └── rust/
+│       ├── __init__.py
+│       ├── parser.rs
+│       └── executor.rs    # cargo test
 ```
 
+### Extension Points
+
+Plugins can extend:
+1. **Execution**: Custom test runners
+2. **Parsing**: Language-specific code analysis
+3. **Formatting**: Code style enforcement
+4. **Validation**: Pre/post-fix checks
+
+##  Safety & Reliability
+
+### Automatic Backups
+
+Before modifying files:
+```
+~/.victory/backups/
+├── file_1_2026-04-10T09-35-42.bak
+├── file_2_2026-04-10T09-35-42.bak
+└── file_3_2026-04-10T09-35-42.bak
+```
+
+### Rollback on Failure
+
+If tests fail:
+1. Keep current state (for analysis)
+2. Create comparison with backup
+3. Allow human review
+4. Optionally rollback to backup
+
+### Timeout Detection
+
+```
+30-second timeout triggers:
+  1. Kill Python process
+  2. Log error
+  3. Auto-restart (with cooldown)
+  4. Mark as failed
+```
+
+### Token Budget
+
+```
+Track spending:
+  OpenAI: $5.00/hr limit
+  Gemini: $1.00/hr limit
+  Claude: $3.00/hr limit
+
+When limit reached:
+  - Stop accepting new commands
+  - Warn user
+  - Save current state
+```
+
+##  Data Flow Diagram
+
+### Simple Fix (Successful Path)
+
+```
+Issue
+  │
+  └─→ LLM Plan
+      │
+      └─→ Generate Patch
+          │
+          └─→ Apply Patch
+              │
+              └─→ Run Tests
+                  │
+                  └─→ ✅ All Pass
+                      │
+                      └─→ Create PR
+                          │
+                          └─→ Done
+```
+
+### Complex Fix (With Iteration)
+
+```
+Issue
+  │
+  └─→ LLM Plan (Attempt 1)
+      │
+      └─→ Patch & Test
+          │
+          ├─→ ❌ Test Fails
+          │   │
+          │   └─→ Analyze Failure (Attempt 2)
+          │       │
+          │       └─→ New Plan
+          │           │
+          │           └─→ New Patch & Test
+          │               │
+          │               ├─→ ❌ Test Fails (Attempt 3)
+          │               │   │
+          │               │   └─→ [Loop back...]
+          │               │
+          │               └─→ ✅ Test Passes
+          │                   │
+          │                   └─→ Done
+          │
+          └─→ ✅ Test Passes (First Try)
+              │
+              └─→ Done
+```
+
+##  Configuration Hierarchy
+
+### Precedence (highest to lowest)
+
+1. **Command-line flags**
+   ```bash
+   victory issue 42 --llm openai --max-iterations 8
+   ```
+
+2. **Environment variables**
+   ```bash
+   VICTORY_LLM=openai VICTORY_MAX_ITERATIONS=8
+   ```
+
+3. **Config file** (~/.victory/config.yaml)
+   ```yaml
+   llm: openai
+   max-iterations: 8
+   ```
+
+4. **Built-in defaults**
+   ```
+   llm: modal
+   max-iterations: 5
+   ```
+
+##  Design Decisions
+
+### Why Persistent Python Process?
+
+**Alternative**: Spawn new Python for each command
+- ✅ Less memory
+- ❌ Cold start overhead (2-3 seconds per command)
+- ❌ Can't share state between commands
+
+**Our Approach**: Single persistent process
+- ✅ Near-instant response
+- ✅ Shared state (cache, connections)
+- ✅ Better for interactive workflows
+
+### Why NDJSON not Protocol Buffers?
+
+**Alternative**: Binary protocol (protobuf)
+- ✅ Smaller message size
+- ✅ Faster serialization
+- ❌ Not human-readable
+- ❌ Harder to debug
+
+**Our Approach**: NDJSON (text-based JSON)
+- ✅ Human-readable
+- ✅ Easy debugging
+- ✅ Language-agnostic
+- ✓ Acceptable performance
+
+### Why Hybrid Rust+Python?
+
+**Alternative 1**: Pure Rust
+- ✅ Single binary
+- ✅ No runtime needed
+- ❌ LLM ecosystem is Python-focused
+- ❌ Slower development iteration
+
+**Alternative 2**: Pure Python
+- ✅ Single ecosystem
+- ✅ Easier to extend
+- ❌ No binary distribution
+- ❌ Startup overhead
+
+**Our Approach**: Hybrid
+- ✅ Best of both worlds
+- ✅ Rust for performance, Python for flexibility
+- ✅ Clear separation of concerns
+
+##  Extension Points
+
+Future capabilities can be added at these points:
+
+1. **New LLM Providers**: Add to `llm/providers/`
+2. **New Commands**: Add to `cli/` and handlers
+3. **Custom Plugins**: Language support in `plugins/`
+4. **Pre/Post Hooks**: Extensible hook system
+5. **Custom Prompts**: Override in `~/.victory/prompts/`
+
+##  Performance Targets
+
+- **Startup**: < 2 seconds
+- **Command response**: < 100ms (p95)
+- **Issue planning**: < 30 seconds
+- **Full automation**: < 5 minutes (for simple issues)
+- **Token rate**: < 1000 tokens/minute
+
+##  Security Considerations
+
+- Config files: 0600 permissions (user-readable only)
+- API keys: Never logged or exposed
+- Code execution: Sandboxed to repository
+- File operations: Restricted to repository + backups
+- Network: Only to authorized (GitHub, LLM APIs)
+
 ---
 
-## 🎨 UI & Aesthetics
-
-- **Primary Theme:** Blue-themed UI (using Rich or Console libraries).
-- **Color Palette:**
-  - Primary: Blue
-  - Headers: Bright Blue
-  - Success: Green
-  - Errors: Red
-  - Warnings: Yellow
-- **Feedback:** Real-time token usage and cost visualization.
-
----
-
-## 📦 Build & Distribution
-
-- **Rust:** Managed by `cargo`.
-- **Python:** Managed by `poetry`.
-- **Linkage:** An `install.sh` script will:
-  1. Build the Rust binary.
-  2. Initialize the Python virtual environment and install dependencies.
-  3. Link the `victory` binary to the system PATH.
-- **Detection:** Rust will auto-detect the `.venv` directory for executing the Python engine.
-
----
-
-## 🧪 Safety & Standards
-
-- **Conventional Commits:** All automatic commits must follow standard conventions (e.g., `fix(scope): description`).
-- **Atomic Operations:** Keep changes focused on the issue.
-- **No Destruction:** Prevent destructive operations unless user-confirmed.
-- **Context Limits:** Never exceed 60% of the LLM context window to maintain accuracy and prevent truncation errors.
+**See Also:**
+- [IPC_PROTOCOL.md](IPC_PROTOCOL.md) - Detailed protocol spec
+- [MODULES.md](MODULES.md) - Component documentation
+- [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md) - Design rationale
