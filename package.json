@@ -1,6 +1,6 @@
 {
   "name": "@srizdebnath/victory",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "AI-powered CLI tool for automated bug fixing - initialize with victory --init",
   "main": "bin/victory",
   "type": "module",
