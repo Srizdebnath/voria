@@ -66,7 +66,10 @@ impl Orchestrator {
     }
 
     pub async fn fix_issue(&mut self, owner: &str, repo: &str, issue_number: u64) -> Result<()> {
-        ui::print_info(&format!("Fixing issue #{} from {}/{}", issue_number, owner, repo));
+        ui::print_info(&format!(
+            "Fixing issue #{} from {}/{}",
+            issue_number, owner, repo
+        ));
 
         let request = Request {
             command: "fix".to_string(),

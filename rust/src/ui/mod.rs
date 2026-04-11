@@ -18,7 +18,11 @@ pub fn print_warning(msg: &str) {
 }
 
 pub fn print_step(step: &str) {
-    println!("\n{} {}", " ⚡ ".on_bright_blue().white().bold(), step.bright_blue().bold());
+    println!(
+        "\n{} {}",
+        " ⚡ ".on_bright_blue().white().bold(),
+        step.bright_blue().bold()
+    );
 }
 
 pub fn print_header(title: &str) {

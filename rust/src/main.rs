@@ -34,10 +34,8 @@ async fn main() -> Result<()> {
     let log_level = if args.verbose { "debug" } else { "info" };
     let env_filter = tracing_subscriber::EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new(log_level));
-    
-    tracing_subscriber::fmt()
-        .with_env_filter(env_filter)
-        .init();
+
+    tracing_subscriber::fmt().with_env_filter(env_filter).init();
 
     // Load config if provided
     let config = if let Some(config_path) = args.config {

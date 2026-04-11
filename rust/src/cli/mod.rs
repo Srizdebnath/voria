@@ -1,7 +1,7 @@
-use anyhow::Result;
-use clap::Subcommand;
 use crate::config::Config;
 use crate::orchestrator::Orchestrator;
+use anyhow::Result;
+use clap::Subcommand;
 use std::io::{self, Write};
 
 #[derive(Subcommand)]
@@ -52,27 +52,15 @@ pub enum Command {
 impl Command {
     pub async fn execute(&self, config: &Config) -> Result<()> {
         match self {
-            Command::SetupModal { token } => {
-                self.handle_setup_modal(token.clone(), config).await
-            }
-            Command::SetGithubToken => {
-                self.handle_set_github_token(config).await
-            }
-            Command::ListIssues { repo } => {
-                self.handle_list_issues(repo.clone(), config).await
-            }
+            Command::SetupModal { token } => self.handle_setup_modal(token.clone(), config).await,
+            Command::SetGithubToken => self.handle_set_github_token(config).await,
+            Command::ListIssues { repo } => self.handle_list_issues(repo.clone(), config).await,
             Command::Fix { issue_number, repo } => {
                 self.handle_fix(*issue_number, repo.clone(), config).await
             }
-            Command::Plan { issue_id } => {
-                self.handle_plan(*issue_id, config).await
-            }
-            Command::Issue { issue_id } => {
-                self.handle_issue(*issue_id, config).await
-            }
-            Command::Apply { plan } => {
-                self.handle_apply(plan, config).await
-            }
+            Command::Plan { issue_id } => self.handle_plan(*issue_id, config).await,
+            Command::Issue { issue_id } => self.handle_issue(*issue_id, config).await,
+            Command::Apply { plan } => self.handle_apply(plan, config).await,
         }
     }
 
@@ -133,17 +121,22 @@ impl Command {
         };
 
         println!("📋 Fetching issues from: {}", repo_url);
-        
+
         // Parse repo URL to get owner and repo name
         let (owner, repo_name) = self.parse_repo_url(&repo_url)?;
-        
+
         let mut orchestrator = Orchestrator::new(config.clone()).await?;
         orchestrator.list_issues(&owner, &repo_name).await?;
-        
+
         Ok(())
     }
 
-    async fn handle_fix(&self, issue_number: u64, repo: Option<String>, config: &Config) -> Result<()> {
+    async fn handle_fix(
+        &self,
+        issue_number: u64,
+        repo: Option<String>,
+        config: &Config,
+    ) -> Result<()> {
         if config.github_token.is_none() {
             eprintln!("❌ GitHub token not configured. Run: victory set-github-token");
             return Ok(());
@@ -165,27 +158,30 @@ impl Command {
         };
 
         let (owner, repo_name) = self.parse_repo_url(&repo_url)?;
-        
-        println!("🔧 Fixing issue #{} from {}/{}", issue_number, owner, repo_name);
-        
+
+        println!(
+            "🔧 Fixing issue #{} from {}/{}",
+            issue_number, owner, repo_name
+        );
+
         let mut orchestrator = Orchestrator::new(config.clone()).await?;
-        orchestrator.fix_issue(&owner, &repo_name, issue_number).await?;
-        
+        orchestrator
+            .fix_issue(&owner, &repo_name, issue_number)
+            .await?;
+
         Ok(())
     }
 
     fn parse_repo_url(&self, url: &str) -> Result<(String, String)> {
         let url = url.trim();
-        
+
         // Handle owner/repo format
         if !url.contains('/') || url.starts_with("https://") || url.starts_with("http://") {
             // Parse GitHub URL
             let parts: Vec<&str> = url.split('/').collect();
             if parts.len() >= 2 {
                 let owner = parts[parts.len() - 2].to_string();
-                let repo = parts[parts.len() - 1]
-                    .trim_end_matches(".git")
-                    .to_string();
+                let repo = parts[parts.len() - 1].trim_end_matches(".git").to_string();
                 Ok((owner, repo))
             } else {
                 anyhow::bail!("Invalid repository URL format")
