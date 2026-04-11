@@ -32,7 +32,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node }}
-        cache: 'npm'
+        # cache: 'npm' # Removing cache as it fails to find package-lock.json in root
     
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
