@@ -124,7 +124,7 @@ impl ProcessManager {
             debug!("Received response: {:?}", response);
             Ok(response)
         } else {
-            return Err(anyhow!("Python process stdout not available"));
+            Err(anyhow!("Python process stdout not available"))
         }
     }
 

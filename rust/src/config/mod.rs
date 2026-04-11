@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct Config {
     pub python_path: String,
     pub engine_module: String,
@@ -35,6 +36,7 @@ impl Default for Config {
     }
 }
 
+#[allow(dead_code)]
 impl Config {
     pub fn load(path: PathBuf) -> Result<Self> {
         if path.exists() {

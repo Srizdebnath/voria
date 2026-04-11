@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="victory",
-    version="1.0.0",
+    version="0.0.1",
     description="AI-powered CLI tool for open source contributors",
     author="Victory Contributors",
     packages=find_packages(),

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use colored::Colorize;
 
 pub fn print_info(msg: &str) {

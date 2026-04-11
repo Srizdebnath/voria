@@ -4,6 +4,7 @@ use crate::ui;
 use anyhow::Result;
 use tracing::info;
 
+#[allow(dead_code)]
 pub struct Orchestrator {
     config: Config,
     pm: ProcessManager,
