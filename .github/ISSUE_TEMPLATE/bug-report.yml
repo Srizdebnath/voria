@@ -1,0 +1,99 @@
+name: Bug Report
+description: Report a bug in Victory
+title: "[BUG] "
+labels: ["bug"]
+assignees: ["Srizdebnath"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the form below.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Before submitting, please check the following
+      options:
+        - label: I have searched existing issues and found no duplicate
+          required: true
+        - label: I have read the documentation
+          required: true
+        - label: I am using the latest version of Victory
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Clear and concise description of the bug
+      placeholder: "What is the bug? Be as specific as possible."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the issue
+      placeholder: |
+        1. Install Victory...
+        2. Run command...
+        3. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should happen instead?
+      placeholder: "Expected behavior..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "Error message or unexpected behavior..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: System information
+      value: |
+        - OS: [e.g., Linux, macOS, Windows]
+        - Node.js version: [run `node --version`]
+        - Python version: [run `python --version`]
+        - Victory version: [run `victory --version`]
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or Error Output
+      description: Include any relevant error messages or logs
+      render: bash
+      placeholder: "Paste error logs here..."
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context?
+      placeholder: "Screenshots, related issues, etc..."
+
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow the Code of Conduct
+          required: true

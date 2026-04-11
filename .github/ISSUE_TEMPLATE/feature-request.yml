@@ -1,0 +1,82 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[FEATURE] "
+labels: ["enhancement"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Please fill out the form below.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Before submitting
+      options:
+        - label: I have searched existing issues and found no duplicate
+          required: true
+        - label: This is not a question or support request
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Describe the problem or limitation you're experiencing
+      placeholder: "What problem does this solve? What's the current limitation?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed solution
+      placeholder: "How should this feature work? What should the behavior be?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternatives?
+      placeholder: "Other ways to solve this problem..."
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or Use Cases
+      description: How would this feature be used?
+      placeholder: |
+        Example usage:
+        ```bash
+        victory feature-name --option value
+        ```
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact
+      description: Who would benefit from this feature?
+      options:
+        - label: Beneficial for most users
+        - label: Beneficial for some users
+        - label: Breaking change
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Screenshots, related issues, references
+      placeholder: "Links to discussions, related features, etc..."
+
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow the Code of Conduct
+          required: true

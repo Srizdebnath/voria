@@ -1,0 +1,45 @@
+name: Question / Support
+description: Ask a question or get support
+title: "[QUESTION] "
+labels: ["question"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're here to help! Please fill out the form below.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Before Asking
+      options:
+        - label: I have checked the documentation
+          required: true
+        - label: I have searched existing questions
+          required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: "Please describe your question..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What are you trying to do?
+      placeholder: |
+        What are you working on?
+        What have you tried so far?
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any relevant details?
+      placeholder: "Command output, error messages, etc..."

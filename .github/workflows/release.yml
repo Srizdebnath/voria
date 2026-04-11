@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+    
+    - name: Build Release
+      run: cargo build --release
+    
+    - name: Get Version
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: target/release/victory
+        draft: false
+        prerelease: false
+        body: |
+          # Victory ${{ steps.version.outputs.VERSION }}
+          
+          ## Installation
+          ```bash
+          npm install -g @sriz/victory
+          ```
+          
+          ## Changelog
+          See [CHANGELOG.md](./docs/CHANGELOG.md) for details.
+          
+          ## Getting Started
+          ```bash
+          victory --init
+          victory plan <issue_id>
+          ```
+          
+          ## Links
+          - Docs: https://github.com/Srizdebnath/Victory/tree/master/docs
+          - Contributing: https://github.com/Srizdebnath/Victory/blob/master/CONTRIBUTING.md
+          - Issues: https://github.com/Srizdebnath/Victory/issues
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Notify
+      run: |
+        echo "::notice title=Release::Victory ${{ steps.version.outputs.VERSION }} released!"

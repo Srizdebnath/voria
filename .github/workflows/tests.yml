@@ -1,0 +1,89 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable]
+        python: ['3.11', '3.12']
+        node: ['18', '20']
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+    
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python }}
+        cache: 'pip'
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node }}
+        cache: 'npm'
+    
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@v2
+    
+    - name: Install Node Dependencies
+      run: npm install
+    
+    - name: Build Rust
+      run: cargo build --release
+    
+    - name: Rust Tests
+      run: cargo test --verbose
+    
+    - name: Rust Linting
+      run: |
+        cargo fmt -- --check
+        cargo clippy -- -D warnings
+    
+    - name: Install Python Dependencies
+      run: |
+        pip install -e ./python
+        pip install pytest pytest-asyncio black flake8 mypy
+    
+    - name: Python Tests
+      run: |
+        python3 test_victory_cli.py
+        # Also run any pytest tests if present in root
+        pytest test_phase2_integration.py test_real_integration.py || true
+    
+    - name: Python Linting
+      run: |
+        black --check .
+        flake8 python/victory --count --select=E9,F63,F7,F82 --show-source --statistics
+        mypy python/victory --ignore-missing-imports || true
+
+    - name: Node CLI Smoke Test
+      run: |
+        node bin/victory --version
+        node bin/victory --help
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'table'
+        exit-code: '0' # Don't fail build for now, just report
+        severity: 'CRITICAL,HIGH'
