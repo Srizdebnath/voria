@@ -17,14 +17,14 @@ from victory.core.agent import AgentLoop
 
 async def test_phase2_integration():
     """Run complete Phase 2 integration tests"""
-    
-    print("\n" + "="*70)
+
+    print("\n" + "=" * 70)
     print("🚀 VICTORY PHASE 2: COMPLETE INTEGRATION TEST")
-    print("="*70 + "\n")
-    
+    print("=" * 70 + "\n")
+
     tests_passed = 0
     tests_total = 0
-    
+
     # ========== TEST 1: LLM Provider Discovery ==========
     tests_total += 1
     print("1️⃣  Testing LLM Provider Discovery...\n")
@@ -34,18 +34,16 @@ async def test_phase2_integration():
         print(f"   ✅ Found {len(models)} OpenAI models:")
         for model in models[:2]:
             print(f"      • {model.display_name}")
-        
+
         # Create provider
         provider = LLMProviderFactory.create(
-            provider_name="openai",
-            api_key="sk-test",
-            model=models[0].name
+            provider_name="openai", api_key="sk-test", model=models[0].name
         )
         print(f"   ✅ Provider created: {provider.__class__.__name__}")
         tests_passed += 1
     except Exception as e:
         print(f"   ❌ Failed: {e}")
-    
+
     # ========== TEST 2: Unified Diff Parsing ==========
     tests_total += 1
     print("\n2️⃣  Testing Unified Diff Parsing...\n")
@@ -58,7 +56,7 @@ async def test_phase2_integration():
 +    result = text.split('\\n')
      return result
 """
-        
+
         hunks = UnifiedDiffParser.parse(patch)
         print(f"   ✅ Parsed patch with {len(hunks)} hunks")
         print(f"      File: {hunks[0].new_file}")
@@ -66,7 +64,7 @@ async def test_phase2_integration():
         tests_passed += 1
     except Exception as e:
         print(f"   ❌ Failed: {e}")
-    
+
     # ========== TEST 3: Code Patcher ==========
     tests_total += 1
     print("\n3️⃣  Testing Code Patcher...\n")
@@ -75,10 +73,10 @@ async def test_phase2_integration():
             # Create test file
             test_file = Path(tmpdir) / "test.py"
             test_file.write_text("def hello():\n    print('world')\n")
-            
+
             # Create patcher
             patcher = CodePatcher(tmpdir)
-            
+
             # Apply patch
             patch = """--- a/test.py
 +++ b/test.py
@@ -87,9 +85,9 @@ async def test_phase2_integration():
 -    print('world')
 +    print('victory')
 """
-            
+
             result = await patcher.apply_patch(patch)
-            
+
             if result["status"] == "success":
                 patched_content = test_file.read_text()
                 if "victory" in patched_content:
@@ -102,14 +100,14 @@ async def test_phase2_integration():
                 print(f"   ❌ Failed: {result['message']}")
     except Exception as e:
         print(f"   ❌ Failed: {e}")
-    
+
     # ========== TEST 4: Test Executor Detection ==========
     tests_total += 1
     print("\n4️⃣  Testing Test Executor Framework Detection...\n")
     try:
         executor = TestExecutor("/home/ansh/victory")
         framework = await executor.detect_framework()
-        
+
         if framework:
             print(f"   ✅ Detected framework: {framework}")
             tests_passed += 1
@@ -118,27 +116,25 @@ async def test_phase2_integration():
             tests_passed += 1
     except Exception as e:
         print(f"   ❌ Failed: {e}")
-    
+
     # ========== TEST 5: Agent Loop Initialization ==========
     tests_total += 1
     print("\n5️⃣  Testing Agent Loop Initialization...\n")
     try:
         loop = AgentLoop(
-            provider_name="modal",
-            api_key="test-key",
-            repo_path="/home/ansh/victory"
+            provider_name="modal", api_key="test-key", repo_path="/home/ansh/victory"
         )
-        
+
         # Initialize
         await loop.initialize("zai-org/GLM-5.1-FP8")
-        
+
         print(f"   ✅ Agent Loop initialized")
         print(f"      Provider: modal")
         print(f"      Model: zai-org/GLM-5.1-FP8")
         tests_passed += 1
     except Exception as e:
         print(f"   ❌ Failed: {e}")
-    
+
     # ========== TEST 6: Full Workflow Mock ==========
     tests_total += 1
     print("\n6️⃣  Testing Full Workflow (Mock)...\n")
@@ -154,15 +150,15 @@ async def test_phase2_integration():
         tests_passed += 1
     except Exception as e:
         print(f"   ❌ Failed: {e}")
-    
+
     # ========== RESULTS ==========
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("📊 TEST RESULTS")
-    print("="*70)
+    print("=" * 70)
     print(f"✅ Passed: {tests_passed}/{tests_total}")
     print(f"📈 Success Rate: {tests_passed/tests_total*100:.1f}%")
-    print("="*70 + "\n")
-    
+    print("=" * 70 + "\n")
+
     if tests_passed == tests_total:
         print("🎉 Phase 2 Integration Complete! Ready for Production.\n")
         return 0

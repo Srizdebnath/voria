@@ -8,23 +8,23 @@ Supports multiple LLM providers with dynamic model discovery:
 
 Dynamic Model Discovery:
     from victory.core.llm import LLMProviderFactory
-    
+
     # Discover available models
     models = await LLMProviderFactory.discover_models(
         provider_name="openai",
         api_key="sk-..."
     )
-    
+
     # User chooses from models list
     chosen_model = models[0]
-    
+
     # Create provider with chosen model
     provider = LLMProviderFactory.create(
         provider_name="openai",
         api_key="sk-...",
         model=chosen_model.name
     )
-    
+
     response = await provider.generate(messages)
 """
 
