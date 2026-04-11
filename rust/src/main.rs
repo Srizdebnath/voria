@@ -7,7 +7,6 @@ mod ui;
 use anyhow::Result;
 use clap::Parser;
 use std::path::PathBuf;
-use tracing_subscriber;
 
 #[derive(Parser)]
 #[command(name = "Victory")]
