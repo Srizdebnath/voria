@@ -28,7 +28,9 @@ class ModelDiscovery:
     """Fetch available models from LLM providers."""
 
     @staticmethod
-    async def fetch_generic_openai_compatible(api_key: str, base_url: str, provider_name: str) -> List[ModelInfo]:
+    async def fetch_generic_openai_compatible(
+        api_key: str, base_url: str, provider_name: str
+    ) -> List[ModelInfo]:
         """Fetch models from an OpenAI-compatible API."""
         try:
             async with httpx.AsyncClient() as client:
@@ -51,7 +53,9 @@ class ModelDiscovery:
                         )
                     return models
                 else:
-                    logger.warning(f"{provider_name} API returned {response.status_code}")
+                    logger.warning(
+                        f"{provider_name} API returned {response.status_code}"
+                    )
                     return []
         except Exception as e:
             logger.warning(f"Failed to fetch {provider_name} models: {e}")
@@ -79,7 +83,9 @@ class ModelDiscovery:
                                 description=f"Modal Z.ai - {model.get('created', 'N/A')}",
                             )
                         )
-                    return models if models else await ModelDiscovery._get_modal_fallback()
+                    return (
+                        models if models else await ModelDiscovery._get_modal_fallback()
+                    )
                 return await ModelDiscovery._get_modal_fallback()
         except Exception:
             return await ModelDiscovery._get_modal_fallback()
@@ -108,8 +114,14 @@ class ModelDiscovery:
                     for model in data.get("data", []):
                         model_id = model.get("id", "")
                         if any(model_id.startswith(p) for p in suitable_prefixes):
-                            models.append(ModelInfo(name=model_id, display_name=model_id))
-                    return models if models else await ModelDiscovery._get_openai_fallback()
+                            models.append(
+                                ModelInfo(name=model_id, display_name=model_id)
+                            )
+                    return (
+                        models
+                        if models
+                        else await ModelDiscovery._get_openai_fallback()
+                    )
                 return await ModelDiscovery._get_openai_fallback()
         except Exception:
             return await ModelDiscovery._get_openai_fallback()
@@ -137,7 +149,11 @@ class ModelDiscovery:
                         name = model.get("name", "").replace("models/", "")
                         if "gemini" in name.lower():
                             models.append(ModelInfo(name=name, display_name=name))
-                    return models if models else await ModelDiscovery._get_gemini_fallback()
+                    return (
+                        models
+                        if models
+                        else await ModelDiscovery._get_gemini_fallback()
+                    )
                 return await ModelDiscovery._get_gemini_fallback()
         except Exception:
             return await ModelDiscovery._get_gemini_fallback()
@@ -153,7 +169,9 @@ class ModelDiscovery:
     async def fetch_claude_models(api_key: str) -> List[ModelInfo]:
         # Anthropic doesn't have a models endpoint, just return hardcoded
         return [
-            ModelInfo(name="claude-3-5-sonnet-20240620", display_name="Claude 3.5 Sonnet"),
+            ModelInfo(
+                name="claude-3-5-sonnet-20240620", display_name="Claude 3.5 Sonnet"
+            ),
             ModelInfo(name="claude-3-opus-20240229", display_name="Claude 3 Opus"),
             ModelInfo(name="claude-3-haiku-20240307", display_name="Claude 3 Haiku"),
         ]
@@ -170,27 +188,37 @@ class ModelDiscovery:
         elif provider == "claude":
             return await ModelDiscovery.fetch_claude_models(api_key)
         elif provider == "deepseek":
-            return await ModelDiscovery.fetch_generic_openai_compatible(api_key, "https://api.deepseek.com/v1", "DeepSeek")
+            return await ModelDiscovery.fetch_generic_openai_compatible(
+                api_key, "https://api.deepseek.com/v1", "DeepSeek"
+            )
         elif provider == "kimi":
-            return await ModelDiscovery.fetch_generic_openai_compatible(api_key, "https://api.moonshot.cn/v1", "Kimi")
+            return await ModelDiscovery.fetch_generic_openai_compatible(
+                api_key, "https://api.moonshot.cn/v1", "Kimi"
+            )
         elif provider == "minimax":
-            return await ModelDiscovery.fetch_generic_openai_compatible(api_key, "https://api.minimax.chat/v1", "Minimax")
+            return await ModelDiscovery.fetch_generic_openai_compatible(
+                api_key, "https://api.minimax.chat/v1", "Minimax"
+            )
         elif provider == "siliconflow":
-            return await ModelDiscovery.fetch_generic_openai_compatible(api_key, "https://api.siliconflow.cn/v1", "SiliconFlow")
+            return await ModelDiscovery.fetch_generic_openai_compatible(
+                api_key, "https://api.siliconflow.cn/v1", "SiliconFlow"
+            )
         else:
             return []
 
+
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) < 3:
         print(json.dumps([]))
         sys.exit(0)
-    
+
     provider = sys.argv[1]
     api_key = sys.argv[2]
-    
+
     async def main():
         models = await ModelDiscovery.discover_all(provider, api_key)
         print(json.dumps([asdict(m) for m in models]))
-    
+
     asyncio.run(main())
