@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import readline from 'readline';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +13,17 @@ const __dirname = path.dirname(__filename);
 const voria_HOME = path.join(process.env.HOME || process.env.USERPROFILE, '.voria');
 const CONFIG_FILE = path.join(voria_HOME, 'config.json');
 const PROJECT_CONFIG = path.join(process.cwd(), '.voria.json');
+
+const PROVIDER_MODELS = {
+  openai: ['gpt-4o', 'gpt-4o-mini', 'o1-preview', 'o1-mini'],
+  claude: ['claude-3-5-sonnet-20240620', 'claude-3-opus-20240229', 'claude-3-haiku-20240307'],
+  gemini: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.0-pro'],
+  modal: ['llama-3.1-405b', 'llama-3.1-70b', 'mixtral-8x7b'],
+  kimi: ['moonshot-v1-8k', 'moonshot-v1-32k', 'moonshot-v1-128k'],
+  minimax: ['abab6.5-chat', 'abab6-chat'],
+  deepseek: ['deepseek-chat', 'deepseek-coder'],
+  siliconflow: ['deepseek-v2.5', 'internlm2_5-20b-chat', 'qwen2.5-72b-instruct']
+};
 
 // ANSI escape codes for blue theme
 const colors = {
@@ -31,36 +43,39 @@ if (!fs.existsSync(voria_HOME)) {
   fs.mkdirSync(voria_HOME, { recursive: true });
 }
 
-const BANNER = colors.brightBlue(`
-    _    __           _      
-   | |  / /___  _____(_)___ _
-   | | / / __ \\/ ___/ / __ \`/
-   | |/ / /_/ / /  / / /_/ / 
-   |___/\\____/_/  /_/\\__,_/  
-`);
+const BANNER = `
+    ${colors.blue("██╗   ██╗ ██████╗ ██████╗ ██╗ █████╗")}
+    ${colors.blue("██║   ██║██╔═══██╗██╔══██╗██║██╔══██╗")}
+    ${colors.blue("██║   ██║██║   ██║██████╔╝██║███████║")}
+    ${colors.blue("╚██╗ ██╔╝██║   ██║██╔══██╗██║██╔══██╗")}
+    ${colors.blue(" ╚████╔╝ ╚██████╔╝██║  ██║██║██║  ██║")}
+`;
 
 const HELP_TEXT = `
 ${BANNER}
-  ${colors.bgBlue(colors.bold(" ⚡ voria "))} ${colors.blue("- AI-Powered Bug Fixing")}
+  ${colors.dim("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")}
+  ${colors.dim("┃")}  ${colors.bold("AI-Powered Autonomous Fixer")}  ${colors.dim("┃")}
+  ${colors.dim("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")}
 
   ${colors.bold(colors.blue("USAGE:"))}
     voria [command] [options]
 
   ${colors.bold(colors.blue("GLOBAL COMMANDS:"))}
-    voria --init              ${colors.dim("Initialize voria in current project")}
-    voria --config            ${colors.dim("Configure LLM provider and settings")}
-    voria --set-github-token  ${colors.dim("Set your GitHub personal access token")}
-    voria --list-issues <repo>${colors.dim("List issues in a repository")}
-    voria --help              ${colors.dim("Show this help message")}
-    voria --version           ${colors.dim("Show version information")}
+    ${colors.blue("🚀")}  voria --init              ${colors.dim("Initialize project & choose models")}
+    ${colors.blue("⚙️")}  voria --config            ${colors.dim("Configure LLM provider and settings")}
+    ${colors.blue("🔑")}  voria --set-github-token  ${colors.dim("Set your GitHub personal access token")}
+    ${colors.blue("📋")}  voria --list-issues <repo>${colors.dim("List issues in a repository")}
+    ${colors.blue("🔭")}  voria --graph             ${colors.dim("Show codebase dependency graph")}
+    ${colors.blue("❓")}  voria --help              ${colors.dim("Show this help message")}
+    ${colors.blue("🏷️")}  voria --version           ${colors.dim("Show current version")}
 
   ${colors.bold(colors.blue("PROJECT COMMANDS:"))}
-    voria plan <desc>         ${colors.dim("Propose a fix for a description")}
-    voria issue <repo> <num>  ${colors.dim("Fix a specific GitHub issue")}
-    voria apply <patch>       ${colors.dim("Apply a patch file")}
-    voria status              ${colors.dim("Show current project status")}
-    voria logs                ${colors.dim("Show recent activity logs")}
-    voria reset               ${colors.dim("Reset project configuration")}
+    ${colors.blue("🐞")}  voria issue <repo> <num>  ${colors.dim("Fix a specific GitHub issue")}
+    ${colors.blue("📦")}  voria apply <patch>       ${colors.dim("Apply a patch file")}
+    ${colors.blue("📊")}  voria status              ${colors.dim("Show current project status")}
+    ${colors.blue("💰")}  voria token info          ${colors.dim("Show token usage info")}
+    ${colors.blue("📝")}  voria logs                ${colors.dim("Show recent activity logs")}
+    ${colors.blue("🔄")}  voria reset               ${colors.dim("Reset project configuration")}
 
   ${colors.bold(colors.blue("OPTIONS:"))}
     --llm <provider>            ${colors.dim("Use specific LLM (openai, claude, gemini, modal, kimi)")}
@@ -83,7 +98,7 @@ ${BANNER}
     ${colors.dim("Full documentation:")} ${colors.blue("https://github.com/Srizdebnath/voria")}
 `;
 
-const VERSION = '0.0.1';
+const VERSION = '0.0.3';
 
 // Load configuration
 function loadConfig() {
@@ -124,8 +139,9 @@ async function runSetup() {
 
   try {
     console.log(BANNER);
-    console.log(`${colors.bgBlue(colors.bold(" ⚙️ voria Setup "))} ${colors.blue("Initialize your project")}`);
-    console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}\n`);
+    console.log(`  ${colors.dim("┏━━")} ${colors.bold("PROJECT INITIALIZATION")} ${colors.dim("━━┓")}`);
+    console.log(`  ${colors.dim("┃")} ${colors.blue("Configuring your intelligence backend")} ${colors.dim("┃")}`);
+    console.log(`  ${colors.dim("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")}\n`);
     
     if (!fs.existsSync(path.join(process.cwd(), '.git'))) {
       console.log(`${colors.yellow("⚠")} ${colors.bold("Warning:")} Not in a Git repository.`);
@@ -136,10 +152,14 @@ async function runSetup() {
     console.log(`  ${colors.blue("1)")} OpenAI (GPT-4o, GPT-4 Mini)`);
     console.log(`  ${colors.blue("2)")} Claude (Anthropic)`);
     console.log(`  ${colors.blue("3)")} Gemini (Google)`);
-    console.log(`  ${colors.blue("4)")} Modal (Free Tier)\n`);
+    console.log(`  ${colors.blue("4)")} Modal (Free Tier)`);
+    console.log(`  ${colors.blue("5)")} Kimi (Moonshot AI)`);
+    console.log(`  ${colors.blue("6)")} Minimax`);
+    console.log(`  ${colors.blue("7)")} DeepSeek`);
+    console.log(`  ${colors.blue("8)")} SiliconFlow\n`);
 
     const choice = await question(`${colors.cyan("selection")} › `);
-    const providers = ['openai', 'claude', 'gemini', 'modal'];
+    const providers = ['openai', 'claude', 'gemini', 'modal', 'kimi', 'minimax', 'deepseek', 'siliconflow'];
     const provider = providers[parseInt(choice) - 1] || 'openai';
 
     const apiKey = await question(`${colors.cyan(provider.toUpperCase() + " API Key")} › `);
@@ -149,6 +169,15 @@ async function runSetup() {
       rl.close();
       return;
     }
+
+    console.log(`\n${colors.bold("Select Model:")}`);
+    const models = PROVIDER_MODELS[provider] || ['default'];
+    models.forEach((model, index) => {
+      console.log(`  ${colors.blue((index + 1) + ")")} ${model}`);
+    });
+    
+    const modelChoice = await question(`\n${colors.cyan("selection")} ${colors.dim("(1)")} › `) || '1';
+    const selectedModel = models[parseInt(modelChoice) - 1] || models[0];
 
     const budget = await question(`${colors.cyan("Daily Budget ($)")} ${colors.dim("(10.0)")} › `) || '10.0';
 
@@ -163,6 +192,7 @@ async function runSetup() {
 
     const config = {
       llm_provider: provider,
+      model: selectedModel,
       daily_budget: parseFloat(budget),
       test_framework: framework,
       created_at: new Date().toISOString()
@@ -191,13 +221,15 @@ async function runConfig() {
   const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
 
   try {
-    console.log(`\n${colors.bgBlue(colors.bold(" 🔧 Configuration "))}`);
+    console.log(`\n  ${colors.dim("┏━━")} ${colors.bold("SETTINGS ENGINE")} ${colors.dim("━━┓")}`);
+    console.log(`  ${colors.dim("┃")} ${colors.blue("Adjusting your local parameters")} ${colors.dim("┃")}`);
+    console.log(`  ${colors.dim("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")}\n`);
+
     const config = loadConfig();
 
-    console.log(`${colors.bold("Current Settings:")}`);
-    console.log(`  Provider:  ${colors.blue(config.llm_provider || 'None')}`);
-    console.log(`  Budget:    ${colors.green("$" + (config.daily_budget || '10.0'))}`);
-    console.log(`  Framework: ${colors.cyan(config.test_framework || 'None')}\n`);
+    console.log(`  ${colors.dim("Provider:")}  ${colors.blue(config.llm_provider || 'None')}`);
+    console.log(`  ${colors.dim("Budget:")}    ${colors.green("$" + (config.daily_budget || '10.0'))}`);
+    console.log(`  ${colors.dim("Framework:")} ${colors.cyan(config.test_framework || 'None')}\n`);
 
     const change = await question(`${colors.cyan("edit")} ${colors.dim("(provider/budget/framework/none)")} › `);
 
@@ -583,6 +615,41 @@ async function callPythonEngine(command) {
   });
 }
 
+// Helper function to call Rust core
+async function runRustCore(args) {
+  const { spawn } = await import('child_process');
+  const pathMod = await import('path');
+  const fsMod = await import('fs');
+  
+  return new Promise((resolve, reject) => {
+    // Try to find the rust binary
+    const possiblePaths = [
+      pathMod.default.join(__dirname, '..', 'target', 'release', 'voria'),
+      pathMod.default.join(__dirname, '..', 'target', 'debug', 'voria'),
+      pathMod.default.join(__dirname, '..', 'rust', 'target', 'release', 'voria'),
+      pathMod.default.join(__dirname, '..', 'rust', 'target', 'debug', 'voria'),
+    ];
+    
+    let rustBin = possiblePaths.find(p => fsMod.default.existsSync(p));
+    
+    if (!rustBin) {
+       // Check if it's in the system path
+       try {
+         execSync('voria --version', { stdio: 'ignore' });
+         rustBin = 'voria';
+       } catch (e) {
+         return reject(new Error('Rust core binary (voria) not found. Please run "cargo build --release" in the rust directory.'));
+       }
+    }
+    
+    const child = spawn(rustBin, args, { stdio: 'inherit' });
+    child.on('exit', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`Rust core exited with code ${code}`));
+    });
+  });
+}
+
 // Main CLI router
 async function main() {
   const args = process.argv.slice(2);
@@ -716,6 +783,15 @@ async function main() {
       }
       break;
     }
+
+    case '--graph':
+      try {
+        await runRustCore(['--graph']);
+      } catch (error) {
+        console.error(`${colors.red("✖")} Error running analysis: ${error.message}`);
+        console.log(`${colors.yellow("💡")} Make sure to build the rust core: ${colors.bold("cargo build --release")}`);
+      }
+      break;
 
     default:
       console.log(`\n❌ Unknown command: ${command}`);

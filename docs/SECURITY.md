@@ -155,7 +155,7 @@ voria respects system HTTP proxy:
 # Set system proxy (voria uses it automatically)
 export HTTP_PROXY="http://proxy.example.com:8080"
 export HTTPS_PROXY="https://proxy.example.com:8443"
-export NO_PROXY="localhost,127.0.0.1"
+export NO_PROXY="localhost,127.0.0.3"
 
 voria plan 1  # Uses proxy automatically
 ```
@@ -332,3 +332,7 @@ For enterprise:
 - [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md) - Security decisions
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues
 - [PERFORMANCE.md](PERFORMANCE.md) - Performance tuning
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

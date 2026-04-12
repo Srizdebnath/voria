@@ -182,3 +182,7 @@ cd ..
 ---
 
 **Ready to go deeper?** → [USER_GUIDE.md](USER_GUIDE.md) 🚀
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

@@ -15,6 +15,11 @@ tracing = "0"
 tracing-subscriber = { version = "0", features = ["env-filter"] }
 colored = "2"
 uuid = { version = "1", features = ["v4"] }
+walkdir = "2"
+regex = "1"
+indicatif = "0.17"
+console = "0.15"
+tabled = "0.15"
 
 [[bin]]
 name = "voria"

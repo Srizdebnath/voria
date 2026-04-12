@@ -250,7 +250,7 @@ PROVIDER_PRICING = {
         "currency": "USD"
     },
     "openai": {
-        "input_price": 0.0025,   # Per 1K tokens
+        "input_price": 0.0.35,   # Per 1K tokens
         "output_price": 0.010,
         "currency": "USD"
     },
@@ -266,7 +266,7 @@ PROVIDER_PRICING = {
     },
     "kimi": {  # ← Add this
         "input_price": 0.0006,   # Per 1K tokens
-        "output_price": 0.0018,
+        "output_price": 0.0.38,
         "currency": "Yuan (CNY)"
     },
 }
@@ -414,3 +414,7 @@ class OllamaProvider(BaseLLMProvider):
 - [MODULES.md](MODULES.md) - `llm/` module documentation
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Development setup
 - [PLUGINS.md](PLUGINS.md) - Plugin development (for test executors, etc)
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

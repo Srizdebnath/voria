@@ -129,4 +129,8 @@ LLM Providers (OpenAI, Gemini, Claude, Modal)
 ---
 
 **Last Updated:** April 12, 2026
-**Documentation Version:** 0.0.2
+**Documentation Version:** 0.0.3
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

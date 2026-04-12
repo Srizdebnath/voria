@@ -417,3 +417,7 @@ Future capabilities can be added at these points:
 - [IPC_PROTOCOL.md](IPC_PROTOCOL.md) - Detailed protocol spec
 - [MODULES.md](MODULES.md) - Component documentation
 - [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md) - Design rationale
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

@@ -37,7 +37,7 @@ The following behaviors are unacceptable:
 If you experience or witness unacceptable behavior:
 
 1. **Direct Communication**: If you're comfortable, speak directly with the person involved
-2. **Report to Maintainers**: Email srizd449@gmail.com with details including:
+2. **Report to Maintainers**: Email srizd449@gmail.com or contact us via **WhatsApp Support Group**: https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t with details including:
    - Description of the behavior
    - Context and location (issue, PR, discussion, etc.)
    - Who was involved
@@ -71,7 +71,7 @@ This Code of Conduct is adapted from the [Contributor Covenant](https://www.cont
 
 ## Questions?
 
-If you have questions about this Code of Conduct, please reach out to the maintainers at srizd449@gmail.com.
+If you have questions about this Code of Conduct, please reach out to the maintainers at srizd449@gmail.com or join our **WhatsApp Support Group**: https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t
 
 ---
 

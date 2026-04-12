@@ -2,12 +2,33 @@
 
 All notable changes to voria are documented here.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/v0.0.1/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/v0.0.3/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [v0.0.2] - April 12, 2026 ✅ PRODUCTION RELEASE
+## [v0.0.3] - April 12, 2026 ✅ ADVANCED ANALYSIS & CHINESE MODELS
+
+### 🔭 Advanced Code Analysis (New)
+- **Hierarchical Dependency Graph** via `voria --graph`
+- **Level-by-level visualization** (Root → Level 1 → Level 2)
+- **Risk Integrity Scoring** based on coupling and complexity
+- **Hot Spot Detection** for complex/unstable modules
+- **Super-fast Rust implementation** for non-LLM static analysis
+- **Progress interaction** with estimated time remaining
+- **Automatic filtering** of generated/hidden directories (`.next`, `dist`, `build`)
+
+### 🤖 Expanded Model Support
+- Support for **Kimi**, **Minimax**, **DeepSeek**, and **SiliconFlow**
+- **Detailed model selection** wizard in `voria --init`
+- Unified model configuration across all providers
+
+### 🔗 Support & Community
+- **WhatsApp Support Group:** https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t
+- **Documentation Overhaul:** Updated all docs to v0.0.3
+- **Enhanced Contributor Setup:** Improved local development guides
+
+## [v0.0.3] - April 12, 2026 ✅ PRODUCTION RELEASE
 
 ### 🎉 Major Release: Feature Complete
 
@@ -75,7 +96,7 @@ All planned features through Phase 8 are now complete and production-ready.
 - **New CHANGELOG.md** - This file
 
 ###  Distribution
-- **Published to npm** as `@voria/cli@0.0.2`
+- **Published to npm** as `@voria/cli@0.0.3`
 - **Global CLI tool** - Install with `npm install -g @voria/cli`
 - **Pre-built binaries** - No build required for end users
 
@@ -97,7 +118,7 @@ All planned features through Phase 8 are now complete and production-ready.
 
 ---
 
-## [v0.0.1] - April 2026
+## [v0.0.3] - April 2026
 
 ###  Phase 3: Configuration & Setup
 - Interactive setup wizard (`voria --init`)
@@ -118,7 +139,7 @@ All planned features through Phase 8 are now complete and production-ready.
 
 ---
 
-## [v0.0.1] - April 2026
+## [v0.0.3] - April 2026
 
 ###  Phase 1: Core Foundation
 - Rust CLI base structure
@@ -145,7 +166,7 @@ All planned features through Phase 8 are now complete and production-ready.
 - Cost allocation
 - Team collaboration features
 
-### vv0.0.1 (Q4 2026) - Stable API
+### vv0.0.3 (Q4 2026) - Stable API
 - Stable API guarantees
 - VS Code extension
 - GitHub Actions integration
@@ -158,14 +179,14 @@ All planned features through Phase 8 are now complete and production-ready.
 
 | Phase | Name | Status | Version |
 |-------|------|--------|---------|
-| 1 | Foundation | ✅ Complete | v0.0.1 |
-| 2 | Automation | ✅ Complete | v0.0.1 |
-| 3 | Setup & Config | ✅ Complete | v0.0.1 |
-| 4 | LLM Integration | ✅ Complete | v0.0.1 |
-| 5 | GitHub Integration | ✅ Complete | v0.0.1 |
-| 6 | Code Analysis | ✅ Complete | v0.0.1 |
-| 7 | Testing & Validation | ✅ Complete | v0.0.1 |
-| 8 | Agent Loop | ✅ Complete | v0.0.1 |
+| 1 | Foundation | ✅ Complete | v0.0.3 |
+| 2 | Automation | ✅ Complete | v0.0.3 |
+| 3 | Setup & Config | ✅ Complete | v0.0.3 |
+| 4 | LLM Integration | ✅ Complete | v0.0.3 |
+| 5 | GitHub Integration | ✅ Complete | v0.0.3 |
+| 6 | Code Analysis | ✅ Complete | v0.0.3 |
+| 7 | Testing & Validation | ✅ Complete | v0.0.3 |
+| 8 | Agent Loop | ✅ Complete | v0.0.3 |
 | 9 | Advanced Analysis | 📋 Planned | v0.1.0 |
 | 10 | Enterprise | 📋 Planned | v0.2.0 |
 
@@ -187,3 +208,8 @@ All planned features through Phase 8 are now complete and production-ready.
 - **npm:** https://www.npmjs.com/package/@voria/cli
 - **Issues:** https://github.com/Srizdebnath/voria/issues
 - **Discussions:** https://github.com/Srizdebnath/voria/discussions
+- **WhatsApp Support:** https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

@@ -144,6 +144,37 @@ voria fix 42 ansh/voria -v
 - `-v, --verbose` - Show detailed output and debug information
 - `--config <PATH>` - Use specific config file
 
+### `voria --graph`
+
+Advanced structural analysis and dependency visualization.
+
+**Usage:**
+```bash
+voria --graph
+```
+
+**What it does:**
+- Scans the entire codebase for dependencies and circular imports
+- Generates a hierarchical tree view of folders and files
+- Visualizes "imports" relationships at every level
+- Calculates a **Risk Integrity Score** based on coupling and complexity
+- Identifies **Hot Spots** (most complex/unstable modules)
+- Provides actionable maintenance insights
+
+**Output Example:**
+```
+🔭 Voria Multi-Level Dependency Tree
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+├── 📁 src (3 files, 450 lines)
+│   ├── 📄 main.rs → imports [cli.rs, config.rs]
+│   └── 📁 cli (2 files, 300 lines)
+│       └── 📄 mod.rs → imports [orchestrator.rs]
+└── 📄 README.md
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚖️ Ecosystem Health Index: 3.2/10.0 [EXCELLENT]
+```
+
 ---
 
 ### `voria plan [ISSUE_ID]`
@@ -698,3 +729,7 @@ Team leads can create `voria.config.json` in repo root:
 - [PERFORMANCE.md](PERFORMANCE.md) - Speed optimization
 - [SECURITY.md](SECURITY.md) - Security best practices
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

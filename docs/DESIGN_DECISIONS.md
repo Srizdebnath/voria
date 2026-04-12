@@ -378,3 +378,7 @@ voria/
 **See Also:**
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System design
 - [MODULES.md](MODULES.md) - Component details
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

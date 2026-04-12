@@ -308,3 +308,7 @@ Currently no versioning mechanism. Once protocol is stable, add version field:
   ...
 }
 ```
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

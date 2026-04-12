@@ -501,7 +501,7 @@ cargo build --release
 
 ### "Cargo not found"
 ```bash
-curl --proto '=https' --tlsvv0.0.1 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsvv0.0.3 -sSf https://sh.rustup.rs | sh
 source $HOME/.cargo/env
 ```
 
@@ -533,3 +533,7 @@ pytest tests/ -v -s --tb=long
 ---
 
 **Need Help?** Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or ask in discussions.
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

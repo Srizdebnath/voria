@@ -430,3 +430,7 @@ class KotlinParser:
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Dev environment setup
 - [MODULES.md](MODULES.md) - Module documentation
 - [LLM_INTEGRATION.md](LLM_INTEGRATION.md) - Add new LLM providers
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

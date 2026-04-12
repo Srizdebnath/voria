@@ -344,3 +344,7 @@ python3 -m py_compile voria/
 - [SECURITY.md](SECURITY.md) - Security best practices
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System design
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

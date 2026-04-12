@@ -384,6 +384,7 @@ Closes #123
 - **Issues**: Search [GitHub Issues](https://github.com/Srizdebnath/voria/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)
 - **Email**: srizd449@gmail.com
+- **WhatsApp Support Group**: https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t
 
 ## Troubleshooting
 

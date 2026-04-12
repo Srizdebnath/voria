@@ -27,7 +27,7 @@ Complete instructions for installing and using voria.
 npm install -g @voria/cli
 
 # Verify installation
-voria --version  # Should show v0.0.2
+voria --version  # Should show v0.0.3
 
 # Initialize in your project
 cd your-project
@@ -270,7 +270,7 @@ pytest -v
 
 ```bash
 # Install Rust
-curl --proto '=https' --tlsvv0.0.1 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsvv0.0.3 -sSf https://sh.rustup.rs | sh
 source $HOME/.cargo/env
 ```
 
@@ -332,3 +332,7 @@ cd python && pip install -e . --force-reinstall
 ---
 
 **Installation Complete!** Continue with [QUICKSTART.md](QUICKSTART.md) 🚀
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

@@ -468,3 +468,7 @@ if test_result.passed == test_result.total:
 **See Also:**
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System design
 - [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md) - Why these choices
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

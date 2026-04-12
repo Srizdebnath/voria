@@ -325,10 +325,11 @@ We welcome contributions! See [Contributing Guide](docs/CONTRIBUTING.md) for:
 
 
 ##  Getting Help
-
-- **[GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)** - Ask questions
-- **[GitHub Issues](https://github.com/Srizdebnath/voria/issues)** - Report bugs
-- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues
+ 
+ - **[WhatsApp Support Group](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)** - Fastest support
+ - **[GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)** - Ask questions
+ - **[GitHub Issues](https://github.com/Srizdebnath/voria/issues)** - Report bugs
+ - **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues
 
 ##  Roadmap
 
@@ -414,12 +415,11 @@ We welcome contributions! See [Contributing Guide](docs/CONTRIBUTING.md) for:
 
 **Current Status:** All core features complete and production-ready! 
 
-**Coming in v0.2.0:**
-- Advanced code dependency analysis
-- Risk scoring for patches
-- VS Code extension
-- GitHub Actions integration
-- Self-hosted deployment options
+**Now Available in v0.0.3:**
+- ✅ Advanced code dependency analysis (`voria --graph`)
+- ✅ Risk scoring for patches & codebase
+- ✅ Expanded Chinese model support (Kimi, Minimax, DeepSeek)
+- ✅ Enhanced hierarchical structural visualization
 
 **Get involved:** [Contributing Guide](docs/CONTRIBUTING.md)
 

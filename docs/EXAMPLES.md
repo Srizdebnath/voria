@@ -432,3 +432,7 @@ diff <(voria issue 42 --llm openai --output json) \
 ---
 
 **Try these examples!** Start with simplest (Example 1) and work up to more complex ones.
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

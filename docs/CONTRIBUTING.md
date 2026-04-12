@@ -444,3 +444,7 @@ Every contribution - big or small - helps make voria better. Thank you for being
 - [ROADMAP.md](ROADMAP.md) - Where we're heading
 - [PLUGINS.md](PLUGINS.md) - Plugin development guide
 - [LLM_INTEGRATION.md](LLM_INTEGRATION.md) - Adding LLM providers
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

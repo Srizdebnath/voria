@@ -3,6 +3,7 @@ mod config;
 mod ipc;
 mod orchestrator;
 mod ui;
+mod analysis;
 
 use anyhow::Result;
 use clap::Parser;
@@ -14,7 +15,7 @@ use std::path::PathBuf;
 #[command(version = env!("CARGO_PKG_VERSION"))]
 struct Args {
     #[command(subcommand)]
-    command: cli::Command,
+    command: Option<cli::Command>,
 
     /// Verbose logging
     #[arg(global = true, short, long)]
@@ -23,6 +24,10 @@ struct Args {
     /// Configuration file path
     #[arg(global = true, short, long)]
     config: Option<PathBuf>,
+
+    /// Show dependency graph and risk analysis
+    #[arg(long)]
+    graph: bool,
 }
 
 #[tokio::main]
@@ -43,6 +48,23 @@ async fn main() -> Result<()> {
         config::Config::default()
     };
 
+    if args.graph {
+        let analyzer = analysis::CodeAnalyzer::new(std::env::current_dir()?);
+        let result = analyzer.analyze().await?;
+        analyzer.visualize_graph(&result);
+        analyzer.display_risk_report(&result);
+        return Ok(());
+    }
+
     // Execute command
-    args.command.execute(&config).await
+    if let Some(cmd) = args.command {
+        cmd.execute(&config).await?;
+    } else if !args.graph {
+        // If no subcommand and no graph flag, show help
+        use clap::CommandFactory;
+        Args::command().print_help()?;
+        println!();
+    }
+
+    Ok(())
 }

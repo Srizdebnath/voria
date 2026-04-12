@@ -14,7 +14,7 @@ command not found: cargo
 **Solution:**
 ```bash
 # Install Rust
-curl --proto '=https' --tlsvv0.0.1 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsvv0.0.3 -sSf https://sh.rustup.rs | sh
 
 # Add to PATH
 source $HOME/.cargo/env
@@ -563,3 +563,7 @@ tar czf voria-debug.tar.gz *.txt *.log
 - [PERFORMANCE.md](PERFORMANCE.md) - Speed optimization
 - [SECURITY.md](SECURITY.md) - Security issues
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Development setup issues
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)

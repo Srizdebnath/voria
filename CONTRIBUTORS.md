@@ -9,6 +9,7 @@ Thank you for being interested in contributing to voria! This guide will help yo
 - **Contributing**: [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
 - **Code of Conduct**: [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 - **Development Setup**: [DEVELOPMENT.md](./docs/DEVELOPMENT.md)
+- **WhatsApp Support**: https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t
 
 ## Ways to Contribute
 
@@ -205,6 +206,7 @@ Contributors are recognized:
 - **Issues**: Search [existing issues](https://github.com/Srizdebnath/voria/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)
 - **Email**: srizd449@gmail.com
+- **WhatsApp Support Group**: https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t
 
 ## Code of Conduct
 

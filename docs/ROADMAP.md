@@ -4,7 +4,7 @@ voria's feature roadmap and product vision.
 
 ##  Current Status: PRODUCTION READY ✅
 
-voria is feature-complete for its first official release (**v0.0.1**). All core orchestration, LLM, and GitHub integration components are stable and distributed via npm.
+voria is feature-complete for its first official release (**v0.0.3**). All core orchestration, LLM, and GitHub integration components are stable and distributed via npm.
 
 **Phase 1: Core Orchestration** ✅ COMPLETE
 - Node.js CLI entry point with premium blue theme
@@ -26,7 +26,7 @@ voria is feature-complete for its first official release (**v0.0.1**). All core 
 - Failure analysis and automatic refinement (up to 5 iterations)
 - Safe patch application with rollback support
 
-**Phase 5: First Release (v0.0.1)** ✅ COMPLETE
+**Phase 5: First Release (v0.0.3)** ✅ COMPLETE
 - Public publication to npm as `@srizdebnath/voria`
 - Integrated documentation and help system
 - 100% test pass rate for CLI and Engine
@@ -164,12 +164,12 @@ Context sent to LLM: 2,000 lines  # Same quality, less cost
 
 | Version | Status | Release Date | Key Features |
 |---------|--------|--------------|--------------|
-| v0.0.1 | ✅ Released | April 2026 | Basic foundation |
-| v0.0.1 | ✅ Released | April 2026 | Full LLM support |
-| v0.0.1 | ✅ Released | Apr 10, 2026 | Production-ready |
+| v0.0.3 | ✅ Released | April 2026 | Basic foundation |
+| v0.0.3 | ✅ Released | April 2026 | Full LLM support |
+| v0.0.3 | ✅ Released | Apr 10, 2026 | Production-ready |
 | v0.1.0 | 📋 Planned | Q2 2026 | Advanced analysis |
 | v0.2.0 | 📋 Planned | Q3 2026 | Enterprise features |
-| vv0.0.1 | 📋 Planned | Q4 2026 | Stable API + IDE integration |
+| vv0.0.3 | 📋 Planned | Q4 2026 | Stable API + IDE integration |
 
 ---
 
@@ -220,7 +220,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 - Plugin system
 - More LLM providers (Modal, Gemini, Claude, Kimi)
 
-### v0.0.1 (April 2026) ✅
+### v0.0.3 (April 2026) ✅
 - Enhanced test failure analysis
 - Batch processing
 - Performance improvements
@@ -344,3 +344,7 @@ voria --report-beta-issue graph-analysis
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Current system design
 - [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md) - Why things are the way they are
 - [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+
+---
+
+**Join our WhatsApp Support Group:** [Click Here](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)
