@@ -131,7 +131,19 @@ function saveConfig(config, isGlobal = true) {
   fs.writeFileSync(file, JSON.stringify(config, null, 2));
 }
 
-// Interactive setup
+/**
+ * Dynamically fetch models for a provider using Python backend
+ */
+function fetchModels(provider, apiKey) {
+  try {
+    const scriptPath = path.join(__dirname, '..', 'python', 'voria', 'core', 'llm', 'model_discovery.py');
+    const output = execSync(`python3 "${scriptPath}" "${provider}" "${apiKey}"`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+    return JSON.parse(output);
+  } catch (e) {
+    return [];
+  }
+}
+
 // Interactive setup
 async function runSetup() {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -170,8 +182,11 @@ async function runSetup() {
       return;
     }
 
+    console.log(`\n${colors.dim("   Fetching latest models...")}`);
+    const fetchedModels = fetchModels(provider, apiKey);
+    const models = fetchedModels.length > 0 ? fetchedModels.map(m => m.name) : (PROVIDER_MODELS[provider] || ['gpt-4o']);
+
     console.log(`\n${colors.bold("Select Model:")}`);
-    const models = PROVIDER_MODELS[provider] || ['default'];
     models.forEach((model, index) => {
       console.log(`  ${colors.blue((index + 1) + ")")} ${model}`);
     });
