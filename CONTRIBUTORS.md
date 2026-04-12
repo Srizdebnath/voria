@@ -1,11 +1,11 @@
 # Contributors Guide
 
-Thank you for being interested in contributing to Victory! This guide will help you get started.
+Thank you for being interested in contributing to voria! This guide will help you get started.
 
 ## Quick Links
 
-- **Issues**: https://github.com/Srizdebnath/Victory/issues
-- **Discussions**: https://github.com/Srizdebnath/Victory/discussions
+- **Issues**: https://github.com/Srizdebnath/voria/issues
+- **Discussions**: https://github.com/Srizdebnath/voria/discussions
 - **Contributing**: [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
 - **Code of Conduct**: [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 - **Development Setup**: [DEVELOPMENT.md](./docs/DEVELOPMENT.md)
@@ -15,13 +15,13 @@ Thank you for being interested in contributing to Victory! This guide will help 
 ### 1. 🐛 Report Issues
 Found a bug? Let us know!
 - Check if it already exists
-- Create a [bug report](https://github.com/Srizdebnath/Victory/issues/new?template=bug-report.yml)
+- Create a [bug report](https://github.com/Srizdebnath/voria/issues/new?template=bug-report.yml)
 - Include steps to reproduce
 
 ### 2. 💡 Suggest Features
 Have an idea? We'd love to hear it!
-- Check [existing features](https://github.com/Srizdebnath/Victory/issues?q=label:enhancement)
-- Create a [feature request](https://github.com/Srizdebnath/Victory/issues/new?template=feature-request.yml)
+- Check [existing features](https://github.com/Srizdebnath/voria/issues?q=label:enhancement)
+- Create a [feature request](https://github.com/Srizdebnath/voria/issues/new?template=feature-request.yml)
 - Explain the use case and benefits
 
 ### 3. 📝 Improve Documentation
@@ -40,7 +40,7 @@ Documentation helps everyone!
 Ready to code? Awesome!
 
 **Good First Issues** for new contributors:
-- [good-first-issue label](https://github.com/Srizdebnath/Victory/labels/good-first-issue)
+- [good-first-issue label](https://github.com/Srizdebnath/voria/labels/good-first-issue)
 - Start with these to get familiar with the codebase
 
 **Areas we need help with:**
@@ -52,30 +52,30 @@ Ready to code? Awesome!
 - [ ] Error handling
 
 ### 5. 🧪 Write Tests
-Robust tests make Victory better!
+Robust tests make voria better!
 - Unit tests for new functions
 - Integration tests for features
 - Edge case coverage
 - Error scenario testing
 
 ### 6. 🎨 Improve UI/UX
-Help make Victory more user-friendly!
+Help make voria more user-friendly!
 - CLI output improvements
 - Better error messages
 - Help text enhancements
 - Color scheme and formatting
 
 ### 7. 🌍 Translate
-Help Victory reach more developers!
+Help voria reach more developers!
 - Translate documentation
 - Translate error messages
 - Localize examples
 
 ### 8. 🔗 Community
 Build our community!
-- Share Victory with others
+- Share voria with others
 - Write blog posts or tutorials
-- Speak about Victory at meetups
+- Speak about voria at meetups
 - Help answer questions
 
 ## Getting Started
@@ -94,13 +94,13 @@ Build our community!
 
 2. **Clone your fork**
    ```bash
-   git clone https://github.com/YOUR-USERNAME/Victory.git
-   cd Victory
+   git clone https://github.com/YOUR-USERNAME/voria.git
+   cd voria
    ```
 
 3. **Add upstream remote**
    ```bash
-   git remote add upstream https://github.com/Srizdebnath/Victory.git
+   git remote add upstream https://github.com/Srizdebnath/voria.git
    ```
 
 4. **Create a branch**
@@ -131,7 +131,7 @@ Build our community!
    cd python && pytest && cd ..
    
    # Integration
-   ./target/debug/victory plan 1
+   ./target/debug/voria plan 1
    ```
 
 8. **Commit with conventional commits**
@@ -202,8 +202,8 @@ Contributors are recognized:
 ## Questions?
 
 - **Documentation**: Check [docs/](./docs/)
-- **Issues**: Search [existing issues](https://github.com/Srizdebnath/Victory/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Srizdebnath/Victory/discussions)
+- **Issues**: Search [existing issues](https://github.com/Srizdebnath/voria/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)
 - **Email**: srizd449@gmail.com
 
 ## Code of Conduct
@@ -216,6 +216,6 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Thank you for contributing to Victory! Happy coding! 🚀**
+**Thank you for contributing to voria! Happy coding! 🚀**
 
-Need help getting started? Feel free to ask in the [discussions](https://github.com/Srizdebnath/Victory/discussions)!
+Need help getting started? Feel free to ask in the [discussions](https://github.com/Srizdebnath/voria/discussions)!

@@ -3,7 +3,7 @@
 Tracks LLM token usage across all providers and manages budget limits.
 
 Usage:
-    from victory.core.token_manager import get_token_manager
+    from voria.core.token_manager import get_token_manager
 
     manager = get_token_manager()
     manager.record_usage("openai", "gpt-4", 500, 1000)

@@ -1,10 +1,10 @@
 # LLM Integration Guide
 
-How to add support for new LLM providers in Victory.
+How to add support for new LLM providers in voria.
 
 ##  Adding a New LLM Provider
 
-Victory supports multiple LLM providers. Here's how to add a new one like Kimi, MiniMax, or custom APIs.
+voria supports multiple LLM providers. Here's how to add a new one like Kimi, MiniMax, or custom APIs.
 
 ##  Step 1: Choose an LLM
 
@@ -26,7 +26,7 @@ Victory supports multiple LLM providers. Here's how to add a new one like Kimi, 
 
 ### Step 1: Create Provider Class
 
-Create `python/victory/core/llm/providers/kimi.py`:
+Create `python/voria/core/llm/providers/kimi.py`:
 
 ```python
 from .base import BaseLLMProvider, LLMResponse
@@ -180,7 +180,7 @@ Analyze why tests failed and suggest fixes. Be specific about what changed."""
 
 ### Step 2: Register Provider
 
-Edit `python/victory/core/llm/__init__.py`:
+Edit `python/voria/core/llm/__init__.py`:
 
 ```python
 from .providers.kimi import KimiProvider
@@ -205,7 +205,7 @@ class LLMProviderFactory:
 
 ### Step 3: Add to Setup
 
-Edit `python/victory/core/setup.py`:
+Edit `python/voria/core/setup.py`:
 
 ```python
 class ProviderSetup:
@@ -240,7 +240,7 @@ class ProviderSetup:
 
 ### Step 4: Add Token Pricing
 
-Edit `python/victory/core/token_manager/pricing.py`:
+Edit `python/voria/core/token_manager/pricing.py`:
 
 ```python
 PROVIDER_PRICING = {
@@ -278,7 +278,7 @@ Create `tests/test_kimi.py`:
 
 ```python
 import pytest
-from victory.core.llm import LLMProviderFactory
+from voria.core.llm import LLMProviderFactory
 
 @pytest.mark.asyncio
 async def test_kimi_provider_creation():
@@ -324,7 +324,7 @@ Users can configure new provider via:
 
 **Option 1: Interactive Setup**
 ```bash
-python3 -m victory.core.setup
+python3 -m voria.core.setup
 # Choose: kimi
 # Enter API key: xxx
 ```

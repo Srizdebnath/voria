@@ -58,20 +58,20 @@ jobs:
     
     - name: Python Tests
       run: |
-        python3 test_victory_cli.py
+        python3 test_voria_cli.py
         # Also run any pytest tests if present in root
         pytest test_phase2_integration.py test_real_integration.py || true
     
     - name: Python Linting
       run: |
         black --check .
-        flake8 python/victory --count --select=E9,F63,F7,F82 --show-source --statistics
-        mypy python/victory --ignore-missing-imports || true
+        flake8 python/voria --count --select=E9,F63,F7,F82 --show-source --statistics
+        mypy python/voria --ignore-missing-imports || true
 
     - name: Node CLI Smoke Test
       run: |
-        node bin/victory --version
-        node bin/victory --help
+        node bin/voria --version
+        node bin/voria --help
 
   security:
     name: Security Scan

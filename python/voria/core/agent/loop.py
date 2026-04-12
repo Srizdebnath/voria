@@ -1,5 +1,5 @@
 """
-Agent Loop - Orchestrates the full Victory workflow
+Agent Loop - Orchestrates the full voria workflow
 
 Workflow:
 1. Plan: Get fix strategy from LLM
@@ -16,9 +16,9 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 
-from victory.core.llm import LLMProviderFactory, Message
-from victory.core.executor import TestExecutor, TestSuiteResult
-from victory.core.patcher import CodePatcher
+from voria.core.llm import LLMProviderFactory, Message
+from voria.core.executor import TestExecutor, TestSuiteResult
+from voria.core.patcher import CodePatcher
 
 logger = logging.getLogger(__name__)
 

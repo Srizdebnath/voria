@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Quick demo of Victory's dynamic model discovery
+Quick demo of voria's dynamic model discovery
 Shows how to select models from latest available options
 """
 
 import asyncio
-from victory.core.llm import LLMProviderFactory
+from voria.core.llm import LLMProviderFactory
 
 
 async def demo():
     print("\n" + "=" * 70)
-    print("🚀 VICTORY DYNAMIC MODEL DISCOVERY DEMO")
+    print("🚀 voria DYNAMIC MODEL DISCOVERY DEMO")
     print("=" * 70 + "\n")
 
     # Demo: Discover OpenAI models (includes latest GPT-5.4)
@@ -40,14 +40,14 @@ async def demo():
     print(f"   ✅ Ready for use!\n")
 
     # Demo: Show all provider options
-    print("3️⃣  Available Providers in Victory:\n")
+    print("3️⃣  Available Providers in voria:\n")
 
     providers = LLMProviderFactory.list_providers()
     for provider in providers:
         print(f"     • {provider.upper()}")
 
     print("\n4️⃣  Interactive Setup (from CLI):\n")
-    print("     $ python3 -m victory.core.setup")
+    print("     $ python3 -m voria.core.setup")
     print("     🤖 Select LLM Provider:")
     print("        1. modal ❌ Not configured")
     print("        2. openai ❌ Not configured")
@@ -65,10 +65,10 @@ async def demo():
     print("     💾 Saving configuration...")
     print("     ✅ openai configured successfully!")
     print("        Model: GPT-5.4 (Latest Frontier)")
-    print("        Config saved to: /home/user/.victory/providers.json\n")
+    print("        Config saved to: /home/user/.voria/providers.json\n")
 
     print("=" * 70)
-    print("✅ Victory supports latest models with dynamic discovery!")
+    print("✅ voria supports latest models with dynamic discovery!")
     print("=" * 70 + "\n")
 
 

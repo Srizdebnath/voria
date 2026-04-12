@@ -1,6 +1,6 @@
 # Installation Guide
 
-Complete instructions for installing and using Victory.
+Complete instructions for installing and using voria.
 
 ##  Prerequisites
 
@@ -25,25 +25,25 @@ Complete instructions for installing and using Victory.
 
 ```bash
 # Install globally
-npm install -g @srizdebnath/victory
+npm install -g @srizdebnath/voria
 
 # Verify installation
-victory --version  # Should show v0.0.1
+voria --version  # Should show v0.0.1
 
 # Initialize in your project
 cd your-project
-victory --init
+voria --init
 ```
 
-**That's it!** Victory is now ready to use.
+**That's it!** voria is now ready to use.
 
 ## 🔧 Alternative: Manual Installation from Source
 
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/Srizdebnath/Victory.git
-cd victory
+git clone https://github.com/Srizdebnath/voria.git
+cd voria
 ```
 
 ### Step 2: Create Python Virtual Environment
@@ -76,23 +76,23 @@ cd ..
 
 ```bash
 # Test the installation
-victory --help
+voria --help
 
 # Setup your LLM provider
-victory setup-modal
+voria setup-modal
 
 # Setup GitHub access  
-victory set-github-token
+voria set-github-token
 
 # List issues from a repository
-victory list-issues owner/repo
+voria list-issues owner/repo
 ```
 
 Expected output:
 ```
-⚡ Victory - AI-Powered Bug Fixing
+⚡ voria - AI-Powered Bug Fixing
 
-Usage: victory [OPTIONS] <COMMAND>
+Usage: voria [OPTIONS] <COMMAND>
 
 Commands:
   setup-modal       Setup Modal API configuration
@@ -113,13 +113,13 @@ Options:
 
 ##  Configure LLM Providers
 
-Victory requires at least one LLM provider. Set up using `victory setup-modal`:
+voria requires at least one LLM provider. Set up using `voria setup-modal`:
 
 ### Interactive Setup (Recommended)
 
 ```bash
 # In your project directory
-victory --init
+voria --init
 ```
 
 This will guide you through:
@@ -127,11 +127,11 @@ This will guide you through:
 2. ✅ Enter API key
 3. ✅ Set daily budget
 4. ✅ Select test framework
-5. ✅ Save configuration to `.victory.json`
+5. ✅ Save configuration to `.voria.json`
 
 ### Manual Configuration
 
-Edit `~/.victory/config.json` (created after `victory --init`):
+Edit `~/.voria/config.json` (created after `voria --init`):
 
 ```json
 {
@@ -169,17 +169,17 @@ export ANTHROPIC_API_KEY="..."
 
 ```bash
 # Copy binary to system path
-sudo cp target/release/victory /usr/local/bin/
+sudo cp target/release/voria /usr/local/bin/
 
 # Now run from anywhere
-victory --version
+voria --version
 ```
 
 ### Create Shell Alias
 
 ```bash
 # Add to ~/.bashrc or ~/.zshrc
-alias victory="~/path/to/victory/target/release/victory"
+alias voria="~/path/to/voria/target/release/voria"
 
 # Reload shell
 source ~/.bashrc
@@ -194,18 +194,18 @@ COPY . .
 RUN cd rust && cargo build --release
 
 FROM python:3.11
-COPY --from=builder /app/target/release/victory /usr/local/bin/
+COPY --from=builder /app/target/release/voria /usr/local/bin/
 COPY python /app/python
 WORKDIR /app
 RUN pip install -e python/
-ENTRYPOINT ["victory"]
+ENTRYPOINT ["voria"]
 ```
 
 Build and run:
 
 ```bash
-docker build -t victory .
-docker run -it victory --version
+docker build -t voria .
+docker run -it voria --version
 ```
 
 ##  Post-Installation Verification
@@ -214,17 +214,17 @@ docker run -it victory --version
 
 ```bash
 # ✅ Check Rust CLI
-./target/release/victory --version
-./target/release/victory --help
+./target/release/voria --version
+./target/release/voria --help
 
 # ✅ Check Python engine
-python3 -c "import victory; print('Python OK')"
+python3 -c "import voria; print('Python OK')"
 
 # ✅ Check NDJSON protocol
-echo '{"command":"plan","issue_id":1}' | python3 -m victory.engine | head -1
+echo '{"command":"plan","issue_id":1}' | python3 -m voria.engine | head -1
 
 # ✅ Check end-to-end
-./target/release/victory plan 1
+./target/release/voria plan 1
 ```
 
 ### Run Test Suite
@@ -240,7 +240,7 @@ cargo test
 
 # Full integration
 cd ..
-python3 test_victory_cli.py
+python3 test_voria_cli.py
 ```
 
 ##  Development Installation
@@ -288,18 +288,18 @@ apt install python3.11  # Ubuntu
 
 ### "Port already in use"
 
-Victory uses stdin/stdout, not network ports, so this shouldn't occur. If you see it:
+voria uses stdin/stdout, not network ports, so this shouldn't occur. If you see it:
 
 ```bash
 # Kill any hanging Python processes
-pkill -f "python.*victory"
+pkill -f "python.*voria"
 ```
 
 ### "NDJSON protocol error"
 
 ```bash
 # Clear any cached state
-rm -rf ~/.victory/
+rm -rf ~/.voria/
 
 # Reinstall
 cd python && pip install -e . --force-reinstall
@@ -310,8 +310,8 @@ cd python && pip install -e . --force-reinstall
 - [ ] Rust compiled successfully
 - [ ] Python virtual environment created
 - [ ] Python dependencies installed
-- [ ] `victory --version` works
-- [ ] `victory plan 1` works
+- [ ] `voria --version` works
+- [ ] `voria plan 1` works
 - [ ] LLM provider configured
 - [ ] All tests passing
 - [ ] Configuration file created
@@ -327,7 +327,7 @@ cd python && pip install -e . --force-reinstall
 
 - Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 - Read [DEVELOPMENT.md](DEVELOPMENT.md)
-- Search [GitHub Issues](https://github.com/Srizdebnath/Victory/issues)
+- Search [GitHub Issues](https://github.com/Srizdebnath/voria/issues)
 - Open a new issue
 
 ---

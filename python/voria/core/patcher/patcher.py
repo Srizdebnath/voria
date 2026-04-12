@@ -112,7 +112,7 @@ class UnifiedDiffParser:
 class CodePatcher:
     """Apply and manage code patches"""
 
-    BACKUP_DIR = Path.home() / ".victory" / "backups"
+    BACKUP_DIR = Path.home() / ".voria" / "backups"
 
     def __init__(self, repo_path: str = "."):
         """Initialize patcher with repo path"""

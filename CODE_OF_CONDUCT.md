@@ -2,7 +2,7 @@
 
 ## Our Pledge
 
-We are committed to providing a welcoming and inspiring community for all. We pledge that everyone participating in the Victory community will be treated with respect and dignity.
+We are committed to providing a welcoming and inspiring community for all. We pledge that everyone participating in the voria community will be treated with respect and dignity.
 
 ## Our Values
 
@@ -62,8 +62,8 @@ Violations may result in:
 
 This Code of Conduct applies to:
 - All community spaces (GitHub issues, discussions, pull requests)
-- Official victory events and spaces
-- When representing Victory in public
+- Official voria events and spaces
+- When representing voria in public
 
 ## Acknowledgment
 
@@ -75,4 +75,4 @@ If you have questions about this Code of Conduct, please reach out to the mainta
 
 ---
 
-Thank you for helping make the Victory community welcoming and safe for everyone! 🚀
+Thank you for helping make the voria community welcoming and safe for everyone! 🚀

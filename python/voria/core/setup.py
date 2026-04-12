@@ -10,7 +10,7 @@ from typing import Dict, Optional
 import json
 import logging
 
-from victory.core.llm import LLMProviderFactory
+from voria.core.llm import LLMProviderFactory
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class ProviderSetup:
     """Interactive provider configuration setup"""
 
-    CONFIG_DIR = Path.home() / ".victory"
+    CONFIG_DIR = Path.home() / ".voria"
     CONFIG_FILE = CONFIG_DIR / "providers.json"
 
     def __init__(self):
@@ -70,7 +70,7 @@ class ProviderSetup:
         except Exception as e:
             print(f"❌ Failed to fetch models: {e}")
             print("Using fallback models...")
-            from victory.core.llm import ModelDiscovery
+            from voria.core.llm import ModelDiscovery
 
             if provider_name == "modal":
                 models = await ModelDiscovery._get_modal_fallback()
@@ -185,7 +185,7 @@ async def interactive_setup():
     setup = ProviderSetup()
 
     print("\n" + "=" * 50)
-    print("🚀 Victory LLM Provider Setup")
+    print("🚀 voria LLM Provider Setup")
     print("=" * 50)
 
     config = await setup.setup_provider()

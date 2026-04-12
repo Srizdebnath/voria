@@ -1,10 +1,10 @@
 # IPC Protocol Specification
 
-Complete specification of Victory's NDJSON-based inter-process communication protocol.
+Complete specification of voria's NDJSON-based inter-process communication protocol.
 
 ##  Protocol Overview
 
-Victory uses **NDJSON** (Newline-Delimited JSON) for communication between Rust CLI and Python engine.
+voria uses **NDJSON** (Newline-Delimited JSON) for communication between Rust CLI and Python engine.
 
 ## Format Rules (MANDATORY)
 
@@ -258,7 +258,7 @@ Protocol changes require coordination between Rust and Python versions.
 ### Manual Test (Python Engine)
 
 ```bash
-echo '{"command":"plan","issue_id":1}' | python3 -m victory.engine
+echo '{"command":"plan","issue_id":1}' | python3 -m voria.engine
 ```
 
 Expected output:
@@ -269,7 +269,7 @@ Expected output:
 ### Manual Test (Full CLI)
 
 ```bash
-./target/debug/victory -v plan 1
+./target/debug/voria -v plan 1
 ```
 
 Expected behavior:
@@ -282,7 +282,7 @@ Expected behavior:
 Enable verbose logging:
 
 ```bash
-RUST_LOG=debug ./target/debug/victory plan 1
+RUST_LOG=debug ./target/debug/voria plan 1
 ```
 
 This shows:
@@ -294,7 +294,7 @@ This shows:
 View Python logs:
 
 ```bash
-./target/debug/victory -v plan 1 2>&1 | grep -E "\[DEBUG\]|\[INFO\]"
+./target/debug/voria -v plan 1 2>&1 | grep -E "\[DEBUG\]|\[INFO\]"
 ```
 
 ## Backward Compatibility

@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="victory",
+    name="voria",
     version="0.0.2",
     description="AI-powered CLI tool for open source contributors",
-    author="Victory Contributors",
+    author="voria Contributors",
     packages=find_packages(),
     python_requires=">=3.9",
     install_requires=[
@@ -15,7 +15,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "victory=victory.engine:main",
+            "voria=voria.engine:main",
         ],
     },
 )

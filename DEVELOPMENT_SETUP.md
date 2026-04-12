@@ -1,6 +1,6 @@
 # Setup for Contributors
 
-Everything you need to set up Victory for local development and contribution.
+Everything you need to set up voria for local development and contribution.
 
 ## Prerequisites
 
@@ -14,11 +14,11 @@ Make sure you have installed:
 
 ```bash
 # 1. Fork and clone
-git clone https://github.com/YOUR-USERNAME/Victory.git
-cd Victory
+git clone https://github.com/YOUR-USERNAME/voria.git
+cd voria
 
 # 2. Add upstream
-git remote add upstream https://github.com/Srizdebnath/Victory.git
+git remote add upstream https://github.com/Srizdebnath/voria.git
 
 # 3. Create a branch
 git checkout -b feature/my-feature
@@ -44,11 +44,11 @@ git push origin feature/my-feature
 
 ```bash
 # Fork on GitHub first, then:
-git clone https://github.com/YOUR-USERNAME/Victory.git
-cd Victory
+git clone https://github.com/YOUR-USERNAME/voria.git
+cd voria
 
 # Add upstream for syncing
-git remote add upstream https://github.com/Srizdebnath/Victory.git
+git remote add upstream https://github.com/Srizdebnath/voria.git
 
 # Verify remotes
 git remote -v
@@ -110,10 +110,10 @@ pytest -v
 black .
 
 # Lint code
-flake8 victory
+flake8 voria
 
 # Type checking
-mypy victory
+mypy voria
 
 # Clean cache
 rm -rf .pytest_cache __pycache__
@@ -125,19 +125,19 @@ cd ..
 
 ```bash
 # Test Rust CLI
-./target/debug/victory --help
+./target/debug/voria --help
 
 # Test Python engine
-python3 -m victory.engine --help
+python3 -m voria.engine --help
 
 # Run integration test
-echo '{"command":"plan","issue_id":1}' | python3 -m victory.engine
+echo '{"command":"plan","issue_id":1}' | python3 -m voria.engine
 ```
 
 ## Project Structure
 
 ```
-victory/
+voria/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/      # Issue templates
 │   ├── workflows/           # GitHub Actions CI/CD
@@ -153,7 +153,7 @@ victory/
 │   ├── Cargo.toml
 │   └── tests/
 ├── python/
-│   ├── victory/
+│   ├── voria/
 │   │   ├── core/
 │   │   │   ├── llm/        # LLM providers
 │   │   │   ├── github/     # GitHub integration
@@ -196,7 +196,7 @@ cd python && pytest && cd ..
 
 # 4. Format and lint
 cd rust && cargo fmt && cargo clippy && cd ..
-cd python && black . && flake8 victory && cd ..
+cd python && black . && flake8 voria && cd ..
 
 # 5. Commit with conventional commits
 git add .
@@ -308,14 +308,14 @@ cd python && black . && cd ..
 cd rust && cargo clippy -- -D warnings && cd ..
 
 # Python
-cd python && flake8 victory && cd ..
+cd python && flake8 voria && cd ..
 ```
 
 ### Type Checking
 
 ```bash
 # Python
-cd python && mypy victory --ignore-missing-imports && cd ..
+cd python && mypy voria --ignore-missing-imports && cd ..
 ```
 
 ## Syncing with Upstream
@@ -381,8 +381,8 @@ Closes #123
 ## Getting Help
 
 - **Documentation**: Check [docs/](./docs/)
-- **Issues**: Search [GitHub Issues](https://github.com/Srizdebnath/Victory/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Srizdebnath/Victory/discussions)
+- **Issues**: Search [GitHub Issues](https://github.com/Srizdebnath/voria/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)
 - **Email**: srizd449@gmail.com
 
 ## Troubleshooting
@@ -411,8 +411,8 @@ python3 --version  # Should be 3.9+
 
 ```bash
 # On Linux/Mac
-chmod +x ./target/debug/victory
-chmod +x ./target/release/victory
+chmod +x ./target/debug/voria
+chmod +x ./target/release/voria
 ```
 
 ## Next Steps

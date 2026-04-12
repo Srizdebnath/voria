@@ -28,15 +28,15 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        files: target/release/victory
+        files: target/release/voria
         draft: false
         prerelease: false
         body: |
-          # Victory ${{ steps.version.outputs.VERSION }}
+          # voria ${{ steps.version.outputs.VERSION }}
           
           ## Installation
           ```bash
-          npm install -g @sriz/victory
+          npm install -g @voria/cli
           ```
           
           ## Changelog
@@ -44,17 +44,17 @@ jobs:
           
           ## Getting Started
           ```bash
-          victory --init
-          victory plan <issue_id>
+          voria --init
+          voria plan <issue_id>
           ```
           
           ## Links
-          - Docs: https://github.com/Srizdebnath/Victory/tree/master/docs
-          - Contributing: https://github.com/Srizdebnath/Victory/blob/master/CONTRIBUTING.md
-          - Issues: https://github.com/Srizdebnath/Victory/issues
+          - Docs: https://github.com/Srizdebnath/voria/tree/master/docs
+          - Contributing: https://github.com/Srizdebnath/voria/blob/master/CONTRIBUTING.md
+          - Issues: https://github.com/Srizdebnath/voria/issues
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Notify
       run: |
-        echo "::notice title=Release::Victory ${{ steps.version.outputs.VERSION }} released!"
+        echo "::notice title=Release::voria ${{ steps.version.outputs.VERSION }} released!"

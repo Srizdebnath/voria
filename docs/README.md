@@ -1,16 +1,16 @@
-# Victory Documentation
+# voria Documentation
 
-Welcome to Victory's comprehensive documentation. This folder contains everything you need to understand, use, and contribute to Victory.
+Welcome to voria's comprehensive documentation. This folder contains everything you need to understand, use, and contribute to voria.
 
 ##  Documentation Map
 
 ### Getting Started (Start Here!)
 - **[INSTALL.md](INSTALL.md)** - Installation and setup instructions
-- **[QUICKSTART.md](QUICKSTART.md)** - Get Victory running in 5 minutes
+- **[QUICKSTART.md](QUICKSTART.md)** - Get voria running in 5 minutes
 - **[USER_GUIDE.md](USER_GUIDE.md)** - Complete usage guide and commands
 - **[EXAMPLES.md](EXAMPLES.md)** - Real-world usage examples
 
-### Understanding Victory
+### Understanding voria
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design and component overview
 - **[IPC_PROTOCOL.md](IPC_PROTOCOL.md)** - NDJSON protocol specification
 - **[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md)** - Why we made certain choices
@@ -32,7 +32,7 @@ Welcome to Victory's comprehensive documentation. This folder contains everythin
 
 **I want to...**
 - Get started → [QUICKSTART.md](QUICKSTART.md)
-- Learn to use Victory → [USER_GUIDE.md](USER_GUIDE.md)
+- Learn to use voria → [USER_GUIDE.md](USER_GUIDE.md)
 - See examples → [EXAMPLES.md](EXAMPLES.md)
 - Understand how it works → [ARCHITECTURE.md](ARCHITECTURE.md)
 - Contribute code → [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -64,15 +64,15 @@ Welcome to Victory's comprehensive documentation. This folder contains everythin
 3. [MODULES.md](MODULES.md)
 4. Specific module docs (e.g., [PLUGINS.md](PLUGINS.md), [LLM_INTEGRATION.md](LLM_INTEGRATION.md))
 
-##  Victory Overview
+##  voria Overview
 
-Victory is an AI-powered CLI tool that helps open source contributors fix issues automatically:
+voria is an AI-powered CLI tool that helps open source contributors fix issues automatically:
 
 ```bash
 # Run one command
-victory issue 42
+voria issue 42
 
-# Victory will:
+# voria will:
 # 1. Fetch issue from GitHub
 # 2. Analyze the codebase
 # 3. Plan a fix (using AI)
@@ -115,10 +115,10 @@ LLM Providers (OpenAI, Gemini, Claude, Modal)
 
 ##  External Resources
 
-- [GitHub Repository](https://github.com/Srizdebnath/Victory)
+- [GitHub Repository](https://github.com/Srizdebnath/voria)
 - [Main README](../README.md)
-- [Issue Tracker](https://github.com/Srizdebnath/Victory/issues)
-- [Discussions](https://github.com/Srizdebnath/Victory/discussions)
+- [Issue Tracker](https://github.com/Srizdebnath/voria/issues)
+- [Discussions](https://github.com/Srizdebnath/voria/discussions)
 
 ##  Questions?
 

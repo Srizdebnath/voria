@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 async def test_engine_direct():
     """Test calling the engine directly"""
-    from victory.core.llm import LLMProviderFactory, Message
+    from voria.core.llm import LLMProviderFactory, Message
 
     print("\n" + "=" * 70)
     print("TEST 1: Direct LLM Provider Test")
@@ -32,7 +32,7 @@ async def test_engine_direct():
             Message(
                 role="system", content="You are a helpful assistant. Respond briefly."
             ),
-            Message(role="user", content="Say 'Hello from Victory!'"),
+            Message(role="user", content="Say 'Hello from voria!'"),
         ]
 
         response = await provider.generate(messages)
@@ -50,7 +50,7 @@ def test_github_client():
     print("=" * 70)
 
     try:
-        from victory.core.github import GitHubClient
+        from voria.core.github import GitHubClient
 
         # MockGitHub token - we won't make actual requests
         token = "ghp_test_token"
@@ -75,8 +75,8 @@ def test_python_engine_via_stdin():
         # Try to import the engine
         import sys
 
-        sys.path.insert(0, "/home/ansh/victory/python")
-        from victory.engine import process_command_async
+        sys.path.insert(0, "/home/ansh/voria/python")
+        from voria.engine import process_command_async
 
         print(f"✅ Engine module imported successfully\n")
         return True
@@ -88,7 +88,7 @@ def test_python_engine_via_stdin():
 async def main():
     """Run all tests"""
     print("\n" + "█" * 70)
-    print("█ VICTORY REAL INTEGRATION TESTS")
+    print("█ voria REAL INTEGRATION TESTS")
     print("█" * 70)
 
     results = []
@@ -123,6 +123,6 @@ async def main():
 
 
 if __name__ == "__main__":
-    sys.path.insert(0, "/home/ansh/victory/python")
+    sys.path.insert(0, "/home/ansh/voria/python")
     result = asyncio.run(main())
     sys.exit(0 if result else 1)

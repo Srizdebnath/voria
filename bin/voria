@@ -9,9 +9,9 @@ import readline from 'readline';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const VICTORY_HOME = path.join(process.env.HOME || process.env.USERPROFILE, '.victory');
-const CONFIG_FILE = path.join(VICTORY_HOME, 'config.json');
-const PROJECT_CONFIG = path.join(process.cwd(), '.victory.json');
+const voria_HOME = path.join(process.env.HOME || process.env.USERPROFILE, '.voria');
+const CONFIG_FILE = path.join(voria_HOME, 'config.json');
+const PROJECT_CONFIG = path.join(process.cwd(), '.voria.json');
 
 // ANSI escape codes for blue theme
 const colors = {
@@ -26,32 +26,41 @@ const colors = {
   bgBlue: (text) => `\x1b[44m\x1b[37m${text}\x1b[0m`
 };
 
-// Ensure victory home directory exists
-if (!fs.existsSync(VICTORY_HOME)) {
-  fs.mkdirSync(VICTORY_HOME, { recursive: true });
+// Ensure voria home directory exists
+if (!fs.existsSync(voria_HOME)) {
+  fs.mkdirSync(voria_HOME, { recursive: true });
 }
 
+const BANNER = colors.brightBlue(`
+    _    __           _      
+   | |  / /___  _____(_)___ _
+   | | / / __ \\/ ___/ / __ \`/
+   | |/ / /_/ / /  / / /_/ / 
+   |___/\\____/_/  /_/\\__,_/  
+`);
+
 const HELP_TEXT = `
-  ${colors.bgBlue(colors.bold(" ⚡ Victory "))} ${colors.blue("- AI-Powered Bug Fixing")}
+${BANNER}
+  ${colors.bgBlue(colors.bold(" ⚡ voria "))} ${colors.blue("- AI-Powered Bug Fixing")}
 
   ${colors.bold(colors.blue("USAGE:"))}
-    victory [command] [options]
+    voria [command] [options]
 
   ${colors.bold(colors.blue("GLOBAL COMMANDS:"))}
-    victory --init              ${colors.dim("Initialize Victory in current project")}
-    victory --config            ${colors.dim("Configure LLM provider and settings")}
-    victory --set-github-token  ${colors.dim("Set your GitHub personal access token")}
-    victory --list-issues <repo>${colors.dim("List issues in a repository")}
-    victory --help              ${colors.dim("Show this help message")}
-    victory --version           ${colors.dim("Show version information")}
+    voria --init              ${colors.dim("Initialize voria in current project")}
+    voria --config            ${colors.dim("Configure LLM provider and settings")}
+    voria --set-github-token  ${colors.dim("Set your GitHub personal access token")}
+    voria --list-issues <repo>${colors.dim("List issues in a repository")}
+    voria --help              ${colors.dim("Show this help message")}
+    voria --version           ${colors.dim("Show version information")}
 
   ${colors.bold(colors.blue("PROJECT COMMANDS:"))}
-    victory plan <desc>         ${colors.dim("Propose a fix for a description")}
-    victory issue <repo> <num>  ${colors.dim("Fix a specific GitHub issue")}
-    victory apply <patch>       ${colors.dim("Apply a patch file")}
-    victory status              ${colors.dim("Show current project status")}
-    victory logs                ${colors.dim("Show recent activity logs")}
-    victory reset               ${colors.dim("Reset project configuration")}
+    voria plan <desc>         ${colors.dim("Propose a fix for a description")}
+    voria issue <repo> <num>  ${colors.dim("Fix a specific GitHub issue")}
+    voria apply <patch>       ${colors.dim("Apply a patch file")}
+    voria status              ${colors.dim("Show current project status")}
+    voria logs                ${colors.dim("Show recent activity logs")}
+    voria reset               ${colors.dim("Reset project configuration")}
 
   ${colors.bold(colors.blue("OPTIONS:"))}
     --llm <provider>            ${colors.dim("Use specific LLM (openai, claude, gemini, modal, kimi)")}
@@ -62,16 +71,16 @@ const HELP_TEXT = `
 
   ${colors.bold(colors.blue("EXAMPLES:"))}
     ${colors.cyan("# Initialize a project")}
-    victory --init
+    voria --init
 
     ${colors.cyan("# Fix an issue and create PR")}
-    victory issue owner/repo 42 --apply
+    voria issue owner/repo 42 --apply
 
     ${colors.cyan("# Propose a fix with specific model")}
-    victory plan "Remove deprecated function" --llm claude --model opus-4.6
+    voria plan "Remove deprecated function" --llm claude --model opus-4.6
 
   ${colors.bold(colors.blue("DOCUMENTATION:"))}
-    ${colors.dim("Full documentation:")} ${colors.blue("https://github.com/Srizdebnath/Victory")}
+    ${colors.dim("Full documentation:")} ${colors.blue("https://github.com/Srizdebnath/voria")}
 `;
 
 const VERSION = '0.0.1';
@@ -114,12 +123,13 @@ async function runSetup() {
   const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
 
   try {
-    console.log(`\n${colors.bgBlue(colors.bold(" ⚙️ Victory Setup "))} ${colors.blue("Initialize your project")}`);
+    console.log(BANNER);
+    console.log(`${colors.bgBlue(colors.bold(" ⚙️ voria Setup "))} ${colors.blue("Initialize your project")}`);
     console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}\n`);
     
     if (!fs.existsSync(path.join(process.cwd(), '.git'))) {
       console.log(`${colors.yellow("⚠")} ${colors.bold("Warning:")} Not in a Git repository.`);
-      console.log(`   Victory works best when integrated with Git.\n`);
+      console.log(`   voria works best when integrated with Git.\n`);
     }
 
     console.log(`${colors.bold("Choose LLM Provider:")}`);
@@ -161,11 +171,11 @@ async function runSetup() {
     saveConfig({ ...config, api_key: apiKey }, true);
     saveConfig({ ...config, api_key_env: `${provider.toUpperCase()}_API_KEY` }, false);
 
-    console.log(`\n${colors.green("✓")} ${colors.bold("Victory initialized successfully!")}`);
+    console.log(`\n${colors.green("✓")} ${colors.bold("voria initialized successfully!")}`);
     console.log(`  ${colors.dim("Project Config:")} ${colors.blue(PROJECT_CONFIG)}`);
     console.log(`\n${colors.bold("Next Steps:")}`);
-    console.log(`  ${colors.blue("1.")} Run: ${colors.cyan("victory --set-github-token")}`);
-    console.log(`  ${colors.blue("2.")} Run: ${colors.cyan("victory issue owner/repo 42 --apply")}\n`);
+    console.log(`  ${colors.blue("1.")} Run: ${colors.cyan("voria --set-github-token")}`);
+    console.log(`  ${colors.blue("2.")} Run: ${colors.cyan("voria issue owner/repo 42 --apply")}\n`);
 
     rl.close();
   } catch (error) {
@@ -219,15 +229,15 @@ async function runConfig() {
 
 // Show status
 function showStatus() {
-  console.log(`\n${colors.bgBlue(colors.bold(" 📊 Victory Status "))}`);
+  console.log(`\n${colors.bgBlue(colors.bold(" 📊 voria Status "))}`);
   const config = loadConfig();
 
   if (Object.keys(config).length === 0) {
-    console.log(`${colors.red("✖")} Victory not initialized. Run ${colors.yellow("victory --init")}\n`);
+    console.log(`${colors.red("✖")} voria not initialized. Run ${colors.yellow("voria --init")}\n`);
     return;
   }
 
-  console.log(`${colors.green("✓")} Victory is configured`);
+  console.log(`${colors.green("✓")} voria is configured`);
   console.log(`  ${colors.bold("LLM Provider:")}   ${colors.blue(config.llm_provider)}`);
   console.log(`  ${colors.bold("Daily Budget:")}   ${colors.green("$" + config.daily_budget)}`);
   console.log(`  ${colors.bold("Test Framework:")} ${colors.cyan(config.test_framework)}`);
@@ -236,7 +246,7 @@ function showStatus() {
 
 // Show logs
 function showLogs() {
-  const logsFile = path.join(VICTORY_HOME, 'victory.log');
+  const logsFile = path.join(voria_HOME, 'voria.log');
   
   if (!fs.existsSync(logsFile)) {
     console.log('\n📝 No logs yet\n');
@@ -324,7 +334,7 @@ async function listIssues(repoArg, config) {
 
   const githubToken = config.github_token || process.env.GITHUB_TOKEN;
   if (!githubToken) {
-    console.log(`\n${colors.red("✖")} GitHub token not found. Run ${colors.yellow("victory --set-github-token")}`);
+    console.log(`\n${colors.red("✖")} GitHub token not found. Run ${colors.yellow("voria --set-github-token")}`);
     return;
   }
 
@@ -368,7 +378,7 @@ async function listIssues(repoArg, config) {
     }
     
     console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}`);
-    console.log(`${colors.yellow("💡")} To fix an issue: ${colors.bold("victory issue " + owner + "/" + repo + " <number> --apply")}\n`);
+    console.log(`${colors.yellow("💡")} To fix an issue: ${colors.bold("voria issue " + owner + "/" + repo + " <number> --apply")}\n`);
   } catch (error) {
     console.error(`${colors.red("✖")} Error: ${error.message}\n`);
   }
@@ -377,7 +387,8 @@ async function listIssues(repoArg, config) {
 // Run plan command with LLM - Actually call Python engine
 // Enhanced plan command
 async function runPlanCommand(description, config, args) {
-  console.log(`\n${colors.bgBlue(colors.bold(" 📝 Victory Plan "))} ${colors.blue("Architecting your fix")}`);
+  console.log(BANNER);
+  console.log(`${colors.bgBlue(colors.bold(" 📝 voria Plan "))} ${colors.blue("Architecting your fix")}`);
   console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}`);
   console.log(`${colors.cyan(description)}`);
   console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}\n`);
@@ -393,7 +404,7 @@ async function runPlanCommand(description, config, args) {
     }
     
     if (!apiKey) {
-      console.error(`${colors.red("✖")} Error: API key not found. Run ${colors.yellow("victory --config")}\n`);
+      console.error(`${colors.red("✖")} Error: API key not found. Run ${colors.yellow("voria --config")}\n`);
       return;
     }
 
@@ -424,7 +435,7 @@ async function runPlanCommand(description, config, args) {
       console.log(`${colors.cyan("🔍")} Dry Run Mode - No changes will be made\n`);
     } else {
       console.log(`${colors.green("✨")} Ready to implement!`);
-      console.log(`   Run: ${colors.bold("victory issue <repo> <number> --apply")}\n`);
+      console.log(`   Run: ${colors.bold("voria issue <repo> <number> --apply")}\n`);
     }
   } catch (error) {
     console.error(`${colors.red("✖")} Error: ${error.message}\n`);
@@ -433,7 +444,8 @@ async function runPlanCommand(description, config, args) {
 
 // Enhanced issue command
 async function runIssueCommand(repo, issueNumber, config, args) {
-  console.log(`\n${colors.bgBlue(colors.bold(" 🚀 Victory "))} ${colors.blue("Issue Fix Integration")}`);
+  console.log(BANNER);
+  console.log(`${colors.bgBlue(colors.bold(" 🚀 voria "))} ${colors.blue("Issue Fix Integration")}`);
   console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}`);
   console.log(`${colors.bold("🔗 Issue:")}    ${colors.brightBlue("#" + issueNumber)} in ${colors.cyan(repo)}`);
   console.log(`${colors.bold("🤖 AI:")}       ${colors.yellow(config.llm_provider || 'openai')}`);
@@ -452,13 +464,13 @@ async function runIssueCommand(repo, issueNumber, config, args) {
     }
     
     if (!apiKey) {
-      console.error(`${colors.red("✖")} Error: API key not found. Run ${colors.yellow("victory --config")}\n`);
+      console.error(`${colors.red("✖")} Error: API key not found. Run ${colors.yellow("voria --config")}\n`);
       return;
     }
 
     const githubToken = config.github_token || process.env.GITHUB_TOKEN;
     if (!githubToken) {
-      console.error(`${colors.red("✖")} Error: GitHub token not found. Run ${colors.yellow("victory --set-github-token")}\n`);
+      console.error(`${colors.red("✖")} Error: GitHub token not found. Run ${colors.yellow("voria --set-github-token")}\n`);
       return;
     }
 
@@ -519,14 +531,14 @@ async function callPythonEngine(command) {
   const fsMod = await import('fs');
   
   return new Promise((resolve, reject) => {
-    const pythonScript = pathMod.default.join(__dirname, '..', 'python', 'victory', 'engine.py');
+    const pythonScript = pathMod.default.join(__dirname, '..', 'python', 'voria', 'engine.py');
     const pythonPath = pathMod.default.join(__dirname, '..', 'python');
     
     // Check if virtual environment exists
     const venvPath = pathMod.default.join(__dirname, '..', 'venv', 'bin', 'python');
     const pythonCmd = fsMod.default.existsSync(venvPath) ? venvPath : 'python3';
     
-    // Add python directory to PYTHONPATH so victory module can be found
+    // Add python directory to PYTHONPATH so voria module can be found
     const env = { ...process.env };
     const currentPath = env.PYTHONPATH || '';
     env.PYTHONPATH = pythonPath + (currentPath ? ':' + currentPath : '');
@@ -585,7 +597,7 @@ async function main() {
   switch (command) {
     case '--version':
     case '-v':
-      console.log(`Victory v${VERSION}`);
+      console.log(`voria v${VERSION}`);
       break;
 
     case '--init':
@@ -605,8 +617,8 @@ async function main() {
       const repoArg = args[1];
       if (!repoArg) {
         console.log('\n❌ Please provide a repository');
-        console.log('   Example: victory --list-issues owner/repo');
-        console.log('   Or:      victory --list-issues https://github.com/owner/repo\n');
+        console.log('   Example: voria --list-issues owner/repo');
+        console.log('   Or:      voria --list-issues https://github.com/owner/repo\n');
         process.exit(1);
       }
       await listIssues(repoArg, config);
@@ -628,14 +640,14 @@ async function main() {
     case 'plan': {
       const config = loadConfig();
       if (Object.keys(config).length === 0) {
-        console.log('\n❌ Victory not initialized');
-        console.log('   Run: victory --init\n');
+        console.log('\n❌ voria not initialized');
+        console.log('   Run: voria --init\n');
         process.exit(1);
       }
       const description = args.slice(1).join(' ');
       if (!description) {
         console.log('\n❌ Please provide a description');
-        console.log('   Example: victory plan "Remove deprecated login() method"\n');
+        console.log('   Example: voria plan "Remove deprecated login() method"\n');
         process.exit(1);
       }
       await runPlanCommand(description, config, args);
@@ -645,16 +657,16 @@ async function main() {
     case 'issue': {
       const config = loadConfig();
       if (Object.keys(config).length === 0) {
-        console.log('\n❌ Victory not initialized');
-        console.log('   Run: victory --init\n');
+        console.log('\n❌ voria not initialized');
+        console.log('   Run: voria --init\n');
         process.exit(1);
       }
       
-      // Parse: victory issue owner/repo issue_number
+      // Parse: voria issue owner/repo issue_number
       const issueArgs = args.slice(1);
       if (issueArgs.length < 2) {
         console.log('\n❌ Please provide repository and issue number');
-        console.log('   Example: victory issue owner/repo 42\n');
+        console.log('   Example: voria issue owner/repo 42\n');
         process.exit(1);
       }
       
@@ -668,14 +680,14 @@ async function main() {
     case 'apply': {
       const config = loadConfig();
       if (Object.keys(config).length === 0) {
-        console.log('\n❌ Victory not initialized');
-        console.log('   Run: victory --init\n');
+        console.log('\n❌ voria not initialized');
+        console.log('   Run: voria --init\n');
         process.exit(1);
       }
       const patchFile = args[1];
       if (!patchFile) {
         console.log('\n❌ Please provide a patch file');
-        console.log('   Example: victory apply fix.patch\n');
+        console.log('   Example: voria apply fix.patch\n');
         process.exit(1);
       }
       
@@ -707,7 +719,7 @@ async function main() {
 
     default:
       console.log(`\n❌ Unknown command: ${command}`);
-      console.log('   Run: victory --help\n');
+      console.log('   Run: voria --help\n');
       process.exit(1);
   }
 }

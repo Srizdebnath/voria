@@ -9,7 +9,7 @@ use clap::Parser;
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[command(name = "Victory")]
+#[command(name = "voria")]
 #[command(about = "AI-powered CLI tool for open source contributors", long_about = None)]
 #[command(version = env!("CARGO_PKG_VERSION"))]
 struct Args {

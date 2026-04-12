@@ -23,7 +23,7 @@ STEP 1: Generate a new token
 ------------------------
 1. Go to: https://github.com/settings/tokens
 2. Click "Generate new token (classic)"
-3. Give it a descriptive name like "victory-cli"
+3. Give it a descriptive name like "voria-cli"
 4. Select expiration (recommend: 90 days)
 
 STEP 2: Select scopes (permissions)

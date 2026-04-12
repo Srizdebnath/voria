@@ -1,13 +1,13 @@
 # Development Guide
 
-Complete guide for setting up a development environment and contributing to Victory.
+Complete guide for setting up a development environment and contributing to voria.
 
 ##  Quick Dev Setup
 
 ```bash
 # 1. Clone repo
-git clone https://github.com/Srizdebnath/Victory.git
-cd victory
+git clone https://github.com/Srizdebnath/voria.git
+cd voria
 
 # 2. Set up Rust
 rustup update
@@ -28,14 +28,14 @@ pip install -e ".[dev]"
 cd ..
 
 # 6. Verify everything
-./target/debug/victory --version
-python3 -m victory.engine < /dev/null
+./target/debug/voria --version
+python3 -m voria.engine < /dev/null
 ```
 
 ##  Project Structure
 
 ```
-victory/
+voria/
 ├── rust/                         # Rust CLI
 │   ├── Cargo.toml               # Rust dependencies
 │   ├── src/
@@ -49,7 +49,7 @@ victory/
 │
 ├── python/                       # Python engine
 │   ├── setup.py                 # Python package config
-│   ├── victory/
+│   ├── voria/
 │   │   ├── __init__.py
 │   │   ├── engine.py            # Main loop
 │   │   ├── core/
@@ -107,7 +107,7 @@ cargo doc --open        # Documentation
 **Debug Logging:**
 ```bash
 RUST_LOG=debug cargo run -- plan 1
-RUST_LOG=victory=trace cargo run -- plan 1  # Module-specific
+RUST_LOG=voria=trace cargo run -- plan 1  # Module-specific
 ```
 
 ### Python Development
@@ -131,16 +131,16 @@ pytest --cov            # Generate coverage report
 black .                 # Format code
 black --check .         # Check without formatting
 mypy .                  # Type checking
-pylint victory/         # Linting
+pylint voria/         # Linting
 ```
 
 **Manual Testing:**
 ```bash
 # Test engine directly
-python3 -m victory.engine
+python3 -m voria.engine
 
 # Test specific module
-python3 -c "from victory.core.llm import ModelDiscovery; print('Import OK')"
+python3 -c "from voria.core.llm import ModelDiscovery; print('Import OK')"
 
 # Run single test
 pytest tests/test_llm.py::test_discover_models -v
@@ -161,7 +161,7 @@ pub async fn handle_new_command(args: <Args>) -> Result<()> {
 }
 ```
 
-**Step 2**: Add Python side (`python/victory/engine.py`)
+**Step 2**: Add Python side (`python/voria/engine.py`)
 ```python
 async def on_new_command(data):
     # Handle the command
@@ -171,12 +171,12 @@ async def on_new_command(data):
 
 **Step 3**: Test
 ```bash
-./target/debug/victory new-command --args
+./target/debug/voria new-command --args
 ```
 
 ### Adding a New LLM Provider
 
-**Step 1**: Create provider file (`python/victory/core/llm/kimi.py`)
+**Step 1**: Create provider file (`python/voria/core/llm/kimi.py`)
 ```python
 from .base import BaseLLMProvider
 
@@ -186,7 +186,7 @@ class KimiProvider(BaseLLMProvider):
         pass
 ```
 
-**Step 2**: Register in factory (`python/victory/core/llm/__init__.py`)
+**Step 2**: Register in factory (`python/voria/core/llm/__init__.py`)
 ```python
 from .kimi import KimiProvider
 LLMProviderFactory.register("kimi", KimiProvider)
@@ -200,7 +200,7 @@ result = await provider.plan("Test issue")
 
 ### Adding Plugin Support
 
-**Step 1**: Create plugin (`python/victory/plugins/go/executor.py`)
+**Step 1**: Create plugin (`python/voria/plugins/go/executor.py`)
 ```python
 class GoTestExecutor:
     async def run(self, path: str) -> TestSuiteResult:
@@ -208,7 +208,7 @@ class GoTestExecutor:
         pass
 ```
 
-**Step 2**: Register in detector (`python/victory/core/executor/executor.py`)
+**Step 2**: Register in detector (`python/voria/core/executor/executor.py`)
 ```python
 async def detect_framework(self):
     if Path("go.mod").exists():
@@ -236,7 +236,7 @@ pytest tests/test_llm.py -v
 pytest tests/test_llm.py::test_discover_models -v
 
 # With coverage
-pytest tests/ --cov=victory --cov-report=html
+pytest tests/ --cov=voria --cov-report=html
 
 # Watch mode (needs pytest-watch)
 ptw tests/
@@ -246,13 +246,13 @@ ptw tests/
 
 ```bash
 # Full CLI test
-python3 test_victory_cli.py
+python3 test_voria_cli.py
 
 # Phase 2 integration test
 python3 test_phase2_integration.py
 
 # End-to-end
-./target/debug/victory plan 1
+./target/debug/voria plan 1
 ```
 
 ### Writing Tests
@@ -260,7 +260,7 @@ python3 test_phase2_integration.py
 **Python test example:**
 ```python
 import pytest
-from victory.core.llm import ModelDiscovery
+from voria.core.llm import ModelDiscovery
 
 @pytest.mark.asyncio
 async def test_discover_openai_models():
@@ -276,19 +276,19 @@ async def test_discover_openai_models():
 
 **Rust:**
 ```bash
-RUST_LOG=debug ./target/debug/victory -v plan 1
+RUST_LOG=debug ./target/debug/voria -v plan 1
 ```
 
 **Python:**
 ```bash
-python3 -m victory.engine  # Logs go to stderr automatically
+python3 -m voria.engine  # Logs go to stderr automatically
 ```
 
 ### Inspect NDJSON Protocol
 
 **See what Rust sends:**
 ```bash
-strace -e write ./target/debug/victory plan 1 2>&1 | grep '"command"'
+strace -e write ./target/debug/voria plan 1 2>&1 | grep '"command"'
 ```
 
 **See what Python receives/sends:**
@@ -308,7 +308,7 @@ for line in sys.stdin:
   echo '{"command":"plan","issue_id":1}'
   sleep 0.5
   echo '{"command":"plan","issue_id":2}'
-) | python3 -m victory.engine
+) | python3 -m voria.engine
 ```
 
 ### Breakpoint Debugging
@@ -330,7 +330,7 @@ dbg!(variable);  // Print variable
 ```bash
 python3 << 'EOF'
 import asyncio
-from victory.core.llm import ModelDiscovery
+from voria.core.llm import ModelDiscovery
 
 async def test():
     models = await ModelDiscovery.discover_all("openai", "sk-test")
@@ -348,7 +348,7 @@ python3 << 'EOF'
 import asyncio
 import tempfile
 from pathlib import Path
-from victory.core.patcher import CodePatcher
+from voria.core.patcher import CodePatcher
 
 async def test():
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -377,7 +377,7 @@ EOF
 ```bash
 python3 << 'EOF'
 import asyncio
-from victory.core.agent import AgentLoop
+from voria.core.agent import AgentLoop
 
 async def test():
     loop = AgentLoop("modal", "test-key", "/repo")
@@ -494,7 +494,7 @@ git push origin v0.2.0
 ```bash
 cd rust
 cargo build --release
-# Binary at: target/release/victory
+# Binary at: target/release/voria
 ```
 
 ##  Common Issues
@@ -509,7 +509,7 @@ source $HOME/.cargo/env
 ```bash
 # Reinstall
 cd python
-pip uninstall victory
+pip uninstall voria
 pip install -e .
 ```
 

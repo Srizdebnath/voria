@@ -7,7 +7,7 @@ Supports multiple LLM providers with dynamic model discovery:
 - Anthropic Claude 3
 
 Dynamic Model Discovery:
-    from victory.core.llm import LLMProviderFactory
+    from voria.core.llm import LLMProviderFactory
 
     # Discover available models
     models = await LLMProviderFactory.discover_models(

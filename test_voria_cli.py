@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Complete Victory CLI + LLM Integration Test Suite
+Complete voria CLI + LLM Integration Test Suite
 Tests model discovery, provider setup, and CLI end-to-end
 """
 
@@ -11,15 +11,15 @@ import sys
 from pathlib import Path
 import json
 
-from victory.core.llm import (
+from voria.core.llm import (
     LLMProviderFactory,
     ModelDiscovery,
 )
-from victory.core.setup import ProviderSetup
+from voria.core.setup import ProviderSetup
 
 
-class VictoryTestSuite:
-    """Comprehensive test suite for Victory"""
+class voriaTestSuite:
+    """Comprehensive test suite for voria"""
 
     def __init__(self):
         self.passed = 0
@@ -157,12 +157,12 @@ class VictoryTestSuite:
 
     def test_cli_build(self):
         """Test CLI compilation"""
-        self.print_header("Victory CLI Build Tests")
+        self.print_header("voria CLI Build Tests")
 
         try:
             result = subprocess.run(
-                ["./target/release/victory", "--version"],
-                cwd="/home/ansh/victory",
+                ["./target/release/voria", "--version"],
+                cwd="/home/ansh/voria",
                 capture_output=True,
                 text=True,
                 timeout=5,
@@ -177,12 +177,12 @@ class VictoryTestSuite:
 
     def test_cli_help(self):
         """Test CLI help output"""
-        self.print_header("Victory CLI Help Tests")
+        self.print_header("voria CLI Help Tests")
 
         try:
             result = subprocess.run(
-                ["./target/release/victory", "--help"],
-                cwd="/home/ansh/victory",
+                ["./target/release/voria", "--help"],
+                cwd="/home/ansh/voria",
                 capture_output=True,
                 text=True,
                 timeout=5,
@@ -198,15 +198,15 @@ class VictoryTestSuite:
 
     def test_cli_end_to_end(self):
         """Test full CLI end-to-end"""
-        self.print_header("Victory CLI End-to-End Tests")
+        self.print_header("voria CLI End-to-End Tests")
 
         try:
             env = os.environ.copy()
             env["OPENAI_API_KEY"] = "test-key"
 
             result = subprocess.run(
-                ["./target/release/victory", "plan", "1"],
-                cwd="/home/ansh/victory",
+                ["./target/release/voria", "plan", "1"],
+                cwd="/home/ansh/voria",
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -218,7 +218,7 @@ class VictoryTestSuite:
             )
 
             self.print_test(
-                "CLI Plan Command", success, "Successfully executed: victory plan 1"
+                "CLI Plan Command", success, "Successfully executed: voria plan 1"
             )
 
             if not success:
@@ -234,7 +234,7 @@ class VictoryTestSuite:
         print("\n")
         print("█" * 60)
         print("█" + " " * 58 + "█")
-        print("█" + "  🚀 VICTORY CLI + LLM INTEGRATION TEST SUITE  ".center(58) + "█")
+        print("█" + "  🚀 voria CLI + LLM INTEGRATION TEST SUITE  ".center(58) + "█")
         print("█" + " " * 58 + "█")
         print("█" * 60)
 
@@ -266,7 +266,7 @@ class VictoryTestSuite:
         print(f"{'='*60}\n")
 
         if self.failed == 0:
-            print("🎉 ALL TESTS PASSED! Victory is ready to use!\n")
+            print("🎉 ALL TESTS PASSED! voria is ready to use!\n")
             return 0
         else:
             print(f"⚠️  {self.failed} test(s) failed. Please review above.\n")
@@ -275,7 +275,7 @@ class VictoryTestSuite:
 
 async def main():
     """Run test suite"""
-    suite = VictoryTestSuite()
+    suite = voriaTestSuite()
     exit_code = await suite.run_all()
     sys.exit(exit_code)
 

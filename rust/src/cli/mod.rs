@@ -106,7 +106,7 @@ impl Command {
 
     async fn handle_list_issues(&self, repo: Option<String>, config: &Config) -> Result<()> {
         if config.github_token.is_none() {
-            eprintln!("❌ GitHub token not configured. Run: victory set-github-token");
+            eprintln!("❌ GitHub token not configured. Run: voria set-github-token");
             return Ok(());
         }
 
@@ -138,12 +138,12 @@ impl Command {
         config: &Config,
     ) -> Result<()> {
         if config.github_token.is_none() {
-            eprintln!("❌ GitHub token not configured. Run: victory set-github-token");
+            eprintln!("❌ GitHub token not configured. Run: voria set-github-token");
             return Ok(());
         }
 
         if config.modal_token.is_none() && config.llm_api_key.is_none() {
-            eprintln!("❌ LLM not configured. Run: victory setup-modal <token>");
+            eprintln!("❌ LLM not configured. Run: voria setup-modal <token>");
             return Ok(());
         }
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Victory Installation Script"
+echo "🚀 voria Installation Script"
 echo "=============================="
 
 # Check prerequisites
@@ -32,7 +32,7 @@ echo "   Git: $(git --version)"
 echo ""
 echo "[2/4] Building Rust CLI..."
 cargo build --release
-RUST_BINARY=$(pwd)/target/release/victory
+RUST_BINARY=$(pwd)/target/release/voria
 echo "✓ Built: $RUST_BINARY"
 
 # Setup Python virtual environment
@@ -51,16 +51,16 @@ echo "✓ Python environment ready"
 echo ""
 echo "[4/4] Setting up CLI symlink..."
 mkdir -p ~/.local/bin
-ln -sf "$RUST_BINARY" ~/.local/bin/victory
-echo "✓ CLI ready at ~/.local/bin/victory"
+ln -sf "$RUST_BINARY" ~/.local/bin/voria
+echo "✓ CLI ready at ~/.local/bin/voria"
 
 echo ""
 echo "✅ Installation complete!"
 echo ""
 echo "Next steps:"
 echo "  1. Add ~/.local/bin to your PATH (if not already)"
-echo "  2. Run: victory --help"
-echo "  3. Try: victory plan 1"
+echo "  2. Run: voria --help"
+echo "  3. Try: voria plan 1"
 echo ""
 echo "For more info, see:"
 echo "  - README.md"

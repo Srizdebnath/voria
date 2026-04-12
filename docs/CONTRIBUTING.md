@@ -1,12 +1,12 @@
-# Contributing to Victory
+# Contributing to voria
 
-Guidelines for contributing to the Victory project.
+Guidelines for contributing to the voria project.
 
 ##  Welcome Contributors!
 
-Victory is a community project. We welcome contributions from people of all experience levels—from fixing documentation to implementing complex features.
+voria is a community project. We welcome contributions from people of all experience levels—from fixing documentation to implementing complex features.
 
-**Not sure where to start?** Check [#good-first-issue](https://github.com/Srizdebnath/Victory/labels/good-first-issue) on GitHub.
+**Not sure where to start?** Check [#good-first-issue](https://github.com/Srizdebnath/voria/labels/good-first-issue) on GitHub.
 
 ---
 
@@ -15,8 +15,8 @@ Victory is a community project. We welcome contributions from people of all expe
 ### 1. Fork & Clone
 ```bash
 # Fork on GitHub, then:
-git clone https://github.com/Srizdebnath/Victory.git
-cd Victory
+git clone https://github.com/Srizdebnath/voria.git
+cd voria
 ```
 
 ### 2. Set Up Development Environment
@@ -76,7 +76,7 @@ git push origin feature/my-feature
 ##  Project Structure
 
 ```
-victory/
+voria/
 ├── rust/                    # Rust CLI and orchestration
 │   ├── src/
 │   │   ├── main.rs         # Entry point
@@ -89,7 +89,7 @@ victory/
 │   └── tests/              # Integration tests
 │
 ├── python/                 # Python core logic
-│   ├── victory/
+│   ├── voria/
 │   │   ├── core/
 │   │   │   ├── llm/        # LLM providers & discovery
 │   │   │   ├── patcher/    # Code patching (diff apply)
@@ -106,7 +106,7 @@ victory/
 ├── docs/                   # Documentation (Markdown)
 │   ├── README.md           # Start here
 │   ├── QUICKSTART.md       # 5-minute setup
-│   ├── USER_GUIDE.md       # How to use Victory
+│   ├── USER_GUIDE.md       # How to use voria
 │   ├── EXAMPLES.md         # Real-world examples
 │   ├── ARCHITECTURE.md     # System design
 │   ├── IPC_PROTOCOL.md     # NDJSON protocol spec
@@ -141,7 +141,7 @@ pytest
 pytest tests/test_patcher.py::test_apply_patch
 
 # With coverage
-pytest --cov=victory
+pytest --cov=voria
 
 # Verbose output
 pytest -vv
@@ -180,7 +180,7 @@ cd ../python
 pip install -e .
 
 # Run test command
-./target/release/victory plan 123
+./target/release/voria plan 123
 ```
 
 ---
@@ -204,10 +204,10 @@ black .
 mypy .
 
 # Linting
-pylint victory/
+pylint voria/
 
 # Before commit, run all:
-black . && mypy . && pylint victory/ && pytest
+black . && mypy . && pylint voria/ && pytest
 ```
 
 **Example Python style:**
@@ -423,20 +423,20 @@ Create plugins for:
 
 - **GitHub Issues** - For bugs and specific problems
 - **GitHub Discussions** - For questions and ideas
-- **Email** - support@victory.dev for serious concerns
+- **Email** - support@voria.dev for serious concerns
 
 ---
 
 ##  Thank You!
 
-Every contribution - big or small - helps make Victory better. Thank you for being part of this project!
+Every contribution - big or small - helps make voria better. Thank you for being part of this project!
 
 ---
 
 **Next Steps:**
 - Read [DEVELOPMENT.md](DEVELOPMENT.md) for detailed setup
-- Check out [good-first-issue](https://github.com/Srizdebnath/Victory/labels/good-first-issue) on GitHub
-- Join our [Discord community](https://discord.gg/victory)
+- Check out [good-first-issue](https://github.com/Srizdebnath/voria/labels/good-first-issue) on GitHub
+- Join our [Discord community](https://discord.gg/voria)
 
 ---
 

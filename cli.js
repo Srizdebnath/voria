@@ -9,16 +9,16 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Get the Victory binary path
+// Get the voria binary path
 const platform = os.platform();
-const binaryName = platform === 'win32' ? 'victory.exe' : 'victory';
+const binaryName = platform === 'win32' ? 'voria.exe' : 'voria';
 const binaryPath = path.join(__dirname, 'target', 'release', binaryName);
 
 // Check if binary exists
 if (!fs.existsSync(binaryPath)) {
-  console.error('❌ Victory binary not found. Please rebuild the package.');
+  console.error('❌ voria binary not found. Please rebuild the package.');
   console.error(`Expected at: ${binaryPath}`);
-  console.error('\nTry running: npm rebuild @srizdebnath/victory');
+  console.error('\nTry running: npm rebuild @voria/cli');
   process.exit(1);
 }
 
@@ -40,6 +40,6 @@ child.on('exit', (code) => {
 
 // Handle errors
 child.on('error', (err) => {
-  console.error('❌ Error running Victory:', err.message);
+  console.error('❌ Error running voria:', err.message);
   process.exit(1);
 });

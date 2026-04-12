@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Victory Phase 2 Complete Integration Test
+voria Phase 2 Complete Integration Test
 Tests all components: LLM, GitHub, Patcher, Executor, Agent Loop
 """
 
@@ -9,17 +9,17 @@ import tempfile
 from pathlib import Path
 import sys
 
-from victory.core.llm import LLMProviderFactory, ModelDiscovery
-from victory.core.patcher import CodePatcher, UnifiedDiffParser
-from victory.core.executor import TestExecutor
-from victory.core.agent import AgentLoop
+from voria.core.llm import LLMProviderFactory, ModelDiscovery
+from voria.core.patcher import CodePatcher, UnifiedDiffParser
+from voria.core.executor import TestExecutor
+from voria.core.agent import AgentLoop
 
 
 async def test_phase2_integration():
     """Run complete Phase 2 integration tests"""
 
     print("\n" + "=" * 70)
-    print("🚀 VICTORY PHASE 2: COMPLETE INTEGRATION TEST")
+    print("🚀 voria PHASE 2: COMPLETE INTEGRATION TEST")
     print("=" * 70 + "\n")
 
     tests_passed = 0
@@ -83,14 +83,14 @@ async def test_phase2_integration():
 @@ -1,2 +1,2 @@
  def hello():
 -    print('world')
-+    print('victory')
++    print('voria')
 """
 
             result = await patcher.apply_patch(patch)
 
             if result["status"] == "success":
                 patched_content = test_file.read_text()
-                if "victory" in patched_content:
+                if "voria" in patched_content:
                     print(f"   ✅ Patch applied successfully")
                     print(f"      File modified: test.py")
                     tests_passed += 1
@@ -105,7 +105,7 @@ async def test_phase2_integration():
     tests_total += 1
     print("\n4️⃣  Testing Test Executor Framework Detection...\n")
     try:
-        executor = TestExecutor("/home/ansh/victory")
+        executor = TestExecutor("/home/ansh/voria")
         framework = await executor.detect_framework()
 
         if framework:
@@ -122,7 +122,7 @@ async def test_phase2_integration():
     print("\n5️⃣  Testing Agent Loop Initialization...\n")
     try:
         loop = AgentLoop(
-            provider_name="modal", api_key="test-key", repo_path="/home/ansh/victory"
+            provider_name="modal", api_key="test-key", repo_path="/home/ansh/voria"
         )
 
         # Initialize

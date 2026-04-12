@@ -415,7 +415,7 @@ class TestExecutor:
 async def test_executor():
     """Test the test executor"""
 
-    executor = TestExecutor("/home/ansh/victory")
+    executor = TestExecutor("/home/ansh/voria")
 
     # Detect framework
     framework = await executor.detect_framework()

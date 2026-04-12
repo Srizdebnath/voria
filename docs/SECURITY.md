@@ -1,6 +1,6 @@
 # Security Best Practices
 
-Essential security guidelines for using Victory safely.
+Essential security guidelines for using voria safely.
 
 ##  Protecting Your Credentials
 
@@ -39,29 +39,29 @@ export GITHUB_TOKEN="ghp_..."
 
 **Restrict permissions:**
 ```bash
-# Victory automatically sets 0600
-ls -la ~/.victory/providers.json
+# voria automatically sets 0600
+ls -la ~/.voria/providers.json
 # Output: -rw------- (readable only by user)
 
 # Never relax permissions
-chmod 600 ~/.victory/providers.json  # Only this
-chmod 644 ~/.victory/providers.json  # ❌ Never this
+chmod 600 ~/.voria/providers.json  # Only this
+chmod 644 ~/.voria/providers.json  # ❌ Never this
 ```
 
 **Control file access:**
 ```bash
 # Only your user can read config
-stat ~/.victory/providers.json
+stat ~/.voria/providers.json
 
 # On shared systems
-sudo chmod 700 ~/.victory  # Directory is private
+sudo chmod 700 ~/.voria  # Directory is private
 ```
 
 ##  Code Execution Safety
 
-### Victory Never Executes Arbitrary Code
+### voria Never Executes Arbitrary Code
 
-Victory's safety model:
+voria's safety model:
 
 ```
 Rust CLI (Trusted)
@@ -89,10 +89,10 @@ Python Engine (Untrusted LLM output)
 
 ### Patch Validation
 
-Victory validates patches before applying:
+voria validates patches before applying:
 
 ```python
-# What Victory checks
+# What voria checks
 - Does patch format match unified diff?
 - Do line numbers make sense?
 - Are file paths reasonable?
@@ -106,7 +106,7 @@ Victory validates patches before applying:
 
 Before EVERY file modification:
 ```bash
-~/.victory/backups/
+~/.voria/backups/
 ├── file_1_2026-04-10T09-35-42.bak
 ├── file_2_2026-04-10T09-35-42.bak
 └── file_3_2026-04-10T09-35-42.bak
@@ -115,12 +115,12 @@ Before EVERY file modification:
 **Recovery:**
 ```bash
 # Roll back if needed
-cp ~/.victory/backups/file_1_* original_file
+cp ~/.voria/backups/file_1_* original_file
 ```
 
 ### Restricted Access
 
-Victory only modifies:
+voria only modifies:
 - ✅ Repository files (your project)
 - ❌ System files (/etc, /usr, /sys)
 - ❌ Hidden files (. prefix)
@@ -130,7 +130,7 @@ Victory only modifies:
 
 ### TLS/HTTPS Only
 
-Victory uses HTTPS for all API calls:
+voria uses HTTPS for all API calls:
 ```python
 # All connections are encrypted
 - https://api.openai.com/
@@ -141,7 +141,7 @@ Victory uses HTTPS for all API calls:
 
 **Verify certificates:**
 ```bash
-# Victory uses system CA certificates
+# voria uses system CA certificates
 # Update trust store if needed:
 # macOS: /etc/ssl/certs/
 # Linux: /etc/ssl/certs/ca-certificates.crt
@@ -150,14 +150,14 @@ Victory uses HTTPS for all API calls:
 
 ### No Direct Proxy Settings
 
-Victory respects system HTTP proxy:
+voria respects system HTTP proxy:
 ```bash
-# Set system proxy (Victory uses it automatically)
+# Set system proxy (voria uses it automatically)
 export HTTP_PROXY="http://proxy.example.com:8080"
 export HTTPS_PROXY="https://proxy.example.com:8443"
 export NO_PROXY="localhost,127.0.0.1"
 
-victory plan 1  # Uses proxy automatically
+voria plan 1  # Uses proxy automatically
 ```
 
 ##  Authentication & Authorization
@@ -178,12 +178,12 @@ public_repo     # If public repository only
 2. Click "Generate new token"
 3. Select ONLY needed scopes
 4. Set expiration (90 days recommended)
-5. Save to `~/.victory/config.json`
+5. Save to `~/.voria/config.json`
 
 ### LLM API Key Security
 
 **Least privilege:**
-- ✅ Create API key specifically for Victory
+- ✅ Create API key specifically for voria
 - ❌ Use main account key
 - ✅ Set rate limits in provider console
 - ❌ Unlimited spending
@@ -191,7 +191,7 @@ public_repo     # If public repository only
 **Monitor usage:**
 ```bash
 # Check spending
-python3 -c "from victory.core.token_manager import TokenManager; m = TokenManager(); print(m.get_stats())"
+python3 -c "from voria.core.token_manager import TokenManager; m = TokenManager(); print(m.get_stats())"
 
 # Set alerts in provider console
 # - OpenAI: Cost alerts
@@ -202,10 +202,10 @@ python3 -c "from victory.core.token_manager import TokenManager; m = TokenManage
 
 ### Operations Log
 
-Victory logs all operations:
+voria logs all operations:
 ```bash
 # View logs
-victory logs --follow
+voria logs --follow
 
 # Logs include:
 # - Command executed
@@ -229,7 +229,7 @@ For security, these are NEVER logged:
 **Risk**: LLM generating malicious code
 
 **Protection**:
-- Victory validates all generated patches
+- voria validates all generated patches
 - Patches must be valid unified diffs
 - Suspicious commands rejected
 
@@ -267,7 +267,7 @@ pip-audit --desc  # Check for vulnerabilities
 
 ```bash
 # 1Password integration
-op run -- victory plan 1  # Injects env vars securely
+op run -- voria plan 1  # Injects env vars securely
 ```
 
 ##  Security Checklist
@@ -289,9 +289,9 @@ op run -- victory plan 1  # Injects env vars securely
 
 ```bash
 # For highly sensitive repos
-# 1. Create patch locally: victory plan 1 --dry-run
+# 1. Create patch locally: voria plan 1 --dry-run
 # 2. Review patch manually
-# 3. Apply patch manually: patch < victory.patch
+# 3. Apply patch manually: patch < voria.patch
 # 4. Run tests locally: pytest
 ```
 
@@ -303,7 +303,7 @@ WORKDIR /app
 COPY . .
 RUN pip install -e .
 USER nobody  # Non-root user
-ENTRYPOINT ["python", "-m", "victory.engine"]
+ENTRYPOINT ["python", "-m", "voria.engine"]
 ```
 
 ### Hardware Security Module (HSM)
@@ -319,7 +319,7 @@ For enterprise:
 **Found a security vulnerability?**
 
 1. **DO NOT** create a GitHub issue
-2. Email: security@victory.dev (use a responsible disclosure process)
+2. Email: security@voria.dev (use a responsible disclosure process)
 3. Include:
    - Description of vulnerability
    - Steps to reproduce

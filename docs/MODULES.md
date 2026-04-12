@@ -1,6 +1,6 @@
 # Module Documentation
 
-Detailed documentation of Victory's core modules and their APIs.
+Detailed documentation of voria's core modules and their APIs.
 
 ##  Python Core Modules
 
@@ -34,9 +34,9 @@ await provider.analyze_test_failure(test_output, code)
 ```
 
 **Configuration**:
-- Stored in `~/.victory/providers.json`
+- Stored in `~/.voria/providers.json`
 - Supports environment variable fallback
-- Interactive setup via `python3 -m victory.core.setup`
+- Interactive setup via `python3 -m voria.core.setup`
 
 **Token Tracking**:
 ```python
@@ -76,7 +76,7 @@ await patcher.cleanup_backups(keep_count=10)
 - Strict/fuzzy matching strategies
 - Automatic rollback on failure
 - Backup retention management
-- Located in `~/.victory/backups/`
+- Located in `~/.voria/backups/`
 
 ### `executor/` - Test Execution
 
@@ -188,10 +188,10 @@ result = await loop.run(
 github = GitHubClient(token="ghp_...")
 issue = await github.fetch_issue(42)
 pr = await github.create_pr(
-    head="victory-fix-42",
+    head="voria-fix-42",
     base="main",
     title="Fix issue #42",
-    body="Automatic fix by Victory"
+    body="Automatic fix by voria"
 )
 ```
 
@@ -246,7 +246,7 @@ config = await setup.setup_provider()
 # → Choose provider
 # → Enter API key
 # → Select model
-# → Save to ~/.victory/providers.json
+# → Save to ~/.voria/providers.json
 
 # Get saved config
 cfg = setup.get_provider_config("openai")
@@ -341,7 +341,7 @@ fn print_warning(msg: &str)  // Yellow [!]
 
 ### Language Plugins
 
-Location: `python/victory/plugins/`
+Location: `python/voria/plugins/`
 
 **Plugin Structure**:
 ```python

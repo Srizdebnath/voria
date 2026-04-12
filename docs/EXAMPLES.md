@@ -1,6 +1,6 @@
 # Examples
 
-Real-world examples of using Victory to fix open source issues.
+Real-world examples of using voria to fix open source issues.
 
 ##  Example 1: Simple Bug Fix
 
@@ -9,7 +9,7 @@ A simple bug in a Python library where a function returns wrong type.
 
 ### Command
 ```bash
-victory issue 42
+voria issue 42
 ```
 
 ### What Happens
@@ -56,7 +56,7 @@ Adding a new feature that requires multiple iterations to get tests passing.
 
 ### Command
 ```bash
-victory issue 100 --verbose --max-iterations 5
+voria issue 100 --verbose --max-iterations 5
 ```
 
 ### Iteration Details
@@ -85,7 +85,7 @@ API migration requiring changes across 5+ files.
 
 ### Command
 ```bash
-victory issue 200 --dry-run --verbose
+voria issue 200 --dry-run --verbose
 ```
 
 ### Dry Run Output
@@ -109,7 +109,7 @@ Estimated impact:
 
 **After verification:**
 ```bash
-victory issue 200 --create-pr
+voria issue 200 --create-pr
 ```
 
 ## 🧪 Example 4: Using Different LLM Providers
@@ -118,7 +118,7 @@ victory issue 200 --create-pr
 
 **Modal (Fastest, Free)**
 ```bash
-victory issue 50 --llm modal --verbose
+voria issue 50 --llm modal --verbose
 Time: 2 minutes
 Cost: $0
 Result: Works but basic
@@ -126,7 +126,7 @@ Result: Works but basic
 
 **OpenAI GPT-5.4 (Best Quality)**
 ```bash
-victory issue 50 --llm openai --verbose
+voria issue 50 --llm openai --verbose
 Time: 5 minutes
 Cost: $0.15
 Result: Excellent, well-documented
@@ -134,7 +134,7 @@ Result: Excellent, well-documented
 
 **Google Gemini (Best Balance)**
 ```bash
-victory issue 50 --llm gemini --verbose
+voria issue 50 --llm gemini --verbose
 Time: 3 minutes
 Cost: $0.05
 Result: Good quality, fast
@@ -147,7 +147,7 @@ Repository uses custom test framework (not auto-detected).
 
 ### Setup
 ```bash
-victory issue 75 --test-cmd "npm run test:coverage" --test-pattern "*.test.js"
+voria issue 75 --test-cmd "npm run test:coverage" --test-pattern "*.test.js"
 ```
 
 ### What Happens
@@ -165,7 +165,7 @@ Issue about code formatting/linting violations.
 
 ### Command
 ```bash
-victory issue 15 --hook "pre-test: black src/ && pylint src/"
+voria issue 15 --hook "pre-test: black src/ && pylint src/"
 ```
 
 ### Workflow
@@ -183,7 +183,7 @@ GitHub issue requesting documentation improvements.
 
 ### Command
 ```bash
-victory issue 88 --save-iterations --output markdown
+voria issue 88 --save-iterations --output markdown
 ```
 
 ### Result: Markdown Report
@@ -212,7 +212,7 @@ Security vulnerability that needs careful handling.
 
 ### Command
 ```bash
-victory issue 300 \
+voria issue 300 \
   --require-approval \
   --skip-auto-pr \
   --save-analysis \
@@ -245,7 +245,7 @@ Issue about slow function that needs optimization.
 
 ### Command
 ```bash
-victory issue 42 \
+voria issue 42 \
   --test-cmd "pytest benchmarks/" \
   --performance-baseline 2.5s \
   --verbose
@@ -269,7 +269,7 @@ Fix multiple related issues at once.
 ISSUES=(42 43 44 45 46)
 for issue in "${ISSUES[@]}"; do
   echo "Processing issue #$issue..."
-  victory issue $issue --create-pr --llm gemini
+  voria issue $issue --create-pr --llm gemini
   sleep 2  # Rate limiting
 done
 ```
@@ -298,19 +298,19 @@ Complex issue - want to analyze before fixing.
 ### Commands
 ```bash
 # Step 1: Just plan
-victory plan 999 --verbose
+voria plan 999 --verbose
 
 # Step 2: Dry run
-victory issue 999 --dry-run
+voria issue 999 --dry-run
 
 # Step 3: Dry run with specific LLM
-victory issue 999 --dry-run --llm claude
+voria issue 999 --dry-run --llm claude
 
 # Step 4: Dry run with custom tests
-victory issue 999 --dry-run --test-cmd "npm run test:all"
+voria issue 999 --dry-run --test-cmd "npm run test:all"
 
 # Step 5: Actually run it
-victory issue 999 --create-pr
+voria issue 999 --create-pr
 ```
 
 ##  Example 12: Handling Failures
@@ -321,50 +321,50 @@ Fix attempt fails - how to debug and retry.
 ### Commands
 ```bash
 # First attempt
-victory issue 50 --verbose
+voria issue 50 --verbose
 
 # If it fails, review logs
-victory logs issue 50 --level DEBUG
+voria logs issue 50 --level DEBUG
 
 # Try with different LLM
-victory issue 50 --llm claude
+voria issue 50 --llm claude
 
 # Or with higher iterations
-victory issue 50 --max-iterations 8
+voria issue 50 --max-iterations 8
 
 # Or manually fix and apply
-victory apply manual-plan
+voria apply manual-plan
 ```
 
 ##  Example 13: Progress Monitoring
 
 ### Scenario
-Monitor Victory's progress on an issue.
+Monitor voria's progress on an issue.
 
 ### Commands
 ```bash
-# Terminal 1: Start Victory
-victory issue 42 --verbose --follow-logs
+# Terminal 1: Start voria
+voria issue 42 --verbose --follow-logs
 
 # Terminal 2: Monitor status
 while true; do
-  victory status issue 42
+  voria status issue 42
   sleep 5
 done
 
 # Terminal 3: Check token usage
-watch victory token info
+watch voria token info
 ```
 
 ##  Example 14: GitHub Enterprise Integration
 
 ### Scenario
-Using Victory with GitHub Enterprise (on-premise).
+Using voria with GitHub Enterprise (on-premise).
 
 ### Setup
 ```bash
 # Configure GitHub Enterprise
-python3 -m victory.core.setup
+python3 -m voria.core.setup
 
 # Select: github-enterprise
 # Enter: https://github.enterprise.com
@@ -373,7 +373,7 @@ python3 -m victory.core.setup
 
 ### Usage
 ```bash
-victory issue 42 --github https://github.enterprise.com
+voria issue 42 --github https://github.enterprise.com
 ```
 
 ##  Best Practice: The Complete Workflow
@@ -381,28 +381,28 @@ victory issue 42 --github https://github.enterprise.com
 ### Full Workflow Example
 ```bash
 # 1. Investigate
-victory plan 42 --verbose
+voria plan 42 --verbose
 
 # 2. Dry run (no modifications)
-victory issue 42 --dry-run --verbose
+voria issue 42 --dry-run --verbose
 
 # 3. Check what changed (before applying)
-victory logs issue 42 --dry-run
+voria logs issue 42 --dry-run
 
 # 4. Run with minimal risk
-victory issue 42 \
+voria issue 42 \
   --max-iterations 3 \
   --require-approval \
   --save-analysis
 
 # 5. If successful, create PR
-victory issue 42 --create-pr
+voria issue 42 --create-pr
 
 # 6. Monitor the PR
-victory status pr-id
+voria status pr-id
 
 # 7. Review results
-victory logs issue 42 --output markdown > review.md
+voria logs issue 42 --output markdown > review.md
 ```
 
 ##  Learning from Examples
@@ -412,21 +412,21 @@ victory logs issue 42 --output markdown > review.md
 # Try all examples in sequence
 for ex in {1..5}; do
   echo "Running example $ex..."
-  victory example $ex --verbose
+  voria example $ex --verbose
 done
 ```
 
 **Understand the Output:**
 ```bash
 # Generate detailed analysis
-victory issue 42 --output json | jq . | less
+voria issue 42 --output json | jq . | less
 
 # Export to markdown
-victory issue 42 --output markdown > report.md
+voria issue 42 --output markdown > report.md
 
 # Compare different approaches
-diff <(victory issue 42 --llm openai --output json) \
-     <(victory issue 42 --llm modal --output json)
+diff <(voria issue 42 --llm openai --output json) \
+     <(voria issue 42 --llm modal --output json)
 ```
 
 ---

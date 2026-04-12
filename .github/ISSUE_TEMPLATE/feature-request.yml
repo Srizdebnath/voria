@@ -53,7 +53,7 @@ body:
       placeholder: |
         Example usage:
         ```bash
-        victory feature-name --option value
+        voria feature-name --option value
         ```
 
   - type: checkboxes

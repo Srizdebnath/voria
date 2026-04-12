@@ -3,13 +3,13 @@
 Provides GitHub API access for fetching issues and managing pull requests.
 
 Usage:
-    from victory.core.github import GitHubClient, print_token_guide
+    from voria.core.github import GitHubClient, print_token_guide
 
     # Guide user on how to get GitHub token
     print_token_guide()
 
     # Or get token interactively
-    from victory.core.github import get_github_token
+    from voria.core.github import get_github_token
     token = get_github_token()
 
     client = GitHubClient(token="ghp_...")

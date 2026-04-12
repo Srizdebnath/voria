@@ -1,10 +1,10 @@
 # Plugin Development Guide
 
-How to create and integrate plugins for Victory.
+How to create and integrate plugins for voria.
 
 ##  What Are Plugins?
 
-Plugins extend Victory to support additional:
+Plugins extend voria to support additional:
 - **Programming languages** (test frameworks, code parsers)
 - **VCS systems** (GitHub, GitLab, Gitea)
 - **CI/CD platforms** (Jenkins, CircleCI, GitHub Actions)
@@ -16,7 +16,7 @@ Plugins extend Victory to support additional:
 
 Add support for new programming languages.
 
-**Location**: `python/victory/plugins/<language>/`
+**Location**: `python/voria/plugins/<language>/`
 
 **Structure**:
 ```python
@@ -31,7 +31,7 @@ __all__ = ["TestExecutor", "CodeParser", "CodeFormatter"]
 **Implementation**:
 ```python
 # executor.py
-from victory.core.executor import TestExecutor, TestResult
+from voria.core.executor import TestExecutor, TestResult
 
 class GoTestExecutor(TestExecutor):
     """Execute Go tests with 'go test ./...'"""
@@ -55,9 +55,9 @@ class GoTestExecutor(TestExecutor):
         pass
 ```
 
-**Registration** (`python/victory/core/executor/executor.py`):
+**Registration** (`python/voria/core/executor/executor.py`):
 ```python
-from victory.plugins.go import GoTestExecutor
+from voria.plugins.go import GoTestExecutor
 
 class TestExecutor:
     EXECUTORS = {
@@ -80,8 +80,8 @@ Support new version control systems.
 **Example: GitLab Support**
 
 ```python
-# python/victory/plugins/vcs/gitlab.py
-from victory.core.github import GitHubClient  # Base class
+# python/voria/plugins/vcs/gitlab.py
+from voria.core.github import GitHubClient  # Base class
 
 class GitLabClient(GitHubClient):
     """GitLab API client"""
@@ -102,8 +102,8 @@ class GitLabClient(GitHubClient):
 
 **Registration**:
 ```python
-# python/victory/core/github/__init__.py
-from victory.plugins.vcs.gitlab import GitLabClient
+# python/voria/core/github/__init__.py
+from voria.plugins.vcs.gitlab import GitLabClient
 
 VCS_PROVIDERS = {
     "github": GitHubClient,
@@ -121,7 +121,7 @@ Integrate with CI/CD platforms.
 **Example: Jenkins Integration**
 
 ```python
-# python/victory/plugins/ci/jenkins.py
+# python/voria/plugins/ci/jenkins.py
 import httpx
 
 class JenkinsCI:
@@ -130,7 +130,7 @@ class JenkinsCI:
     def __init__(self, url: str, token: str):
         self.url = url
         self.client = httpx.AsyncClient(
-            auth=httpx.BasicAuth("victory", token)
+            auth=httpx.BasicAuth("voria", token)
         )
     
     async def trigger_build(self, job_name: str) -> str:
@@ -160,7 +160,7 @@ class JenkinsCI:
 ```python
 # In agent loop
 jenkins = JenkinsCI("https://jenkins.example.com", token)
-build_url = await jenkins.trigger_build("victory-tests")
+build_url = await jenkins.trigger_build("voria-tests")
 status = await jenkins.wait_for_build(build_url)
 if status == "SUCCESS":
     print("CI passed!")
@@ -171,9 +171,9 @@ if status == "SUCCESS":
 ### Step 1: Define Plugin Interface
 
 ```python
-# python/victory/plugins/my_lang/executor.py
+# python/voria/plugins/my_lang/executor.py
 from abc import ABC, abstractmethod
-from victory.core.executor import TestSuiteResult
+from voria.core.executor import TestSuiteResult
 
 class MyLangExecutor(ABC):
     """Base class for my language test executor"""
@@ -197,10 +197,10 @@ class MyLangExecutor(ABC):
 ### Step 2: Implement Plugin
 
 ```python
-# python/victory/plugins/python_rust/executor.py
+# python/voria/plugins/python_rust/executor.py
 import subprocess
 from pathlib import Path
-from victory.plugins.my_lang.executor import MyLangExecutor
+from voria.plugins.my_lang.executor import MyLangExecutor
 
 class PythonRustExecutor(MyLangExecutor):
     """Pytest + cargo test executor"""
@@ -244,8 +244,8 @@ class PythonRustExecutor(MyLangExecutor):
 ### Step 3: Register Plugin
 
 ```python
-# python/victory/core/executor/executor.py
-from victory.plugins.python_rust.executor import PythonRustExecutor
+# python/voria/core/executor/executor.py
+from voria.plugins.python_rust.executor import PythonRustExecutor
 
 class TestExecutor:
     EXECUTORS = {
@@ -261,7 +261,7 @@ class TestExecutor:
 ```python
 # tests/test_python_rust_plugin.py
 import pytest
-from victory.plugins.python_rust.executor import PythonRustExecutor
+from voria.plugins.python_rust.executor import PythonRustExecutor
 
 @pytest.mark.asyncio
 async def test_detect_python_rust():
@@ -286,15 +286,15 @@ async def test_run_tests():
 from setuptools import setup
 
 setup(
-    name="victory-plugin-kotlin",
+    name="voria-plugin-kotlin",
     version="0.1.0",
-    py_modules=["victory_kotlin"],
+    py_modules=["voria_kotlin"],
     install_requires=[
-        "victory>=0.2.0",
+        "voria>=0.2.0",
     ],
     entry_points={
-        "victory.plugins": [
-            "kotlin = victory_kotlin:KotlinExecutor",
+        "voria.plugins": [
+            "kotlin = voria_kotlin:KotlinExecutor",
         ]
     }
 )
@@ -303,7 +303,7 @@ setup(
 ### Load External Plugins
 
 ```python
-# python/victory/core/executor/executor.py
+# python/voria/core/executor/executor.py
 import importlib
 
 class TestExecutor:
@@ -315,7 +315,7 @@ class TestExecutor:
         plugins = {}
         try:
             import pkg_resources
-            for entry_point in pkg_resources.iter_entry_points("victory.plugins"):
+            for entry_point in pkg_resources.iter_entry_points("voria.plugins"):
                 plugins[entry_point.name] = entry_point.load()
         except:
             pass
@@ -327,7 +327,7 @@ class TestExecutor:
 ### Complete Python Plugin
 
 ```python
-#python/victory/plugins/django/executor.py
+#python/voria/plugins/django/executor.py
 class DjangoTestExecutor:
     """Django test executor"""
     
@@ -344,7 +344,7 @@ class DjangoTestExecutor:
             capture_output=True
         )
         
-        from victory.core.executor import TestSuiteResult, TestStatus
+        from voria.core.executor import TestSuiteResult, TestStatus
         
         # Parse Django test output
         output = result.stdout.decode()
@@ -374,7 +374,7 @@ class DjangoTestExecutor:
 ### Custom Code Parser Plugin
 
 ```python
-# python/victory/plugins/kotlin/parser.py
+# python/voria/plugins/kotlin/parser.py
 import re
 from dataclasses import dataclass
 
@@ -419,8 +419,8 @@ class KotlinParser:
 
 ##  Useful Resources
 
-- Base classes: See `python/victory/core/*/` modules
-- Examples: Check ExistingPlugins in `python/victory/plugins/`
+- Base classes: See `python/voria/core/*/` modules
+- Examples: Check ExistingPlugins in `python/voria/plugins/`
 - Testing: Use pytest with async support
 - Async/await: Python 3.7+ syntax
 

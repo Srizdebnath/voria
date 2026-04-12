@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get Victory running in 5 minutes or less!
+Get voria running in 5 minutes or less!
 
 ##  5-Minute Setup
 
@@ -8,26 +8,26 @@ Get Victory running in 5 minutes or less!
 
 ```bash
 # Install globally from npm
-npm install -g @srizdebnath/victory
+npm install -g @srizdebnath/voria
 
 # Verify
-victory --version
+voria --version
 ```
 
 ### 2. Configure LLM Provider (1 minute)
 
 ```bash
 # Setup Modal (FREE and easy!)
-victory setup-modal your_modal_api_key
+voria setup-modal your_modal_api_key
 
 # Or get prompted for token
-victory setup-modal
+voria setup-modal
 ```
 
 ### 3. Setup GitHub Access (1 minute)
 
 ```bash
-victory set-github-token
+voria set-github-token
 # Paste your GitHub Personal Access Token
 ```
 
@@ -35,13 +35,13 @@ victory set-github-token
 
 ```bash
 # List issues from any repository
-victory list-issues owner/repo
+voria list-issues owner/repo
 
 # Or with full GitHub URL
-victory list-issues https://github.com/owner/repo
+voria list-issues https://github.com/owner/repo
 ```
 
-**✅ That's it! Victory is ready.**
+**✅ That's it! voria is ready.**
 
 ##  Common Commands
 
@@ -49,49 +49,49 @@ victory list-issues https://github.com/owner/repo
 
 ```bash
 # Using owner/repo format
-victory list-issues ansh/victory
+voria list-issues ansh/voria
 
 # Using GitHub URL
-victory list-issues https://github.com/ansh/victory
+voria list-issues https://github.com/ansh/voria
 
 # Interactive mode
-victory list-issues  # Will prompt for repo
+voria list-issues  # Will prompt for repo
 ```
 
 ### Fix a GitHub Issue
 
 ```bash
 # Fix issue with repo specified
-victory fix 42 ansh/victory
+voria fix 42 ansh/voria
 
 # Fix with GitHub URL
-victory fix 42 https://github.com/ansh/victory
+voria fix 42 https://github.com/ansh/voria
 
 # Interactive mode
-victory fix 42  # Will prompt for repo
+voria fix 42  # Will prompt for repo
 ```
 
 ### Plan out a Fix
 
 ```bash
 # Plan how to fix an issue by ID
-victory plan 123
+voria plan 123
 
 # Apply a patch after planning
-victory apply /path/to/patch.diff
+voria apply /path/to/patch.diff
 ```
 
 ### Show Help
 
 ```bash
-victory --help              # General help
-victory fix --help          # Command-specific help
-victory list-issues --help  # List issues help
+voria --help              # General help
+voria fix --help          # Command-specific help
+voria list-issues --help  # List issues help
 ```
 
 ##  LLM Providers
 
-Victory supports multiple providers. Set one up during setup:
+voria supports multiple providers. Set one up during setup:
 
 ### 1. Modal (Easiest - Free tier)
 
@@ -117,7 +117,7 @@ export ANTHROPIC_API_KEY="..."
 ##  Project Structure (What You Got)
 
 ```
-victory/
+voria/
 ├── rust/              # CLI (Rust)
 ├── python/            # Engine (Python)
 ├── docs/              # Documentation (You are here!)
@@ -128,14 +128,14 @@ victory/
 
 ```bash
 # Test CLI
-./target/release/victory --version
-./target/release/victory --help
+./target/release/voria --version
+./target/release/voria --help
 
 # Test Python engine
-python3 -m victory.engine
+python3 -m voria.engine
 
 # Test end-to-end
-./target/release/victory plan 1
+./target/release/voria plan 1
 ```
 
 ##  Next Steps
@@ -151,21 +151,21 @@ python3 -m victory.engine
 - [User Guide](USER_GUIDE.md)
 - [Examples](EXAMPLES.md)
 - [Troubleshooting](TROUBLESHOOTING.md)
-- [GitHub](https://github.com/Srizdebnath/Victory)
+- [GitHub](https://github.com/Srizdebnath/voria)
 
 ## ❓ Common Issues
 
 ### Command not found
 ```bash
 # Make sure you're in the right directory
-cd victory
-./target/release/victory --version
+cd voria
+./target/release/voria --version
 ```
 
 ### LLM not working
 ```bash
 # Verify configuration
-python3 -m victory.core.setup
+python3 -m voria.core.setup
 
 # Or set environment variable
 export OPENAI_API_KEY="your-key-here"

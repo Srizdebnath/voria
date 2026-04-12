@@ -1,5 +1,5 @@
 [package]
-name = "victory"
+name = "voria"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -17,5 +17,5 @@ colored = "2"
 uuid = { version = "1", features = ["v4"] }
 
 [[bin]]
-name = "victory"
+name = "voria"
 path = "src/main.rs"

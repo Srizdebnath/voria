@@ -1,10 +1,10 @@
 # User Guide
 
-Complete guide to using Victory for automating bug fixes.
+Complete guide to using voria for automating bug fixes.
 
 ##  Overview
 
-Victory automates the process of fixing issues in your codebase. You describe a problem, and Victory:
+voria automates the process of fixing issues in your codebase. You describe a problem, and voria:
 
 1. **Lists** issues from your repositories  
 2. **Fetches** the issue details
@@ -15,60 +15,60 @@ Victory automates the process of fixing issues in your codebase. You describe a 
 
 ```bash
 # Setup your LLM provider (do once)
-victory setup-modal your_token_here
+voria setup-modal your_token_here
 
 # Setup GitHub access (do once)
-victory set-github-token
+voria set-github-token
 
 # List all issues in a repo
-victory list-issues owner/repo
+voria list-issues owner/repo
 
 # Fix a specific GitHub issue
-victory fix 42 owner/repo
+voria fix 42 owner/repo
 
 # Plan a fix for an issue
-victory plan 42
+voria plan 42
 
 # Apply a generated patch
-victory apply patch-file.diff
+voria apply patch-file.diff
 ```
 
 ---
 
 ##  Main Commands
 
-### `victory setup-modal [TOKEN]`
+### `voria setup-modal [TOKEN]`
 
 Setup Modal API for AI-powered code generation.
 
 **Usage:**
 ```bash
 # With token provided
-victory setup-modal sk-modal-your-key-here
+voria setup-modal sk-modal-your-key-here
 
 # Or enter interactively
-victory setup-modal
+voria setup-modal
 ```
 
 **What it does:**
-- Saves Modal API key to `~/.victory/config.json`
+- Saves Modal API key to `~/.voria/config.json`
 - Sets Modal as your LLM provider
 - Encrypts and secures your token
 
 ---
 
-### `victory set-github-token`
+### `voria set-github-token`
 
 Setup GitHub Personal Access Token for accessing repositories.
 
 **Usage:**
 ```bash
-victory set-github-token
+voria set-github-token
 # Paste your GitHub token when prompted
 ```
 
 **What it does:**
-- Saves GitHub token to `~/.victory/config.json`
+- Saves GitHub token to `~/.voria/config.json`
 - Enables access to private/public repositories
 - Allows listing issues and creating pull requests
 
@@ -80,55 +80,55 @@ victory set-github-token
 
 ---
 
-### `victory list-issues [REPO]`
+### `voria list-issues [REPO]`
 
 List all open issues in a GitHub repository.
 
 **Usage:**
 ```bash
 # Using owner/repo format
-victory list-issues ansh/victory
+voria list-issues ansh/voria
 
 # Using full GitHub URL
-victory list-issues https://github.com/ansh/victory
+voria list-issues https://github.com/ansh/voria
 
 # Interactive mode (will prompt for repo)
-victory list-issues
+voria list-issues
 ```
 
 **Output:**
 ```
-📋 Found 5 open issues in ansh/victory:
+📋 Found 5 open issues in ansh/voria:
 
   #1 - Fix null pointer exception
        Labels: bug, critical
-       https://github.com/ansh/victory/issues/1
+       https://github.com/ansh/voria/issues/1
 
   #2 - Add retry logic to API calls
        Labels: enhancement
-       https://github.com/ansh/victory/issues/2
+       https://github.com/ansh/voria/issues/2
 ```
 
 ---
 
-### `victory fix <ISSUE_NUMBER> [REPO]`
+### `voria fix <ISSUE_NUMBER> [REPO]`
 
 Fix a specific GitHub issue using AI.
 
 **Usage:**
 ```bash
 # With repo specified
-victory fix 42 ansh/victory
+voria fix 42 ansh/voria
 
 # With full URL
-victory fix 42 https://github.com/ansh/victory
+voria fix 42 https://github.com/ansh/voria
 
 # Interactive mode
-victory fix 42
+voria fix 42
 # Will prompt for repository
 
 # With verbose output
-victory fix 42 ansh/victory -v
+voria fix 42 ansh/voria -v
 ```
 
 **Workflow:**
@@ -146,17 +146,17 @@ victory fix 42 ansh/victory -v
 
 ---
 
-### `victory plan [ISSUE_ID]`
+### `voria plan [ISSUE_ID]`
 
 Plan how to fix a GitHub issue.
 
 **Usage:**
 ```bash
 # Analyze and propose a fix for issue #42
-victory plan 42
+voria plan 42
 
 # Verbose mode with details
-victory plan 42 -v
+voria plan 42 -v
 ```
 
 **Output:**
@@ -171,17 +171,17 @@ victory plan 42 -v
 
 ---
 
-### `victory apply <PATCH_FILE>`
+### `voria apply <PATCH_FILE>`
 
 Apply a previously-generated patch file.
 
 **Usage:**
 ```bash
 # Apply a patch
-victory apply fix.patch
+voria apply fix.patch
 
 # Verbose output
-victory apply fix.patch -v
+voria apply fix.patch -v
 ```
 
 **What it does:**
@@ -193,7 +193,7 @@ victory apply fix.patch -v
 
 ##  Configuration
 
-Victory stores configuration in `~/.victory/config.json`:
+voria stores configuration in `~/.voria/config.json`:
 
 ```json
 {
@@ -229,38 +229,38 @@ export ANTHROPIC_API_KEY=sk-ant-...
 
 ```bash
 # Setup (one time)
-victory setup-modal
-victory set-github-token
+voria setup-modal
+voria set-github-token
 
 # List issues
-victory list-issues owner/repo
+voria list-issues owner/repo
 
 # Fix issue #1
-victory fix 1 owner/repo
+voria fix 1 owner/repo
 ```
 
 ### Example 2: Plan Before Fixing
 
 ```bash
 # See what would be done
-victory plan 42
+voria plan 42
 
 # If it looks good, apply it
-victory apply recommended-fix.patch
+voria apply recommended-fix.patch
 ```
 
 ### Example 3: Batch Process Multiple Issues
 
 ```bash
 # List all issues
-victory list-issues owner/repo
+voria list-issues owner/repo
 
 # Fix multiple issues one by one
-victory fix 1 owner/repo
-victory fix 2 owner/repo
-victory fix 3 owner/repo
+voria fix 1 owner/repo
+voria fix 2 owner/repo
+voria fix 3 owner/repo
 ```
-3. Config file (`~/.victory/config.json`)
+3. Config file (`~/.voria/config.json`)
 4. Defaults (OpenAI, gpt-4)
 
 ---
@@ -275,7 +275,7 @@ victory fix 3 owner/repo
 export OPENAI_API_KEY=sk-...
 
 # 3. Configure (optional, uses gpt-4 by default)
-./target/release/victory plan "test" --llm openai --model gpt-4-turbo
+./target/release/voria plan "test" --llm openai --model gpt-4-turbo
 ```
 
 **Cost:** ~$10-30/month for typical usage
@@ -288,7 +288,7 @@ export OPENAI_API_KEY=sk-...
 export ANTHROPIC_API_KEY=sk-ant-...
 
 # 3. Use
-./target/release/victory plan "test" --llm claude --model claude-3-sonnet
+./target/release/voria plan "test" --llm claude --model claude-3-sonnet
 ```
 
 **Cost:** ~$5-15/month
@@ -301,7 +301,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 export GOOGLE_API_KEY=...
 
 # 3. Use
-./target/release/victory plan "test" --llm gemini
+./target/release/voria plan "test" --llm gemini
 ```
 
 **Cost:** ~$1-5/month (cheapest)
@@ -314,7 +314,7 @@ export GOOGLE_API_KEY=...
 export MODAL_API_KEY=...
 
 # 3. Use
-./target/release/victory plan "test" --llm modal
+./target/release/voria plan "test" --llm modal
 ```
 
 **Cost:** Free (community tier) or ~$20/month
@@ -350,19 +350,19 @@ Each fix typically costs:
 
 ```bash
 # Set daily budget
-export VICTORY_DAILY_BUDGET=5.0
+export voria_DAILY_BUDGET=5.0
 
 # Monitor spending
-./target/release/victory token info
+./target/release/voria token info
 
 # Reduce context size to save tokens
-./target/release/victory issue 42 --max-files 10
+./target/release/voria issue 42 --max-files 10
 
 # Use cheaper LLM
-./target/release/victory issue 42 --llm gemini  # 10x cheaper
+./target/release/voria issue 42 --llm gemini  # 10x cheaper
 
 # Limit iterations
-./target/release/victory issue 42 --max-iterations 1
+./target/release/voria issue 42 --max-iterations 1
 ```
 
 Typical monthly cost: **$5-30 depending on usage and LLM choice**
@@ -384,34 +384,34 @@ Typical monthly cost: **$5-30 depending on usage and LLM choice**
 
 ### Automatic Detection
 
-Victory automatically detects your test framework:
+voria automatically detects your test framework:
 
 ```bash
 cd your-repo
-./target/release/victory issue 42  # Detects pytest, jest, etc.
+./target/release/voria issue 42  # Detects pytest, jest, etc.
 ```
 
 ### Custom Test Command
 
 ```bash
 # Specify test command explicitly
-./target/release/victory issue 42 --test-cmd "npm test"
+./target/release/voria issue 42 --test-cmd "npm test"
 
-./target/release/victory issue 42 --test-cmd "pytest tests/ -xvs"
+./target/release/voria issue 42 --test-cmd "pytest tests/ -xvs"
 
-./target/release/victory issue 42 --test-cmd "cargo test --lib"
+./target/release/voria issue 42 --test-cmd "cargo test --lib"
 ```
 
 ### Skip Testing
 
 ```bash
 # Don't run tests (faster but less safe)
-./target/release/victory issue 42 --skip-tests
+./target/release/voria issue 42 --skip-tests
 ```
 
 ### Test Failure Analysis
 
-When tests fail, Victory:
+When tests fail, voria:
 
 1. **Reads** the test output
 2. **Analyzes** what went wrong
@@ -431,7 +431,7 @@ Example:
 
 ##  Iteration & Refinement
 
-Victory automatically improves fixes through iteration:
+voria automatically improves fixes through iteration:
 
 **How it works:**
 1. Generate fix
@@ -451,46 +451,46 @@ Victory automatically improves fixes through iteration:
 **Control iteration:**
 ```bash
 # Try harder (up to 5 times)
-./target/release/victory issue 42 --max-iterations 5
+./target/release/voria issue 42 --max-iterations 5
 
 # Fast mode (only try once)
-./target/release/victory issue 42 --max-iterations 1
+./target/release/voria issue 42 --max-iterations 1
 ```
 
 ---
 
 ##  Monitoring & Logging
 
-### Check Victory's Progress
+### Check voria's Progress
 
 ```bash
 # Verbose output (shows all steps)
-./target/release/victory -v issue 42
+./target/release/voria -v issue 42
 
 # Very verbose (shows token count, API calls)
-./target/release/victory -vv issue 42
+./target/release/voria -vv issue 42
 ```
 
 ### Token Usage
 
 ```bash
 # Check token usage for this issue
-./target/release/victory token info
+./target/release/voria token info
 
 # Reset daily counter (if needed)
-./target/release/victory token reset
+./target/release/voria token reset
 ```
 
 ### Logs
 
-Victory logs are stored in `~/.victory/victory.log`:
+voria logs are stored in `~/.voria/voria.log`:
 
 ```bash
 # View recent logs
-tail -f ~/.victory/victory.log
+tail -f ~/.voria/voria.log
 
 # Find errors
-grep ERROR ~/.victory/victory.log
+grep ERROR ~/.voria/voria.log
 ```
 
 ---
@@ -501,21 +501,21 @@ grep ERROR ~/.victory/victory.log
 
 ```bash
 # Propose first
-./target/release/victory issue 42 --dry-run
+./target/release/voria issue 42 --dry-run
 
 # Review the proposed patch
-git diff  # or look at Victory's output
+git diff  # or look at voria's output
 
 # Then apply
-./target/release/victory issue 42
+./target/release/voria issue 42
 ```
 
 ### Automatic Backups
 
-Victory automatically backs up files before patching:
+voria automatically backs up files before patching:
 
 ```bash
-~/.victory/backups/
+~/.voria/backups/
 ├── file_1704067200.py  # Backup with timestamp
 ├── file_1704067201.py
 └── ...
@@ -523,7 +523,7 @@ Victory automatically backs up files before patching:
 
 ### Review PR Before Merging
 
-Victory creates PRs automatically, but always:
+voria creates PRs automatically, but always:
 
 1. **Review** code changes in GitHub PR
 2. **Check** tests pass in CI
@@ -533,11 +533,11 @@ Victory creates PRs automatically, but always:
 ### Rollback If Needed
 
 ```bash
-# If Victory's fix broke something:
+# If voria's fix broke something:
 git revert HEAD
 
 # Or manually restore from backup
-cp ~/.victory/backups/file_*.py restored_file.py
+cp ~/.voria/backups/file_*.py restored_file.py
 ```
 
 ---
@@ -562,7 +562,7 @@ curl -H "Authorization: Bearer $OPENAI_API_KEY" \
 
 ```bash
 # Increase timeout
-./target/release/victory issue 42 --timeout 600  # 10 minutes
+./target/release/voria issue 42 --timeout 600  # 10 minutes
 
 # Run tests manually to check they work
 npm test  # or pytest, cargo test, etc.
@@ -578,7 +578,7 @@ git status
 echo $GITHUB_TOKEN
 
 # Specify repo explicitly
-./target/release/victory issue 42 --repo https://github.com/user/repo
+./target/release/voria issue 42 --repo https://github.com/user/repo
 ```
 
 ### "Patch Fails to Apply"
@@ -588,10 +588,10 @@ echo $GITHUB_TOKEN
 git status
 
 # Try fuzzy matching
-./target/release/victory issue 42 --patch-strategy fuzzy
+./target/release/voria issue 42 --patch-strategy fuzzy
 
 # Review the patch manually
-victory issue 42 --dry-run
+voria issue 42 --dry-run
 ```
 
 See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more issues.
@@ -603,8 +603,8 @@ See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more issues.
 - **[Quick Start](QUICKSTART.md)** - Get running in 5 minutes
 - **[Examples](EXAMPLES.md)** - Real-world usage scenarios
 - **[FAQ](TROUBLESHOOTING.md)** - Common problems and solutions
-- **[Architecture](ARCHITECTURE.md)** - How Victory works internally
-- **[Plugins](PLUGINS.md)** - Extend Victory with custom capabilities
+- **[Architecture](ARCHITECTURE.md)** - How voria works internally
+- **[Plugins](PLUGINS.md)** - Extend voria with custom capabilities
 
 ---
 
@@ -614,7 +614,7 @@ See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more issues.
 
 ```bash
 # Dry-run first
-./target/release/victory issue 42 --dry-run
+./target/release/voria issue 42 --dry-run
 
 # Review output carefully
 # Then proceed if it looks good
@@ -624,33 +624,33 @@ See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more issues.
 
 ```bash
 # For well-defined issues
-./target/release/victory issue 42
+./target/release/voria issue 42
 
 # For vague descriptions  
-./target/release/victory plan "optimize database queries"
+./target/release/voria plan "optimize database queries"
 
 # For direct descriptions
-./target/release/victory plan "Add type hints to utils.py"
+./target/release/voria plan "Add type hints to utils.py"
 ```
 
 ### Monitor Costs
 
 ```bash
 # Start with cheaper models
-./target/release/victory issue 42 --llm gemini  # 10x cheaper
+./target/release/voria issue 42 --llm gemini  # 10x cheaper
 
 # Upgrade if needed
-./target/release/victory issue 42 --llm claude  # Better quality
+./target/release/voria issue 42 --llm claude  # Better quality
 ```
 
 ### Iterate Carefully
 
 ```bash
-# Let Victory refine
-./target/release/victory issue 42 --max-iterations 3
+# Let voria refine
+./target/release/voria issue 42 --max-iterations 3
 
 # Monitor progress
-./target/release/victory -v issue 42
+./target/release/voria -v issue 42
 ```
 
 ---
@@ -661,26 +661,26 @@ See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more issues.
 
 ```bash
 # Fix multiple issues
-./target/release/victory issue 42 43 45 46
+./target/release/voria issue 42 43 45 46
 
 # Fix all open issues
-./target/release/victory issue --all
+./target/release/voria issue --all
 ```
 
 ### Custom Hooks
 
-Create `~/.victory/hooks/post-fix.sh`:
+Create `~/.voria/hooks/post-fix.sh`:
 
 ```bash
 #!/bin/bash
-# Run after Victory creates PR
+# Run after voria creates PR
 echo "New PR created: $1"
 # Send notification, etc.
 ```
 
 ### Team Configuration
 
-Team leads can create `victory.config.json` in repo root:
+Team leads can create `voria.config.json` in repo root:
 
 ```json
 {

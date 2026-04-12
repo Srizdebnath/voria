@@ -1,4 +1,4 @@
-"""Agent Loop Module - Orchestrates full Victory workflow"""
+"""Agent Loop Module - Orchestrates full voria workflow"""
 
 from .loop import AgentLoop, LoopState, LoopAction
 

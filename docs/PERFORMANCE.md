@@ -1,6 +1,6 @@
 # Performance Guide
 
-Optimizing Victory for speed and efficiency.
+Optimizing voria for speed and efficiency.
 
 ##  Performance Targets
 
@@ -18,13 +18,13 @@ Optimizing Victory for speed and efficiency.
 
 ```bash
 # Skip tests (if you know they pass)
-victory issue 42 --skip-tests
+voria issue 42 --skip-tests
 
 # Dry run (don't modify files)
-victory issue 42 --dry-run
+voria issue 42 --dry-run
 
 # Single iteration (don't refine)
-victory issue 42 --max-iterations 1
+voria issue 42 --max-iterations 1
 ```
 
 ### 2. Use Fastest LLM Provider
@@ -37,17 +37,17 @@ victory issue 42 --max-iterations 1
 
 ```bash
 # Use fastest
-victory issue 42 --llm modal
+voria issue 42 --llm modal
 ```
 
 ### 3. Cache Models
 
-Victory caches model responses. To warm up cache:
+voria caches model responses. To warm up cache:
 
 ```bash
 # Pre-download models
-victory plan 1  # First time (slow)
-victory plan 2  # Second time (faster - cached)
+voria plan 1  # First time (slow)
+voria plan 2  # Second time (faster - cached)
 ```
 
 ### 4. Parallel Operations
@@ -56,9 +56,9 @@ For batch processing:
 
 ```bash
 # Process multiple issues in parallel
-export VICTORY_WORKERS=4
+export voria_WORKERS=4
 for issue in {1..20}; do
-  victory issue $issue &
+  voria issue $issue &
 done
 wait
 ```
@@ -69,10 +69,10 @@ Large codebases slow down analysis:
 
 ```bash
 # Only analyze relevant files
-victory issue 42 --include "src/api.py" --include "tests/test_api.py"
+voria issue 42 --include "src/api.py" --include "tests/test_api.py"
 
 # Exclude large files
-victory issue 42 --exclude "node_modules" --exclude "dist"
+voria issue 42 --exclude "node_modules" --exclude "dist"
 ```
 
 ##  Profiling
@@ -81,10 +81,10 @@ victory issue 42 --exclude "node_modules" --exclude "dist"
 
 ```bash
 # Run with timing
-time python3 -m victory.engine < test_command.json
+time python3 -m voria.engine < test_command.json
 
 # Detailed profiling
-python3 -m cProfile -s cumtime -m victory.engine < test_command.json
+python3 -m cProfile -s cumtime -m voria.engine < test_command.json
 ```
 
 ### Rust Profiling
@@ -102,30 +102,30 @@ cargo flamegraph -- plan 1
 
 ```bash
 # Watch memory usage
-watch -n 1 'ps aux | grep victory'
+watch -n 1 'ps aux | grep voria'
 
 # Detailed memory stats
-/usr/bin/time -v ./target/release/victory plan 1
+/usr/bin/time -v ./target/release/voria plan 1
 ```
 
 ### Reduce Memory Footprint
 
 ```bash
 # Smaller batch sizes
-victory issue 42 --batch-size 100
+voria issue 42 --batch-size 100
 
 # Disable caching
-victory issue 42 --no-cache
+voria issue 42 --no-cache
 
 # Limit context
-victory issue 42 --max-files 10
+voria issue 42 --max-files 10
 ```
 
 ##  Network Optimization
 
 ### Connection Pooling
 
-Victory reuses connections (built-in). To verify:
+voria reuses connections (built-in). To verify:
 
 ```python
 # Check connection reuse
@@ -139,18 +139,18 @@ httpx.AsyncClient(limits=httpx.Limits(
 
 ```bash
 # Slow down token usage (avoid rate limits)
-VICTORY_TOKEN_RATE=100 victory issue 100  # 100 tokens/sec max
+voria_TOKEN_RATE=100 voria issue 100  # 100 tokens/sec max
 
 # Add delays between requests
-VICTORY_REQUEST_DELAY=2 victory issue 42  # 2 sec between requests
+voria_REQUEST_DELAY=2 voria issue 42  # 2 sec between requests
 ```
 
 ### DNS Caching
 
 ```python
-# Victory auto-caches DNS (via httpx)
+# voria auto-caches DNS (via httpx)
 # Verify with:
-# strace -e openat ./target/release/victory plan 1 | grep hosts
+# strace -e openat ./target/release/voria plan 1 | grep hosts
 ```
 
 ##  Benchmarking
@@ -161,13 +161,13 @@ VICTORY_REQUEST_DELAY=2 victory issue 42  # 2 sec between requests
 # Time different providers
 for llm in modal openai gemini claude; do
   echo "Testing $llm..."
-  time victory plan 1 --llm $llm
+  time voria plan 1 --llm $llm
 done
 
 # Compare patch generation
 for strategy in strict fuzzy; do
   echo "Testing $strategy..."
-  time victory issue 1 --patch-strategy $strategy
+  time voria issue 1 --patch-strategy $strategy
 done
 ```
 
@@ -181,7 +181,7 @@ ISSUES=(1 2 3 10 42 100)
 for issue in "${ISSUES[@]}"; do
   echo "Issue #$issue"
   /usr/bin/time -f "%e seconds, %M KB" \
-    ./target/release/victory plan $issue
+    ./target/release/voria plan $issue
 done
 ```
 
@@ -191,9 +191,9 @@ done
 
 ```bash
 # Smaller = faster + cheaper
-victory issue 42 --llm modal              # GLM-5.1-FP8 (fast)
-victory issue 42 --llm openai --model gpt-4.5-mini  # mini (faster)
-victory issue 42 --llm claude --model claude-3-haiku  # haiku (fastest)
+voria issue 42 --llm modal              # GLM-5.1-FP8 (fast)
+voria issue 42 --llm openai --model gpt-4.5-mini  # mini (faster)
+voria issue 42 --llm claude --model claude-3-haiku  # haiku (fastest)
 ```
 
 ### Prompt Engineering
@@ -217,11 +217,11 @@ prompt = f"""Analyze these files for {issue_description}:
 
 ```bash
 # See token usage
-victory plan 1 --verbose
+voria plan 1 --verbose
 
 # Output shows tokens consumed and cost
 # Adjust budget if needed
-python3 -m victory.core.setup  # Increase budget
+python3 -m voria.core.setup  # Increase budget
 ```
 
 ##  Configuration Tuning
@@ -233,7 +233,7 @@ python3 -m victory.core.setup  # Increase budget
 cargo build          # vs cargo build --release
 
 # Skip some validations
-VICTORY_SKIP_VALIDATION=1 ./target/debug/victory plan 1
+voria_SKIP_VALIDATION=1 ./target/debug/voria plan 1
 ```
 
 ### Production Mode (Slower but robust)
@@ -270,7 +270,7 @@ RUSTFLAGS="-C target-cpu=native" cargo build --release
 
 ```bash
 # Add timing breakpoints
-VICTORY_DEBUG_TIMING=1 ./target/release/victory issue 42
+voria_DEBUG_TIMING=1 ./target/release/voria issue 42
 
 # Output:
 # [TIMING] LLM plan: 3.2s
@@ -287,11 +287,11 @@ VICTORY_DEBUG_TIMING=1 ./target/release/victory issue 42
 ```bash
 # Serial (slow)
 for i in {1..100}; do
-  victory issue $i --create-pr
+  voria issue $i --create-pr
 done
 
 # Parallel (faster)
-seq 1 100 | parallel "victory issue {} --create-pr" --max-procs 4
+seq 1 100 | parallel "voria issue {} --create-pr" --max-procs 4
 ```
 
 ### Load Balancing
@@ -300,7 +300,7 @@ seq 1 100 | parallel "victory issue {} --create-pr" --max-procs 4
 # Distribute across LLM providers
 for i in {1..100}; do
   llm=$((i % 4))  # Rotate: 0=modal, 1=openai, 2=gemini, 3=claude
-  victory issue $i --llm ${LLMS[$llm]}
+  voria issue $i --llm ${LLMS[$llm]}
 done
 ```
 
@@ -335,7 +335,7 @@ pypy3 -m venv venv
 source venv/bin/activate
 
 # Compile to bytecode
-python3 -m py_compile victory/
+python3 -m py_compile voria/
 ```
 
 ---

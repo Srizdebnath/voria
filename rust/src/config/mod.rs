@@ -22,7 +22,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             python_path: "python3".to_string(),
-            engine_module: "victory.engine".to_string(),
+            engine_module: "voria.engine".to_string(),
             process_timeout: 30,
             max_retries: 1,
             github_token: None,
@@ -69,6 +69,6 @@ impl Config {
 
     fn global_config_path() -> Result<PathBuf> {
         let home = std::env::var("HOME").map(PathBuf::from)?;
-        Ok(home.join(".victory").join("config.json"))
+        Ok(home.join(".voria").join("config.json"))
     }
 }

@@ -1,6 +1,6 @@
 # Design Decisions
 
-Rationale behind Victory's key architectural and technical choices.
+Rationale behind voria's key architectural and technical choices.
 
 ##  Core Decisions
 
@@ -154,7 +154,7 @@ Claude:  $3.00/hr
 
 ### 3. Interactive Setup over CLI Flags
 
-**Decision**: `python3 -m victory.core.setup` for configuration.
+**Decision**: `python3 -m voria.core.setup` for configuration.
 
 **Rationale**:
 - Better UX (guided steps)
@@ -180,7 +180,7 @@ Claude:  $3.00/hr
 **Alternative** (rejected):
 ```
 # ❌ Feature-based
-victory/
+voria/
 ├── github_automation/
 │   ├── llm.py
 │   ├── patcher.py
@@ -193,7 +193,7 @@ victory/
 **Our Structure** (accepted):
 ```
 # ✅ Responsibility-based
-victory/
+voria/
 ├── core/
 │   ├── llm/          (all LLM logic)
 │   ├── patcher/      (all patching)
@@ -226,15 +226,15 @@ victory/
 
 **Hierarchy** (highest to lowest priority):
 1. CLI flags: `--llm openai`
-2. Environment: `VICTORY_LLM=openai`
-3. Config file: `~/.victory/config.yaml`
+2. Environment: `voria_LLM=openai`
+3. Config file: `~/.voria/config.yaml`
 4. Defaults: Built-in sensible defaults
 
 ##  Security Decisions
 
 ### 1. Config File Permissions
 
-**Decision**: Store configs at `~/.victory/` with `0600` (user-only).
+**Decision**: Store configs at `~/.voria/` with `0600` (user-only).
 
 **Rationale**:
 - API keys stored locally (not on server)

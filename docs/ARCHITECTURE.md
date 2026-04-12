@@ -1,12 +1,12 @@
 # Architecture
 
-Victory's system design and component overview.
+voria's system design and component overview.
 
 ##  High-Level Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      Victory CLI                            │
+│                      voria CLI                            │
 │                  (Node.js - Entry Point)                    │
 │                                                             │
 │  ┌────────────────────────────────────────────────────────┐ │
@@ -25,7 +25,7 @@ Victory's system design and component overview.
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Victory Engine                            │
+│                    voria Engine                            │
 │                  (Python - AI Core)                          │
 │                                                             │
 │  ┌────────────────────────────────────────────────────────┐ │
@@ -45,7 +45,7 @@ Victory's system design and component overview.
                         │ (Optional / Planned)
                         ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Victory Hub                              │
+│                    voria Hub                              │
 │                  (Rust - High Perf)                          │
 │                                                             │
 │  ┌────────────────────────────────────────────────────────┐ │
@@ -61,7 +61,7 @@ Victory's system design and component overview.
 ### 1. Plan Command
 
 ```
-Command: victory plan 42
+Command: voria plan 42
     ↓
 [Rust] Parse args, spawn Python
     ↓
@@ -85,7 +85,7 @@ Command: victory plan 42
 ### 2. Full Issue Command
 
 ```
-Command: victory issue 123
+Command: voria issue 123
     ↓
 [Rust] Spawn Python (stays alive)
     ↓
@@ -122,7 +122,7 @@ Command: victory issue 123
 - IPC message serialization/deserialization (NDJSON)
 
 **Key Files:**
-- `bin/victory` - Main script and command handlers
+- `bin/voria` - Main script and command handlers
 - `package.json` - Dependency and distribution management
 
 **Why Node.js:**
@@ -142,9 +142,9 @@ Command: victory issue 123
 
 **Key Modules:**
 - `engine.py` - Core listener and command dispatcher
-- `victory/core/agent/` - Agent loop and logic
-- `victory/core/llm/` - Multi-provider LLM adapters
-- `victory/core/github/` - Repository integration
+- `voria/core/agent/` - Agent loop and logic
+- `voria/core/llm/` - Multi-provider LLM adapters
+- `voria/core/github/` - Repository integration
 
 ### Rust Hub Layer (High Performance)
 
@@ -187,7 +187,7 @@ Example:
 
 ### Language Support
 
-Victory supports multiple programming languages via plugins:
+voria supports multiple programming languages via plugins:
 
 ```
 python/
@@ -222,7 +222,7 @@ Plugins can extend:
 
 Before modifying files:
 ```
-~/.victory/backups/
+~/.voria/backups/
 ├── file_1_2026-04-10T09-35-42.bak
 ├── file_2_2026-04-10T09-35-42.bak
 └── file_3_2026-04-10T09-35-42.bak
@@ -318,15 +318,15 @@ Issue
 
 1. **Command-line flags**
    ```bash
-   victory issue 42 --llm openai --max-iterations 8
+   voria issue 42 --llm openai --max-iterations 8
    ```
 
 2. **Environment variables**
    ```bash
-   VICTORY_LLM=openai VICTORY_MAX_ITERATIONS=8
+   voria_LLM=openai voria_MAX_ITERATIONS=8
    ```
 
-3. **Config file** (~/.victory/config.yaml)
+3. **Config file** (~/.voria/config.yaml)
    ```yaml
    llm: openai
    max-iterations: 8
@@ -393,7 +393,7 @@ Future capabilities can be added at these points:
 2. **New Commands**: Add to `cli/` and handlers
 3. **Custom Plugins**: Language support in `plugins/`
 4. **Pre/Post Hooks**: Extensible hook system
-5. **Custom Prompts**: Override in `~/.victory/prompts/`
+5. **Custom Prompts**: Override in `~/.voria/prompts/`
 
 ##  Performance Targets
 

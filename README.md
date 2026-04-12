@@ -1,13 +1,13 @@
-# Victory
+# voria
 
 🚀 **AI-Powered Bug Fixing Tool**
 
-Victory is a CLI tool that automatically fixes bugs and implements features in your codebase. Describe an issue or provide a GitHub issue number, and Victory will generate a fix, test it, iterate on failures, and create a pull request - all automatically.
+voria is a CLI tool that automatically fixes bugs and implements features in your codebase. Describe an issue or provide a GitHub issue number, and voria will generate a fix, test it, iterate on failures, and create a pull request - all automatically.
 
 ##  Features
 
-- **Global CLI Tool** - Install once, use anywhere with `npm install -g @srizdebnath/victory`
-- **Easy Setup** - One command initialization with `victory --init`
+- **Global CLI Tool** - Install once, use anywhere with `npm install -g @voria/cli`
+- **Easy Setup** - One command initialization with `voria --init`
 - **Automatic Code Analysis** - Understand issues and relevant code context
 - **AI-Powered Fixes** - Generate patches using Claude, GPT-4, Gemini, Modal, or other LLMs
 - **Validation & Testing** - Runs your test suite to verify fixes work
@@ -21,14 +21,14 @@ Victory is a CLI tool that automatically fixes bugs and implements features in y
 ### Global Installation
 
 ```bash
-npm install -g @srizdebnath/victory
+npm install -g @voria/cli
 ```
 
 ### Initialize a Project
 
 ```bash
 cd your-project
-victory --init
+voria --init
 ```
 
 This will guide you through:
@@ -40,7 +40,7 @@ This will guide you through:
 ### Set Up GitHub Token
 
 ```bash
-victory --set-github-token
+voria --set-github-token
 ```
 
 This stores your GitHub Personal Access Token to access repositories.
@@ -57,10 +57,10 @@ Choose your preferred LLM provider:
 
 ```bash
 # Setup with your own token
-victory setup-modal YOUR_MODAL_API_KEY
+voria setup-modal YOUR_MODAL_API_KEY
 
 # Or use interactively (will prompt for token)
-victory setup-modal
+voria setup-modal
 ```
 
 ### Step 2: Setup GitHub Token
@@ -68,10 +68,10 @@ victory setup-modal
 Configure your GitHub Personal Access Token to access your repositories:
 
 ```bash
-victory set-github-token
+voria set-github-token
 ```
 
-You'll be prompted to enter your GitHub token. This allows Victory to:
+You'll be prompted to enter your GitHub token. This allows voria to:
 - List issues from your repositories
 - Fetch issue details
 - Create pull requests with fixes
@@ -82,13 +82,13 @@ See all open issues in any of your repositories:
 
 ```bash
 # From a repo URL
-victory list-issues https://github.com/owner/repo
+voria list-issues https://github.com/owner/repo
 
 # Or use owner/repo format
-victory list-issues owner/repo
+voria list-issues owner/repo
 
 # Or provide interactively
-victory list-issues  # Will prompt for repo URL
+voria list-issues  # Will prompt for repo URL
 ```
 
 Output shows:
@@ -104,16 +104,16 @@ Use the LLM to automatically fix any issue:
 
 ```bash
 # Fix issue #42 in a repository
-victory fix 42 https://github.com/owner/repo
+voria fix 42 https://github.com/owner/repo
 
 # Or use owner/repo format
-victory fix 42 owner/repo
+voria fix 42 owner/repo
 
 # Or provide the repo interactively
-victory fix 42  # Will prompt for repo URL
+voria fix 42  # Will prompt for repo URL
 ```
 
-Victory will:
+voria will:
 1. Fetch the issue details from GitHub
 2. Analyze the issue description
 3. Use Modal LLM to generate a fix
@@ -124,22 +124,22 @@ Victory will:
 
 ```bash
 # 1. First time - setup your LLM provider (get token from modal.com, openai.com, etc.)
-victory setup-modal YOUR_API_KEY
+voria setup-modal YOUR_API_KEY
 
 # 2. Setup GitHub once
-victory set-github-token
+voria set-github-token
 
 # 3. List issues in your repo
-victory list-issues owner/my-project
+voria list-issues owner/my-project
 
 # 4. Fix issue #5
-victory fix 5 owner/my-project
+voria fix 5 owner/my-project
 
 # 5. Fix issue #10 from different repo
-victory fix 10 owner/another-project
+voria fix 10 owner/another-project
 
 # 6. Fix issue #3 with interactive prompts
-victory fix 3
+voria fix 3
 # Will ask for repo URL
 ```
 
@@ -151,27 +151,27 @@ victory fix 3
 
 ```bash
 # Setup Modal API token (do this first!)
-victory setup-modal [TOKEN]
+voria setup-modal [TOKEN]
 # Interactive mode if no token provided
 
 # Setup GitHub Personal Access Token
-victory set-github-token
+voria set-github-token
 # Required for accessing repositories
 
 # List all issues in a repository
-victory list-issues [REPO_URL_OR_OWNER/REPO]
+voria list-issues [REPO_URL_OR_OWNER/REPO]
 # Shows all open issues with details
 
 # Fix a specific Github issue
-victory fix <ISSUE_NUMBER> [REPO_URL_OR_OWNER/REPO]
+voria fix <ISSUE_NUMBER> [REPO_URL_OR_OWNER/REPO]
 # Uses AI to generate a fix for the issue
 
 # Plan how to fix a GitHub issue
-victory plan <ISSUE_ID>
+voria plan <ISSUE_ID>
 # Analyzes issue and proposes solution
 
 # Apply an existing patch
-victory apply <PLAN>
+voria apply <PLAN>
 # Applies previously generated patch
 ```
 
@@ -179,20 +179,20 @@ victory apply <PLAN>
 
 ```bash
 # One-time setup (use your own API key)
-victory setup-modal YOUR_API_KEY
-victory set-github-token
+voria setup-modal YOUR_API_KEY
+voria set-github-token
 
 # List issues from different repo formats
-victory list-issues ansh/victory
-victory list-issues https://github.com/ansh/victory
-victory list-issues  # Interactive mode
+voria list-issues ansh/voria
+voria list-issues https://github.com/ansh/voria
+voria list-issues  # Interactive mode
 
 # Fix issues
-victory fix 42 ansh/victory        # With repo specified
-victory fix 42                     # Interactive mode prompts for repo
+voria fix 42 ansh/voria        # With repo specified
+voria fix 42                     # Interactive mode prompts for repo
 
 # Plan out a fix
-victory plan 123
+voria plan 123
 ```
 
 ## Documentation
@@ -221,7 +221,7 @@ victory plan 123
 - **[Roadmap](docs/ROADMAP.md)** - Future features & timeline- **[Changelog](docs/CHANGELOG.md)** - Version history & releases
 ##  Architecture
 
-Victory uses a **hybrid Rust + Python** architecture for performance and flexibility:
+voria uses a **hybrid Rust + Python** architecture for performance and flexibility:
 
 - **Node.js CLI** - Global command-line interface (distributed via npm)
 - **Python Engine** - AI logic, LLM integration, code analysis
@@ -267,7 +267,7 @@ See [Plugins documentation](docs/PLUGINS.md) for extending to more frameworks.
 
 ##  Security
 
-- API keys stored securely in `~/.victory/`
+- API keys stored securely in `~/.voria/`
 - Never logs credentials
 - Automatic file backups before modifications
 - Restricted code execution environments
@@ -279,32 +279,32 @@ See [Plugins documentation](docs/PLUGINS.md) for extending to more frameworks.
 
 ### Fix a GitHub Issue
 ```bash
-victory issue owner/repo 42 --llm claude
+voria issue owner/repo 42 --llm claude
 ```
 
 ### List Issues First
 ```bash
-victory --list-issues owner/repo
-victory issue owner/repo 42
+voria --list-issues owner/repo
+voria issue owner/repo 42
 ```
 
 ### Propose a Change Before Applying
 ```bash
-victory plan "Add type hints to utils.py" --dry-run
-victory plan "Add type hints to utils.py"  # Apply after review
+voria plan "Add type hints to utils.py" --dry-run
+voria plan "Add type hints to utils.py"  # Apply after review
 ```
 
 ### Use Different LLM Providers
 ```bash
-victory issue owner/repo 42 --llm gemini  # Cheaper ($1-5/month)
-victory issue owner/repo 42 --llm claude  # Better quality ($5-15/month)
+voria issue owner/repo 42 --llm gemini  # Cheaper ($1-5/month)
+voria issue owner/repo 42 --llm claude  # Better quality ($5-15/month)
 ```
 
 ### Batch Processing Multiple Issues
 ```bash
-victory issue owner/repo 40
-victory issue owner/repo 41
-victory issue owner/repo 42
+voria issue owner/repo 40
+voria issue owner/repo 41
+voria issue owner/repo 42
 ```
 
 **→ [See 14 more real examples](docs/EXAMPLES.md)**
@@ -326,8 +326,8 @@ We welcome contributions! See [Contributing Guide](docs/CONTRIBUTING.md) for:
 
 ##  Getting Help
 
-- **[GitHub Discussions](https://github.com/Srizdebnath/Victory/discussions)** - Ask questions
-- **[GitHub Issues](https://github.com/Srizdebnath/Victory/issues)** - Report bugs
+- **[GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)** - Ask questions
+- **[GitHub Issues](https://github.com/Srizdebnath/voria/issues)** - Report bugs
 - **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues
 
 ##  Roadmap
@@ -338,26 +338,26 @@ We welcome contributions! See [Contributing Guide](docs/CONTRIBUTING.md) for:
 - ✅ Process management and communication
 
 **Phase 2: Global CLI Distribution** ✅ COMPLETE
-- ✅ npm package (@srizdebnath/victory)
+- ✅ npm package (@voria/cli)
 - ✅ Global installation support
 - ✅ Auto-discovery in PATH
 - ✅ Version management
 
 **Phase 3: Configuration & Setup** ✅ COMPLETE
-- ✅ Interactive setup wizard (`victory --init`)
+- ✅ Interactive setup wizard (`voria --init`)
 - ✅ LLM provider selection
 - ✅ API key management
 - ✅ Budget configuration
 - ✅ Test framework detection
-- ✅ Configuration management (`victory --config`)
-- ✅ Per-project settings (`.victory.json`)
-- ✅ Global settings (`~/.victory/config.json`)
+- ✅ Configuration management (`voria --config`)
+- ✅ Per-project settings (`.voria.json`)
+- ✅ Global settings (`~/.voria/config.json`)
 
 **Phase 4: LLM Integration** ✅ COMPLETE
 - ✅ Python LLM modules created
 - ✅ Support for: OpenAI, Claude, Gemini, Modal, Kimi
 - ✅ Token tracking and budget management
-- ✅ CLI integration with `victory plan/issue` commands
+- ✅ CLI integration with `voria plan/issue` commands
 - ✅ Model discovery and selection
 
 **Phase 5: GitHub Integration** ✅ COMPLETE
@@ -392,7 +392,7 @@ We welcome contributions! See [Contributing Guide](docs/CONTRIBUTING.md) for:
 
 → [Full Roadmap Details](docs/ROADMAP.md)
 
-##  Why Victory?
+##  Why voria?
 
 - **Saves Time** - Fixes bugs in seconds instead of hours
 - **Reduces Errors** - Tests validate every change

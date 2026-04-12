@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Victory are documented here.
+All notable changes to voria are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/v0.0.1/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 All planned features through Phase 8 are now complete and production-ready.
 
 ###  Phase 4: LLM Integration (COMPLETE)
-- **Full CLI integration** with `victory plan` and `victory issue` commands
+- **Full CLI integration** with `voria plan` and `voria issue` commands
 - **5 LLM providers** fully integrated:
   - OpenAI (GPT-5.4, GPT-5.4-mini)
   - Anthropic Claude (Claude 4.6 series)
@@ -24,7 +24,7 @@ All planned features through Phase 8 are now complete and production-ready.
 - **Dynamic model discovery** for all providers
 - **Token tracking and budgeting** system
 - **API key management** with secure storage
-- **Model selection during setup** (`victory --init`)
+- **Model selection during setup** (`voria --init`)
 
 ###  Phase 5: GitHub Integration (COMPLETE)
 - **Issue fetching** from GitHub API
@@ -75,8 +75,8 @@ All planned features through Phase 8 are now complete and production-ready.
 - **New CHANGELOG.md** - This file
 
 ###  Distribution
-- **Published to npm** as `@srizdebnath/victory@0.0.3`
-- **Global CLI tool** - Install with `npm install -g @srizdebnath/victory`
+- **Published to npm** as `@srizdebnath/voria@0.0.3`
+- **Global CLI tool** - Install with `npm install -g @srizdebnath/voria`
 - **Pre-built binaries** - No build required for end users
 
 ###  Testing
@@ -100,14 +100,14 @@ All planned features through Phase 8 are now complete and production-ready.
 ## [v0.0.1] - April 2026
 
 ###  Phase 3: Configuration & Setup
-- Interactive setup wizard (`victory --init`)
+- Interactive setup wizard (`voria --init`)
 - LLM provider selection
 - API key management
 - Budget configuration
 - Test framework detection
 - Configuration persistence
-- Per-project settings (`.victory.json`)
-- Global settings (`~/.victory/config.json`)
+- Per-project settings (`.voria.json`)
+- Global settings (`~/.voria/config.json`)
 
 ###  Phase 2: Automation Foundation
 - Multi-iteration refinement (up to 5 iterations)
@@ -183,7 +183,7 @@ All planned features through Phase 8 are now complete and production-ready.
 
 ##  Links
 
-- **GitHub:** https://github.com/Srizdebnath/Victory
-- **npm:** https://www.npmjs.com/package/@srizdebnath/victory
-- **Issues:** https://github.com/Srizdebnath/Victory/issues
-- **Discussions:** https://github.com/Srizdebnath/Victory/discussions
+- **GitHub:** https://github.com/Srizdebnath/voria
+- **npm:** https://www.npmjs.com/package/@srizdebnath/voria
+- **Issues:** https://github.com/Srizdebnath/voria/issues
+- **Discussions:** https://github.com/Srizdebnath/voria/discussions

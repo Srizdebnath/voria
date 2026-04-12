@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Solutions to common Victory issues.
+Solutions to common voria issues.
 
 ##  Installation Issues
 
@@ -60,7 +60,7 @@ cargo build
 
 **Error:**
 ```
-ModuleNotFoundError: No module named 'victory'
+ModuleNotFoundError: No module named 'voria'
 ```
 
 **Solution:**
@@ -69,7 +69,7 @@ cd python
 pip install -e .
 
 # Verify
-python3 -c "import victory; print('OK')"
+python3 -c "import voria; print('OK')"
 ```
 
 ##  Runtime Issues
@@ -88,17 +88,17 @@ python3 -c "import victory; print('OK')"
    ps aux | grep python
    
    # Kill the stuck process
-   pkill -f victory.engine
+   pkill -f voria.engine
    ```
 
 2. **Increase timeout:**
    ```bash
-   VICTORY_TIMEOUT=3600 ./target/release/victory plan 1
+   voria_TIMEOUT=3600 ./target/release/voria plan 1
    ```
 
 3. **Use different LLM** (might be down):
    ```bash
-   ./target/release/victory plan 1 --llm gemini
+   ./target/release/voria plan 1 --llm gemini
    ```
 
 4. **Check network:**
@@ -131,7 +131,7 @@ Unauthorized: Invalid API key
 
 3. **Reconfigure:**
    ```bash
-   python3 -m victory.core.setup
+   python3 -m voria.core.setup
    # Choose provider → Enter key again → Select model
    ```
 
@@ -162,18 +162,18 @@ Failed to apply patch: hunk FAILED
 1. **Check patch is valid:**
    ```bash
    # Look at generated patchfile
-   victory issue 42 --dry-run --verbose
+   voria issue 42 --dry-run --verbose
    ```
 
 2. **Try fuzzy matching:**
    ```bash
-   victory issue 42 --patch-strategy fuzzy
+   voria issue 42 --patch-strategy fuzzy
    ```
 
 3. **Rollback and retry:**
    ```bash
    # Recovery from auto-backup
-   cp ~/.victory/backups/file_* restored_file
+   cp ~/.voria/backups/file_* restored_file
    ```
 
 ### "Tests fail after patch"
@@ -192,14 +192,14 @@ Tests: 24 passed, 1 failed
    git diff HEAD
    ```
 
-2. **Increase iterations** (let Victory refine):
+2. **Increase iterations** (let voria refine):
    ```bash
-   victory issue 42 --max-iterations 5
+   voria issue 42 --max-iterations 5
    ```
 
 3. **Use different LLM** (better quality):
    ```bash
-   victory issue 42 --llm claude
+   voria issue 42 --llm claude
    ```
 
 4. **Check test output:**
@@ -221,22 +221,22 @@ BudgetExceededError: Daily budget of $5.00 exceeded
 
 1. **Check spending:**
    ```bash
-   victory token info
+   voria token info
    ```
 
 2. **Increase budget:**
    ```bash
-   python3 -m victory.core.setup  # Reconfigure
+   python3 -m voria.core.setup  # Reconfigure
    ```
 
 3. **Use cheaper LLM:**
    ```bash
-   victory issue 42 --llm gemini  # Cheaper than OpenAI
+   voria issue 42 --llm gemini  # Cheaper than OpenAI
    ```
 
 4. **Skip iterations** (don't refine):
    ```bash
-   victory issue 42 --max-iterations 1
+   voria issue 42 --max-iterations 1
    ```
 
 ### "High token usage"
@@ -248,16 +248,16 @@ BudgetExceededError: Daily budget of $5.00 exceeded
 
 1. **Reduce context:**
    ```bash
-   victory issue 42 --max-files 10 --exclude "tests/"
+   voria issue 42 --max-files 10 --exclude "tests/"
    ```
 
 2. **Shorter prompts:**
-   - Customize prompts in `~/.victory/prompts/`
+   - Customize prompts in `~/.voria/prompts/`
    - Remove unnecessary instructions
 
 3. **Use faster model:**
    ```bash
-   victory issue 42 --model gpt-4-mini
+   voria issue 42 --model gpt-4-mini
    ```
 
 ##  Network Issues
@@ -284,8 +284,8 @@ Connection timeout: Unable to reach api.openai.com
 3. **Add network retry:**
    ```python
    # In settings
-   victory_retry_count=3
-   victory_retry_delay=2
+   voria_retry_count=3
+   voria_retry_delay=2
    ```
 
 4. **Use VPN** (if behind corporate proxy):
@@ -307,7 +307,7 @@ SSL: CERTIFICATE_VERIFY_FAILED
 ```bash
 # Disable cert verification (unsafe!)
 export INSECURE_SKIP_VERIFY=true
-victory plan 1
+voria plan 1
 
 # Better: Update CA certificates
 # macOS
@@ -331,20 +331,20 @@ PyErr_SetString: Protocol error
 
 1. **Clear cache:**
    ```bash
-   rm -rf ~/.victory/
+   rm -rf ~/.voria/
    ```
 
 2. **Reinstall Python:**
    ```bash
    cd python
-   pip uninstall victory
+   pip uninstall voria
    pip install -e .
    ```
 
 3. **Check for corruption:**
    ```bash
    # Test protocol manually
-   echo '{"command":"plan","issue_id":1}' | python3 -m victory.engine | head -1
+   echo '{"command":"plan","issue_id":1}' | python3 -m voria.engine | head -1
    ```
 
 ### "Process communication broken"
@@ -357,17 +357,17 @@ PyErr_SetString: Protocol error
 
 1. **Kill stray processes:**
    ```bash
-   pkill -f victory.engine
+   pkill -f voria.engine
    ```
 
 2. **Check stderr for errors:**
    ```bash
-   victory -v plan 1 2>&1 | tail -20
+   voria -v plan 1 2>&1 | tail -20
    ```
 
 3. **Test Python directly:**
    ```bash
-   python3 -m victory.engine  # See if it starts
+   python3 -m voria.engine  # See if it starts
    ```
 
 ##  Test Execution Issues
@@ -383,7 +383,7 @@ Could not detect test framework
 
 1. **Specify manually:**
    ```bash
-   victory issue 42 --test-cmd "pytest -v tests/"
+   voria issue 42 --test-cmd "pytest -v tests/"
    ```
 
 2. **Check framework installed:**
@@ -411,7 +411,7 @@ Test execution timeout: Exceeded 300s
 
 1. **Increase timeout:**
    ```bash
-   victory issue 42 --test-timeout 600
+   voria issue 42 --test-timeout 600
    ```
 
 2. **Run tests individually:**
@@ -422,7 +422,7 @@ Test execution timeout: Exceeded 300s
 
 3. **Skip slow tests:**
    ```bash
-   victory issue 42 --test-cmd "pytest -v -m 'not slow'"
+   voria issue 42 --test-cmd "pytest -v -m 'not slow'"
    ```
 
 ##  Permission Issues
@@ -445,27 +445,27 @@ chmod 644 /repo/file.py
 chmod 755 /repo/
 
 # Or run with adequate permissions
-sudo victory issue 42  # ⚠️ Use cautiously
+sudo voria issue 42  # ⚠️ Use cautiously
 ```
 
 ### "Cannot write to backup directory"
 
 **Error:**
 ```
-PermissionError: ~/.victory/backups
+PermissionError: ~/.voria/backups
 ```
 
 **Solutions:**
 
 ```bash
 # Create backup directory
-mkdir -p ~/.victory/backups
+mkdir -p ~/.voria/backups
 
 # Fix permissions
-chmod 700 ~/.victory/
+chmod 700 ~/.voria/
 
 # Verify
-ls -ld ~/.victory/
+ls -ld ~/.voria/
 ```
 
 ##  Output Issues
@@ -484,7 +484,7 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 # Disable colors (if terminal doesn't support)
-victory --no-color plan 1
+voria --no-color plan 1
 
 # Verify terminal encoding
 locale
@@ -499,18 +499,18 @@ locale
 
 1. **Use verbose flag:**
    ```bash
-   victory -v plan 1
+   voria -v plan 1
    ```
 
 2. **Check if running:**
    ```bash
    # In another terminal
-   watch -n 1 'ps aux | grep victory'
+   watch -n 1 'ps aux | grep voria'
    ```
 
 3. **Check logs:**
    ```bash
-   tail -f ~/.victory/victory.log
+   tail -f ~/.voria/voria.log
    ```
 
 ##  Getting Help
@@ -519,24 +519,24 @@ locale
 
 ```bash
 # Generate debug bundle
-mkdir victory-debug
-cd victory-debug
+mkdir voria-debug
+cd voria-debug
 
 # Collect versions
 echo "Rust:" && rustc --version && cargo --version
 echo "Python:" && python3 --version
-echo "Victory:" && ./target/release/victory --version
+echo "voria:" && ./target/release/voria --version
 
 # Test setup
-./target/release/victory --help > cli_help.txt
-python3 -m victory.engine < /dev/null 2> engine.log
+./target/release/voria --help > cli_help.txt
+python3 -m voria.engine < /dev/null 2> engine.log
 
 # System info
 uname -a > system.txt
-env | grep VICTORY > victory_env.txt
+env | grep voria > voria_env.txt
 
 # Create bundle
-tar czf victory-debug.tar.gz *.txt *.log
+tar czf voria-debug.tar.gz *.txt *.log
 
 # Upload to issue
 ```
@@ -550,11 +550,11 @@ tar czf victory-debug.tar.gz *.txt *.log
    - Expected behavior
    - Actual behavior
    - Debug bundle (if complex)
-3. **Check** [GitHub Issues](https://github.com/Srizdebnath/Victory/issues)
+3. **Check** [GitHub Issues](https://github.com/Srizdebnath/voria/issues)
 
 ### Ask for Help
 
-- [GitHub Discussions](https://github.com/Srizdebnath/Victory/discussions)
+- [GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)
 - Email: srizd449@gmail.com
 
 ---

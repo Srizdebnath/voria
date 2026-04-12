@@ -1,10 +1,10 @@
 # Roadmap
 
-Victory's feature roadmap and product vision.
+voria's feature roadmap and product vision.
 
 ##  Current Status: PRODUCTION READY ✅
 
-Victory is feature-complete for its first official release (**v0.0.1**). All core orchestration, LLM, and GitHub integration components are stable and distributed via npm.
+voria is feature-complete for its first official release (**v0.0.1**). All core orchestration, LLM, and GitHub integration components are stable and distributed via npm.
 
 **Phase 1: Core Orchestration** ✅ COMPLETE
 - Node.js CLI entry point with premium blue theme
@@ -27,7 +27,7 @@ Victory is feature-complete for its first official release (**v0.0.1**). All cor
 - Safe patch application with rollback support
 
 **Phase 5: First Release (v0.0.1)** ✅ COMPLETE
-- Public publication to npm as `@srizdebnath/victory`
+- Public publication to npm as `@srizdebnath/voria`
 - Integrated documentation and help system
 - 100% test pass rate for CLI and Engine
 
@@ -42,7 +42,7 @@ Victory is feature-complete for its first official release (**v0.0.1**). All cor
 **Impact:** Higher-quality patches by understanding code relationships  
 **Implementation:**
 ```python
-# Victory will analyze call chains
+# voria will analyze call chains
 graph = CodeGraph(repo)
 caller_chain = graph.find_callers("function_name")  # Who calls this?
 impact = graph.estimate_impact(file_change)  # What breaks?
@@ -85,7 +85,7 @@ High risk (6-10):
 **Status:** Design phase  
 **Benefit:** Only include affected code in context window
 ```
-# Victory will automatically reduce context size
+# voria will automatically reduce context size
 Full repo: 50,000 lines
 Affected modules: 2,000 lines  # 96% reduction
 Context sent to LLM: 2,000 lines  # Same quality, less cost
@@ -107,7 +107,7 @@ Context sent to LLM: 2,000 lines  # Same quality, less cost
 #### Team Collaboration
 **Status:** Planning  
 **Features:**
-- Pull request integration (Victory creates PRs)
+- Pull request integration (voria creates PRs)
 - Code review requests
 - Approval workflows
 - Merge policies enforcement
@@ -134,7 +134,7 @@ Context sent to LLM: 2,000 lines  # Same quality, less cost
 **Timeline:** Q3 2026
 
 ### IDE Integration
-🔮 **Concept:** Victory inside VS Code / JetBrains / IntelliJ  
+🔮 **Concept:** voria inside VS Code / JetBrains / IntelliJ  
 **Benefits:** Real-time AI assistance while coding  
 **Challenge:** UI complexity in IDE constraints  
 **Timeline:** Q4 2026
@@ -154,7 +154,7 @@ Context sent to LLM: 2,000 lines  # Same quality, less cost
 **Timeline:** Q4 2026
 
 ### CI/CD Integration
-🔮 **Concept:** Victory as a GitHub Action, GitLab/Jenkins plugin  
+🔮 **Concept:** voria as a GitHub Action, GitLab/Jenkins plugin  
 **Benefits:** Automated fixes in CI/CD pipelines  
 **Timeline:** Q2 2026
 
@@ -256,7 +256,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ### How to Request Features
 
-1. **Check existing requests** - https://github.com/Srizdebnath/Victory/discussions
+1. **Check existing requests** - https://github.com/Srizdebnath/voria/discussions
 2. **Create discussion** with:
    - What problem it solves
    - How you'd use it
@@ -285,7 +285,7 @@ We track progress by:
 - **Adoption:** Downloads, GitHub stars, active users
 - **Quality:** Bug reports, test coverage, performance
 - **Community:** Contributors, issues resolved, discussions
-- **Enterprise:** Organizations using Victory, team seats
+- **Enterprise:** Organizations using voria, team seats
 
 
 ---
@@ -296,7 +296,7 @@ We track progress by:
 1. **GitHub Issues** - Bug reports
 2. **Discussions** - Feature ideas
 3. **Usage telemetry** - What features are used
-4. **Direct feedback** - Email to support@victory.dev
+4. **Direct feedback** - Email to support@voria.dev
 
 ### How Decisions Are Made
 1. **Community votes** on proposals
@@ -312,7 +312,7 @@ We track progress by:
 ### Enable Beta Features
 
 ```bash
-# Add to ~/.victory/config.json
+# Add to ~/.voria/config.json
 {
   "beta_features": ["graph_analysis", "risk_scoring"],
   "enable_telemetry": true  # Help us improve
@@ -323,7 +323,7 @@ We track progress by:
 
 Found an issue with a beta feature?
 ```bash
-victory --report-beta-issue graph-analysis
+voria --report-beta-issue graph-analysis
 # Opens form to describe issue
 ```
 
@@ -331,7 +331,7 @@ victory --report-beta-issue graph-analysis
 
 ##  Contact & Support
 
-- **GitHub:** [Discussions](https://github.com/Srizdebnath/Victory/discussions)
+- **GitHub:** [Discussions](https://github.com/Srizdebnath/voria/discussions)
 - **Email:** srizd449@gmail.com
 
 

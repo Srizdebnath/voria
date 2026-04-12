@@ -79,8 +79,8 @@ Thumbs.db
 *.exe
 
 # Project-specific
-.victory/
-.victory.json
+.voria/
+.voria.json
 config.local.yaml
 secrets/
 test_repos/

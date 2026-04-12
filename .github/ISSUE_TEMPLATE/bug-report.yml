@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug in Victory
+description: Report a bug in voria
 title: "[BUG] "
 labels: ["bug"]
 assignees: ["Srizdebnath"]
@@ -20,7 +20,7 @@ body:
           required: true
         - label: I have read the documentation
           required: true
-        - label: I am using the latest version of Victory
+        - label: I am using the latest version of voria
           required: true
 
   - type: textarea
@@ -38,7 +38,7 @@ body:
       label: Steps to Reproduce
       description: Steps to reproduce the issue
       placeholder: |
-        1. Install Victory...
+        1. Install voria...
         2. Run command...
         3. See error...
     validations:
@@ -71,7 +71,7 @@ body:
         - OS: [e.g., Linux, macOS, Windows]
         - Node.js version: [run `node --version`]
         - Python version: [run `python --version`]
-        - Victory version: [run `victory --version`]
+        - voria version: [run `voria --version`]
     validations:
       required: true
 
