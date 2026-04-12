@@ -194,6 +194,91 @@ a {
   text-align: center;
 }
 
+.terminal-window {
+  background: #1a1a2e;
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.terminal-header {
+  background: #0f0f1a;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.terminal-title {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.terminal-body {
+  background: #0f0f1a;
+  padding: 1rem;
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #e0e0e0;
+}
+
+.command-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.prompt {
+  color: #00ff88;
+  font-weight: bold;
+  min-width: 20px;
+}
+
+.command {
+  color: #00d4ff;
+}
+
+.comment {
+  color: #666;
+  font-style: italic;
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.doc-link {
+  display: block;
+  background: #0a0a0a;
+  color: #00ff88;
+  border: 2px solid var(--border);
+  padding: 0.75rem 1rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.doc-link:hover {
+  background: #00ff88;
+  color: #0a0a0a;
+}
+
 @media (max-width: 768px) {
   .brutal-title {
     font-size: 1.75rem;
