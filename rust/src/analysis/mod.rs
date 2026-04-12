@@ -209,7 +209,7 @@ impl CodeAnalyzer {
 
         // Build the tree
         let mut root = Node::new(".", true, ".");
-        for (rel_path, _) in &result.dependencies {
+        for rel_path in result.dependencies.keys() {
             let parts: Vec<&str> = rel_path.split('/').collect();
             let mut current = &mut root;
             let mut path_acc = String::new();
@@ -315,7 +315,7 @@ impl CodeAnalyzer {
         println!("  Score:  {}", self.format_score(result.risk_score));
         println!("  Meter:  {}", self.render_meter(result.risk_score));
 
-        println!("\n{}", Table::new(&result.risk_parameters).to_string());
+        println!("\n{}", Table::new(&result.risk_parameters));
 
         // Find top 3 complex files
         let mut complex_files: Vec<_> = result.file_stats.iter().collect();
@@ -324,11 +324,12 @@ impl CodeAnalyzer {
         println!("\n{}", style(" 🚨 DEBT HOTSPOTS").bold().yellow());
         for (i, (path, stat)) in complex_files.iter().take(3).enumerate() {
             println!(
-                "  {}. {} (Complexity: {}, Lines: {})",
+                "  {}. {} (Complexity: {}, Lines: {}, Size: {} bytes)",
                 i + 1,
                 style(path).cyan(),
                 style(stat.complexity).red().bold(),
-                style(stat.lines).dim()
+                style(stat.lines).dim(),
+                style(stat.size).blue()
             );
         }
 
@@ -355,7 +356,7 @@ impl CodeAnalyzer {
 
         meter.push_str(&color_func(&"█".repeat(filled)));
         meter.push_str(&style("░".repeat(empty)).dim().to_string());
-        meter.push_str("]");
+        meter.push(']');
         meter
     }
 
