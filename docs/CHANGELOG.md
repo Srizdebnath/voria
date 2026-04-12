@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [v0.0.1] - April 10, 2026 ✅ PRODUCTION RELEASE
+## [v0.0.2] - April 12, 2026 ✅ PRODUCTION RELEASE
 
 ### 🎉 Major Release: Feature Complete
 
@@ -75,8 +75,8 @@ All planned features through Phase 8 are now complete and production-ready.
 - **New CHANGELOG.md** - This file
 
 ###  Distribution
-- **Published to npm** as `@srizdebnath/voria@0.0.3`
-- **Global CLI tool** - Install with `npm install -g @srizdebnath/voria`
+- **Published to npm** as `@voria/cli@0.0.2`
+- **Global CLI tool** - Install with `npm install -g @voria/cli`
 - **Pre-built binaries** - No build required for end users
 
 ###  Testing
@@ -184,6 +184,6 @@ All planned features through Phase 8 are now complete and production-ready.
 ##  Links
 
 - **GitHub:** https://github.com/Srizdebnath/voria
-- **npm:** https://www.npmjs.com/package/@srizdebnath/voria
+- **npm:** https://www.npmjs.com/package/@voria/cli
 - **Issues:** https://github.com/Srizdebnath/voria/issues
 - **Discussions:** https://github.com/Srizdebnath/voria/discussions

@@ -116,18 +116,17 @@ LLM Providers (OpenAI, Gemini, Claude, Modal)
 ##  External Resources
 
 - [GitHub Repository](https://github.com/Srizdebnath/voria)
-- [Main README](../README.md)
 - [Issue Tracker](https://github.com/Srizdebnath/voria/issues)
-- [Discussions](https://github.com/Srizdebnath/voria/discussions)
+- [Email Contact](mailto:srizd449@gmail.com)
 
 ##  Questions?
 
 - Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues
 - Read [EXAMPLES.md](EXAMPLES.md) for usage patterns
-- See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution process
+- Contact: [srizd449@gmail.com](mailto:srizd449@gmail.com)
 - Open an issue on GitHub
 
 ---
 
-**Last Updated:** April 10, 2026
-**Documentation Version:** 2.0
+**Last Updated:** April 12, 2026
+**Documentation Version:** 0.0.2

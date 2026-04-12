@@ -436,7 +436,6 @@ Every contribution - big or small - helps make voria better. Thank you for being
 **Next Steps:**
 - Read [DEVELOPMENT.md](DEVELOPMENT.md) for detailed setup
 - Check out [good-first-issue](https://github.com/Srizdebnath/voria/labels/good-first-issue) on GitHub
-- Join our [Discord community](https://discord.gg/voria)
 
 ---
 

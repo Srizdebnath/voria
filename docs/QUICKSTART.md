@@ -8,7 +8,7 @@ Get voria running in 5 minutes or less!
 
 ```bash
 # Install globally from npm
-npm install -g @srizdebnath/voria
+npm install -g @voria/cli
 
 # Verify
 voria --version

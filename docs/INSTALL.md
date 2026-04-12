@@ -17,7 +17,6 @@ Complete instructions for installing and using voria.
 ### Optional (for specific features)
 - **pytest** - For Python test execution support
 - **Docker** - For sandboxed test runs
-- **GraphQL client** - For GitHub Enterprise
 
 ##  Quick Install (Recommended)
 
@@ -25,10 +24,10 @@ Complete instructions for installing and using voria.
 
 ```bash
 # Install globally
-npm install -g @srizdebnath/voria
+npm install -g @voria/cli
 
 # Verify installation
-voria --version  # Should show v0.0.1
+voria --version  # Should show v0.0.2
 
 # Initialize in your project
 cd your-project
@@ -326,9 +325,9 @@ cd python && pip install -e . --force-reinstall
 ##  Need Help?
 
 - Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- Read [DEVELOPMENT.md](DEVELOPMENT.md)
-- Search [GitHub Issues](https://github.com/Srizdebnath/voria/issues)
-- Open a new issue
+- [GitHub Repository](https://github.com/Srizdebnath/voria)
+- [Issue Tracker](https://github.com/Srizdebnath/voria/issues)
+- [Email Contact](mailto:srizd449@gmail.com)
 
 ---
 

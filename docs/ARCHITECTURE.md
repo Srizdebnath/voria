@@ -6,30 +6,30 @@ voria's system design and component overview.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      voria CLI                            │
+│                      voria CLI                              │
 │                  (Node.js - Entry Point)                    │
 │                                                             │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │ Command Dispatcher (--init, --config, issue, plan)    │ │
+│  │ Command Dispatcher (--init, --config, issue, plan)     │ │
 │  ├────────────────────────────────────────────────────────┤ │
 │  │ UI Layer (Premium Blue Theme, ANSI styling)            │ │
 │  ├────────────────────────────────────────────────────────┤ │
 │  │ IPC Manager (Process orchestration, NDJSON)            │ │
 │  └────────────────────────────────────────────────────────┘ │
-│                      │                                       │
-│                      │ NDJSON (stdin/stdout)               │
-│                      ▼                                       │
+│                      │                                      │
+│                      │ NDJSON (stdin/stdout)                │
+│                      ▼                                      │
 └─────────────────────────────────────────────────────────────┘
                         │
                         │ Persistent Child Process
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    voria Engine                            │
-│                  (Python - AI Core)                          │
+│                    voria Engine                             │
+│                  (Python - AI Core)                         │
 │                                                             │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │ Agent Loop (Plan → Patch → Apply → Test → Iterate)    │ │
+│  │ Agent Loop (Plan → Patch → Apply → Test → Iterate)     │ │
 │  ├────────────────────────────────────────────────────────┤ │
 │  │ LLM Adapters (Claude, OpenAI, Gemini, Modal, Kimi)     │ │
 │  ├────────────────────────────────────────────────────────┤ │
@@ -37,16 +37,16 @@ voria's system design and component overview.
 │  ├────────────────────────────────────────────────────────┤ │
 │  │ Code Patcher & Test Executor                           │ │
 │  └────────────────────────────────────────────────────────┘ │
-│                      │                                       │
-│                      │ NDJSON responses
-│                      ▼                                       │
+│                      │                                      │
+│                      │ NDJSON response                      |      
+│                      ▼                                      │
 └─────────────────────────────────────────────────────────────┘
                         │
                         │ (Optional / Planned)
                         ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    voria Hub                              │
-│                  (Rust - High Perf)                          │
+│                    voria Hub                                │
+│                  (Rust - High Perf)                         │
 │                                                             │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │ Fast FS Operations                                     │ │

@@ -1,7 +1,9 @@
+import fs from 'fs';
+import path from 'path';
 import { GitStars } from './components/GitStars';
 import { TerminalCommands } from './components/TerminalCommands';
 
-export default function Home() {
+export default async function Home() {
   const commands = [
     { cmd: 'voria --init', desc: 'Initialize voria in your project' },
     { cmd: 'voria setup-modal [TOKEN]', desc: 'Setup Modal LLM (free tier)' },
@@ -17,36 +19,37 @@ export default function Home() {
     { cmd: 'voria --version', desc: 'Check installed version' },
   ];
 
-  const docs = [
-    { name: 'README', path: '/docs/README.md' },
-    { name: 'QUICKSTART', path: '/docs/QUICKSTART.md' },
-    { name: 'INSTALL', path: '/docs/INSTALL.md' },
-    { name: 'USER_GUIDE', path: '/docs/USER_GUIDE.md' },
-    { name: 'EXAMPLES', path: '/docs/EXAMPLES.md' },
-    { name: 'ARCHITECTURE', path: '/docs/ARCHITECTURE.md' },
-    { name: 'DEVELOPMENT', path: '/docs/DEVELOPMENT.md' },
-    { name: 'CONTRIBUTING', path: '/docs/CONTRIBUTING.md' },
-    { name: 'MODULES', path: '/docs/MODULES.md' },
-    { name: 'PLUGINS', path: '/docs/PLUGINS.md' },
-    { name: 'LLM_INTEGRATION', path: '/docs/LLM_INTEGRATION.md' },
-    { name: 'IPC_PROTOCOL', path: '/docs/IPC_PROTOCOL.md' },
-    { name: 'CHANGELOG', path: '/docs/CHANGELOG.md' },
-    { name: 'ROADMAP', path: '/docs/ROADMAP.md' },
-    { name: 'SECURITY', path: '/docs/SECURITY.md' },
-    { name: 'TROUBLESHOOTING', path: '/docs/TROUBLESHOOTING.md' },
-  ];
+  let docsFiles: string[] = [];
+  try {
+    const docsDir = path.join(process.cwd(), '../docs');
+    if (fs.existsSync(docsDir)) {
+      docsFiles = fs.readdirSync(docsDir).filter(f => f.endsWith('.md'));
+    }
+  } catch (error) {
+    console.error("Error reading docs directory:", error);
+  }
+
+  const docs = docsFiles.map(file => ({
+    name: file.replace('.md', ''),
+    path: `/docs/${file.replace('.md', '')}`
+  }));
+
+  // Fallback if no docs are found
+  if (docs.length === 0) {
+    docs.push({ name: 'README', path: '/docs/README' });
+  }
 
   return (
-    <div className="container">
-      <section className="hero-section">
-        <h1 className="logo">VORIA</h1>
-        <p className="tagline">AI-Powered Bug Fixing Tool</p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="https://www.npmjs.com/package/@voria/cli" target="_blank" rel="noopener noreferrer" className="brutal-btn">
-            npm →
+    <div className="container mx-auto px-4 max-w-5xl">
+      <section className="hero-section text-center py-16">
+        <h1 className="logo text-6xl md:text-8xl font-black mb-4 tracking-tighter">VORIA</h1>
+        <p className="tagline text-xl md:text-2xl font-bold mb-8 text-gray-800">AI-Powered Bug Fixing Tool</p>
+        <div className="flex gap-4 justify-center flex-wrap pt-4">
+          <a href="https://www.npmjs.com/package/@voria/cli" target="_blank" rel="noopener noreferrer" className="brutal-btn flex items-center tracking-wide">
+            NPM Package ↗
           </a>
-          <a href="https://github.com/Srizdebnath/voria" target="_blank" rel="noopener noreferrer" className="brutal-btn brutal-btn-secondary">
-            github →
+          <a href="https://github.com/Srizdebnath/voria" target="_blank" rel="noopener noreferrer" className="brutal-btn brutal-btn-secondary flex items-center tracking-wide">
+            GitHub Repo ↗
           </a>
         </div>
       </section>
@@ -58,22 +61,29 @@ export default function Home() {
         <p>
           <strong>Voria</strong> is an AI-powered CLI tool that automatically fixes bugs and implements features in your codebase. 
           Describe an issue or provide a GitHub issue number, and Voria will generate a fix, test it, iterate on failures, 
-          and create a pull request — all automatically.
+          and create a pull request - all automatically.
         </p>
-        <div className="terminal-window" style={{ marginTop: '1rem' }}>
-          <div className="terminal-header">
-            <span className="terminal-dot" style={{ background: '#ff5f56' }}></span>
-            <span className="terminal-dot" style={{ background: '#ffbd2e' }}></span>
-            <span className="terminal-dot" style={{ background: '#27c93f' }}></span>
-            <span className="terminal-title">~</span>
+        <div className="terminal-window rounded-xl overflow-hidden mt-6 shadow-xl" style={{ background: '#1c1c1e', border: '1px solid #333' }}>
+          <div className="terminal-header flex items-center px-4 py-3" style={{ background: '#2d2d30' }}>
+            <div className="flex gap-2">
+              <span className="w-3.5 h-3.5 rounded-full" style={{ background: '#ff5f56' }}></span>
+              <span className="w-3.5 h-3.5 rounded-full" style={{ background: '#ffbd2e' }}></span>
+              <span className="w-3.5 h-3.5 rounded-full" style={{ background: '#27c93f' }}></span>
+            </div>
+            <div className="flex-1 text-center text-xs font-semibold text-gray-400 font-sans tracking-wide">
+              bash - 80×24
+            </div>
           </div>
-          <div className="terminal-body">
-            <p style={{ margin: 0 }}><span className="prompt">$</span> voria fix 42 owner/repo</p>
-            <p style={{ margin: 0, color: '#00ff88' }}>[✓] Analyzing issue...</p>
-            <p style={{ margin: 0, color: '#00ff88' }}>[✓] Generating patch...</p>
-            <p style={{ margin: 0, color: '#00ff88' }}>[✓] Running tests...</p>
-            <p style={{ margin: 0, color: '#00ff88' }}>[✓] Creating PR...</p>
-            <p style={{ margin: 0, color: '#00ff88' }}>✨ Done!</p>
+          <div className="terminal-body p-6 font-mono text-sm leading-relaxed" style={{ background: '#1c1c1e' }}>
+            <div className="flex flex-wrap gap-2 mb-2">
+              <span className="text-emerald-400 font-bold">$</span>
+              <span className="text-cyan-300 font-medium">voria fix 42 owner/repo</span>
+            </div>
+            <p className="m-0 text-emerald-400 mb-1">[✓] Analyzing issue...</p>
+            <p className="m-0 text-emerald-400 mb-1">[✓] Generating patch...</p>
+            <p className="m-0 text-emerald-400 mb-1">[✓] Running tests...</p>
+            <p className="m-0 text-emerald-400 mb-1">[✓] Creating PR...</p>
+            <p className="m-0 text-emerald-400 mt-2">✨ Done!</p>
           </div>
         </div>
       </section>
@@ -86,57 +96,61 @@ export default function Home() {
       <section className="brutal-box">
         <h2 className="brutal-title">Visual Architecture</h2>
         <div className="code-block" style={{ whiteSpace: 'pre', fontSize: '0.75rem', lineHeight: '1.4' }}>
-{`┌─────────────────────────────────────────────────────────────┐
-│                      VORIA CLI                            │
-│                  (Node.js - Entry Point)                    │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │ Command Dispatcher (--init, --config, fix, plan)      │  │
-│  ├────────────────────────────────────────────────────────┤  │
-│  │ UI Layer (Neo-brutalism Theme, ANSI styling)            │  │
-│  ├────────────────────────────────────────────────────────┤  │
-│  │ IPC Manager (Process orchestration, NDJSON)         │  │
-│  └────────────────────────────────────────────────────────┘  │
-│                      │                                       │
-│                      │ NDJSON (stdin/stdout)               │
-│                      ▼                                       │
-└─────────────────────────────────────────────────────────────┘
+{`┌───────────────────────────────────────────────────────────────┐
+│                      VORIA CLI                                │
+│                  (Node.js - Entry Point)                      │
+│  ┌────────────────────────────────────────────────────────┐   │
+│  │ Command Dispatcher (--init, --config, fix, plan)       │   │
+│  ├────────────────────────────────────────────────────────┤   │
+│  │ UI Layer (Neo-brutalism Theme, ANSI styling)           │   │
+│  ├────────────────────────────────────────────────────────┤   │
+│  │ IPC Manager (Process orchestration, NDJSON)            │   |
+│  └────────────────────────────────────────────────────────┘   │
+│                      │                                        │
+│                      │ NDJSON (stdin/stdout)                  │
+│                      ▼                                        │
+└───────────────────────────────────────────────────────────────┘
                          │
                          │ Persistent Child Process
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    VORIA ENGINE                            │
-│                  (Python - AI Core)                        │
-│  ┌────────────────────────────────────────────────────────┐  │
+│                    VORIA ENGINE                             │
+│                  (Python - AI Core)                         │
+│  ┌───────────────────────────────────────────────────────┐  │
 │  │ Agent Loop (Plan → Patch → Apply → Test → Iterate)    │  │
-│  ├────────────────────────────────────────────────────────┤  │
+│  ├───────────────────────────────────────────────────────┤  │
 │  │ LLM Adapters (Claude, OpenAI, Gemini, Modal, Kimi)    │  │
-│  ├────────────────────────────────────────────────────────┤  │
+│  ├───────────────────────────────────────────────────────┤  │
 │  │ GitHub Client (Issues, PRs, Comments)                 │  │
-│  ├────────────────────────────────────────────────────────┤  ��
+│  ├───────────────────────────────────────────────────────┤  |
 │  │ Code Patcher & Test Executor                          │  │
-│  └────────────────────────────────────────────────────────┘ │
+│  └───────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                          │
                          │ (Optional / Future)
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    VORIA HUB                              │
-│                  (Rust - High Perf)                        │
-│  ┌────────────────────────────────────────────────────────┐  │
+│                    VORIA HUB                                │
+│                  (Rust - High Perf)                         │
+│  ┌───────────────────────────────────────────────────────┐  │
 │  │ Fast FS Operations                                    │  │
-│  ├────────────────────────────────────────────────────────┤  │
-│  │ Parallel Computation                                │  │
-│  └────────────────────────────────────────────────────────┘  │
+│  ├───────────────────────────────────────────────────────┤  │
+│  │ Parallel Computation                                  │  │
+│  └───────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘`}
         </div>
       </section>
 
       <section className="brutal-box">
         <h2 className="brutal-title">Developer Docs</h2>
-        <div className="docs-grid">
+        <div className="docs-grid mt-8">
           {docs.map((doc, index) => (
-            <a key={index} href={doc.path} className="doc-link">
-              {doc.name}
+            <a 
+              key={index} 
+              href={doc.path} 
+              className="doc-link flex items-center justify-center min-h-[60px] uppercase font-black tracking-tight"
+            >
+              {doc.name.replace(/_/g, ' ')}
             </a>
           ))}
         </div>
@@ -151,7 +165,7 @@ export default function Home() {
         <p style={{ marginTop: '1rem' }}>
           Built by{' '}
           <a href="https://github.com/Srizdebnath" target="_blank" rel="noopener noreferrer" className="brutal-link">
-            @Srizdebnath
+            TEAM VORIA
           </a>
         </p>
       </footer>
