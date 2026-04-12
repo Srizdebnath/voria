@@ -1,6 +1,6 @@
 # voria
 
-🚀 **AI-Powered Bug Fixing Tool**
+ **AI-Powered Bug Fixing Tool**
 
 voria is a CLI tool that automatically fixes bugs and implements features in your codebase. Describe an issue or provide a GitHub issue number, and voria will generate a fix, test it, iterate on failures, and create a pull request - all automatically.
 
