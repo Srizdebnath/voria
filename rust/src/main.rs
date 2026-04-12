@@ -1,9 +1,9 @@
+mod analysis;
 mod cli;
 mod config;
 mod ipc;
 mod orchestrator;
 mod ui;
-mod analysis;
 
 use anyhow::Result;
 use clap::Parser;

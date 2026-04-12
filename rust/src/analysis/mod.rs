@@ -1,13 +1,13 @@
 use anyhow::Result;
+use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
-use walkdir::WalkDir;
-use tabled::{Table, Tabled};
-use console::style;
 use std::time::Duration;
+use tabled::{Table, Tabled};
+use walkdir::WalkDir;
 
 #[derive(Tabled)]
 pub struct RiskParameter {
@@ -81,25 +81,30 @@ impl CodeAnalyzer {
         pb.set_length(files.len() as u64);
         pb.set_style(
             ProgressStyle::default_bar()
-                .template("{spinner:.blue} [{bar:40.cyan/blue}] {pos}/{len} {msg} ({eta} remaining)")?
+                .template(
+                    "{spinner:.blue} [{bar:40.cyan/blue}] {pos}/{len} {msg} ({eta} remaining)",
+                )?
                 .progress_chars("━╾─"),
         );
 
         let mut dependencies = HashMap::new();
         let mut file_stats = HashMap::new();
-        
+
         let js_import_re = Regex::new(r#"(?:import|from)\s+['"]([^'"]+)['"]"#)?;
         let js_require_re = Regex::new(r#"require\(['"]([^'"]+)['"]\)"#)?;
         let py_import_re = Regex::new(r#"import\s+([a-zA-Z0-9_\.]+)"#)?;
         let py_from_re = Regex::new(r#"from\s+([a-zA-Z0-9_\.]+)\s+import"#)?;
 
         for (i, file_path) in files.iter().enumerate() {
-            let rel_path = file_path.strip_prefix(&self.root_path)?.to_string_lossy().into_owned();
+            let rel_path = file_path
+                .strip_prefix(&self.root_path)?
+                .to_string_lossy()
+                .into_owned();
             pb.set_message(format!("Tracing dependencies in {}", rel_path));
-            
+
             if let Ok(content) = fs::read_to_string(file_path) {
                 let mut file_deps = HashSet::new();
-                
+
                 for cap in js_import_re.captures_iter(&content) {
                     file_deps.insert(cap[1].to_string());
                 }
@@ -114,12 +119,15 @@ impl CodeAnalyzer {
                 }
 
                 dependencies.insert(rel_path.clone(), file_deps);
-                
-                file_stats.insert(rel_path, FileStat {
-                    size: file_path.metadata()?.len(),
-                    lines: content.lines().count(),
-                    complexity: self.estimate_complexity(&content),
-                });
+
+                file_stats.insert(
+                    rel_path,
+                    FileStat {
+                        size: file_path.metadata()?.len(),
+                        lines: content.lines().count(),
+                        complexity: self.estimate_complexity(&content),
+                    },
+                );
             }
             pb.set_position(i as u64);
         }
@@ -127,7 +135,8 @@ impl CodeAnalyzer {
         pb.finish_with_message("Code architecture analysis complete!");
 
         let risk_parameters = self.calculate_risk_parameters(&dependencies, &file_stats);
-        let avg_score: f32 = risk_parameters.iter().map(|p| p.score).sum::<f32>() / risk_parameters.len() as f32;
+        let avg_score: f32 =
+            risk_parameters.iter().map(|p| p.score).sum::<f32>() / risk_parameters.len() as f32;
 
         Ok(AnalysisResult {
             dependencies,
@@ -138,7 +147,9 @@ impl CodeAnalyzer {
     }
 
     fn estimate_complexity(&self, content: &str) -> usize {
-        let keywords = ["if ", "for ", "while ", "match ", "case ", "catch ", "async ", "await "];
+        let keywords = [
+            "if ", "for ", "while ", "match ", "case ", "catch ", "async ", "await ",
+        ];
         let mut count = 1;
         for kw in keywords {
             count += content.matches(kw).count();
@@ -146,10 +157,15 @@ impl CodeAnalyzer {
         count
     }
 
-    fn calculate_risk_parameters(&self, deps: &HashMap<String, HashSet<String>>, stats: &HashMap<String, FileStat>) -> Vec<RiskParameter> {
-        let avg_comp = stats.values().map(|s| s.complexity).sum::<usize>() as f32 / stats.len() as f32;
+    fn calculate_risk_parameters(
+        &self,
+        deps: &HashMap<String, HashSet<String>>,
+        stats: &HashMap<String, FileStat>,
+    ) -> Vec<RiskParameter> {
+        let avg_comp =
+            stats.values().map(|s| s.complexity).sum::<usize>() as f32 / stats.len() as f32;
         let total_deps = deps.values().map(|d| d.len()).sum::<usize>();
-        
+
         vec![
             RiskParameter {
                 parameter: "Structural Debt".to_string(),
@@ -186,7 +202,10 @@ impl CodeAnalyzer {
 
     pub fn visualize_graph(&self, result: &AnalysisResult) {
         println!("\n{}", style(" 🔭 ARCHITECTURAL MAP").bold().blue());
-        println!("{}", style(" ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").dim());
+        println!(
+            "{}",
+            style(" ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").dim()
+        );
 
         // Build the tree
         let mut root = Node::new(".", true, ".");
@@ -194,41 +213,72 @@ impl CodeAnalyzer {
             let parts: Vec<&str> = rel_path.split('/').collect();
             let mut current = &mut root;
             let mut path_acc = String::new();
-            
+
             for (i, &part) in parts.iter().enumerate() {
-                if !path_acc.is_empty() { path_acc.push('/'); }
+                if !path_acc.is_empty() {
+                    path_acc.push('/');
+                }
                 path_acc.push_str(part);
-                
+
                 let is_last = i == parts.len() - 1;
                 let full_path = path_acc.clone();
-                
-                current = current.children.entry(part.to_string())
+
+                current = current
+                    .children
+                    .entry(part.to_string())
                     .or_insert_with(|| Node::new(part, !is_last, &full_path));
             }
         }
 
         self.print_node(&root, " ", true, result);
-        println!("{}", style(" ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").dim());
+        println!(
+            "{}",
+            style(" ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").dim()
+        );
     }
 
     fn print_node(&self, node: &Node, prefix: &str, is_last: bool, result: &AnalysisResult) {
         if node.name != "." {
             let connector = if is_last { "┗━" } else { "┣━" };
-            let icon = if node.is_dir { style("📁").yellow() } else { style("📄").white() };
-            let name_style = if node.is_dir { style(&node.name).cyan().bold() } else { style(&node.name).green() };
-            
-            print!("{}{} {} {}", prefix, style(connector).dim(), icon, name_style);
-            
+            let icon = if node.is_dir {
+                style("📁").yellow()
+            } else {
+                style("📄").white()
+            };
+            let name_style = if node.is_dir {
+                style(&node.name).cyan().bold()
+            } else {
+                style(&node.name).green()
+            };
+
+            print!(
+                "{}{} {} {}",
+                prefix,
+                style(connector).dim(),
+                icon,
+                name_style
+            );
+
             // Show dependencies if it's a file
             if !node.is_dir {
                 if let Some(deps) = result.dependencies.get(&node.full_path) {
                     if !deps.is_empty() {
-                        let dep_list: Vec<String> = deps.iter()
+                        let dep_list: Vec<String> = deps
+                            .iter()
                             .take(2)
                             .map(|d| style(d).dim().italic().to_string())
                             .collect();
-                        let more = if deps.len() > 2 { format!(" (+{} more)", deps.len() - 2) } else { "".to_string() };
-                        print!(" {} [{}{}]", style("→").blue().bold(), dep_list.join(", "), style(more).dim());
+                        let more = if deps.len() > 2 {
+                            format!(" (+{} more)", deps.len() - 2)
+                        } else {
+                            "".to_string()
+                        };
+                        print!(
+                            " {} [{}{}]",
+                            style("→").blue().bold(),
+                            dep_list.join(", "),
+                            style(more).dim()
+                        );
                     }
                 }
             }
@@ -257,27 +307,31 @@ impl CodeAnalyzer {
 
     pub fn display_risk_report(&self, result: &AnalysisResult) {
         println!("\n{}", style(" ⚖️ ECOSYSTEM INTEGRITY").bold().red());
-        println!("{}", style(" ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").dim());
-        
+        println!(
+            "{}",
+            style(" ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").dim()
+        );
+
         println!("  Score:  {}", self.format_score(result.risk_score));
         println!("  Meter:  {}", self.render_meter(result.risk_score));
-        
+
         println!("\n{}", Table::new(&result.risk_parameters).to_string());
-        
+
         // Find top 3 complex files
         let mut complex_files: Vec<_> = result.file_stats.iter().collect();
         complex_files.sort_by(|a, b| b.1.complexity.cmp(&a.1.complexity));
-        
+
         println!("\n{}", style(" 🚨 DEBT HOTSPOTS").bold().yellow());
         for (i, (path, stat)) in complex_files.iter().take(3).enumerate() {
-            println!("  {}. {} (Complexity: {}, Lines: {})", 
-                i+1, 
-                style(path).cyan(), 
+            println!(
+                "  {}. {} (Complexity: {}, Lines: {})",
+                i + 1,
+                style(path).cyan(),
                 style(stat.complexity).red().bold(),
                 style(stat.lines).dim()
             );
         }
-        
+
         println!("\n{}", style(" 💡 STRATEGY").bold().blue());
         if result.risk_score > 5.0 {
             println!("  ! High coupling detected. Prioritize refactoring core modules.");
@@ -298,7 +352,7 @@ impl CodeAnalyzer {
         } else {
             |s: &str| style(s).green().bold().to_string()
         };
-        
+
         meter.push_str(&color_func(&"█".repeat(filled)));
         meter.push_str(&style("░".repeat(empty)).dim().to_string());
         meter.push_str("]");
