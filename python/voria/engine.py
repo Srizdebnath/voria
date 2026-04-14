@@ -30,7 +30,7 @@ try:
     from voria.core.llm import LLMProviderFactory, ModelDiscovery
     from voria.core.github import GitHubClient
     from voria.core.patcher import CodePatcher, UnifiedDiffParser
-    from voria.core.executor import TestExecutor
+    from voria.core.executor import VoriaTestExecutor
     from voria.core.agent import AgentLoop
     from voria.core.testing.runner import TestRunner
 except ImportError as e:
@@ -160,7 +160,7 @@ async def handle_plan_command(command: Dict[str, Any]) -> None:
                         status="pending",
                         action="continue",
                         message="Streaming plan...",
-                        chunk=chunk
+                        chunk=chunk,
                     )
                 )
 
@@ -168,6 +168,7 @@ async def handle_plan_command(command: Dict[str, Any]) -> None:
             try:
                 # Basic JSON extraction
                 import re
+
                 json_match = re.search(r"({.*})", full_content, re.DOTALL)
                 if json_match:
                     plan_data = json.loads(json_match.group(1))
@@ -318,7 +319,7 @@ async def handle_issue_command(command: Dict[str, Any]) -> None:
                         status="pending",
                         action="continue",
                         message="Streaming patch...",
-                        chunk=chunk
+                        chunk=chunk,
                     )
                 )
 
@@ -336,7 +337,11 @@ async def handle_issue_command(command: Dict[str, Any]) -> None:
                         action="stop",
                         message=f"Patch generated and auto-applied to {len(result)} files",
                         patch=patch,
-                        data={"files_modified": result, "issue_number": issue_number, "issue_title": issue.title}
+                        data={
+                            "files_modified": result,
+                            "issue_number": issue_number,
+                            "issue_title": issue.title,
+                        },
                     )
                 )
             else:
@@ -715,12 +720,20 @@ async def handle_create_pr_command(command: Dict[str, Any]) -> None:
         except subprocess.CalledProcessError as e:
             logger.error(f"Git operation failed: {e.stderr}")
             send_response(
-                Response(status="error", action="stop", message=f"Git operation failed: {e.stderr}")
+                Response(
+                    status="error",
+                    action="stop",
+                    message=f"Git operation failed: {e.stderr}",
+                )
             )
         except Exception as e:
             logger.error(f"PR creation error: {e}")
             send_response(
-                Response(status="error", action="stop", message=f"PR creation error: {str(e)}")
+                Response(
+                    status="error",
+                    action="stop",
+                    message=f"PR creation error: {str(e)}",
+                )
             )
 
     except Exception as e:
@@ -849,7 +862,9 @@ def _setup_file_logging(log_file: Path) -> None:
             return
     fh = logging.FileHandler(str(log_file), mode="a")
     fh.setLevel(logging.INFO)
-    fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+    fh.setFormatter(
+        logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+    )
     root_logger.addHandler(fh)
 
 
@@ -894,33 +909,38 @@ async def handle_token_command(command: Dict[str, Any]) -> None:
                 status="error", action="stop", message=f"Token command failed: {str(e)}"
             )
         )
+
+
 async def handle_list_tests_command(command: Dict[str, Any]) -> None:
     """Handle 'list_tests' command."""
     try:
         from voria.core.testing.definitions import TEST_DEFINITIONS
-        
+
         tests = []
         for t in TEST_DEFINITIONS:
-            tests.append({
-                "id": t.id,
-                "name": t.name,
-                "category": t.category.value,
-                "description": t.description,
-                "impact": t.impact,
-                "type": t.type
-            })
-            
+            tests.append(
+                {
+                    "id": t.id,
+                    "name": t.name,
+                    "category": t.category.value,
+                    "description": t.description,
+                    "impact": t.impact,
+                    "type": t.type,
+                }
+            )
+
         send_response(
             Response(
                 status="success",
                 action="stop",
                 message=f"Available tests: {len(tests)}",
-                data={"tests": tests}
+                data={"tests": tests},
             )
         )
     except Exception as e:
         logger.error(f"List tests error: {e}")
         send_response(Response(status="error", action="stop", message=str(e)))
+
 
 async def handle_test_command(command: Dict[str, Any]) -> None:
     """Handle 'test' command."""
@@ -934,7 +954,9 @@ async def handle_test_command(command: Dict[str, Any]) -> None:
             repo_path = "."
 
         if not test_id:
-            send_response(Response(status="error", action="stop", message="test_id is required"))
+            send_response(
+                Response(status="error", action="stop", message="test_id is required")
+            )
             return
 
         if not api_key:
@@ -948,24 +970,29 @@ async def handle_test_command(command: Dict[str, Any]) -> None:
                 model = config.get("llm_model", model)
 
         if not api_key:
-            send_response(Response(status="error", action="stop", message=f"API key required for {provider_name}"))
+            send_response(
+                Response(
+                    status="error",
+                    action="stop",
+                    message=f"API key required for {provider_name}",
+                )
+            )
             return
 
         runner = TestRunner(provider_name, api_key, model, repo_path)
         result = await runner.run_test(test_id)
-        
+
         send_response(
             Response(
                 status="success",
                 action="stop",
                 message=f"Test '{test_id}' completed",
-                data={"result": result}
+                data={"result": result},
             )
         )
     except Exception as e:
         logger.error(f"Test execution error: {e}")
         send_response(Response(status="error", action="stop", message=str(e)))
-
 
 
 def handle_test_results_callback(command: Dict[str, Any]) -> None:
@@ -996,7 +1023,13 @@ async def handle_scan_command(command: Dict[str, Any]) -> None:
             env_key = f"{provider_name.upper()}_API_KEY"
             api_key = os.environ.get(env_key)
         if not api_key:
-            send_response(Response(status="error", action="stop", message=f"API key required for {provider_name}"))
+            send_response(
+                Response(
+                    status="error",
+                    action="stop",
+                    message=f"API key required for {provider_name}",
+                )
+            )
             return
 
         from voria.core.testing.runner import TestRunner
@@ -1019,27 +1052,45 @@ async def handle_scan_command(command: Dict[str, Any]) -> None:
         else:
             tests_to_run = list(TEST_DEFINITIONS)
 
-        logger.info(f"Scanning {len(tests_to_run)} tests in category '{category_filter}'")
+        logger.info(
+            f"Scanning {len(tests_to_run)} tests in category '{category_filter}'"
+        )
 
         # Run tests in parallel batches of 5
         results = []
         batch_size = 5
         for i in range(0, len(tests_to_run), batch_size):
-            batch = tests_to_run[i:i+batch_size]
+            batch = tests_to_run[i : i + batch_size]
             tasks = [runner.run_test(t.id) for t in batch]
             batch_results = await asyncio.gather(*tasks, return_exceptions=True)
             for j, r in enumerate(batch_results):
                 if isinstance(r, Exception):
-                    results.append({"id": batch[j].id, "name": batch[j].name, "result": {"status": "error", "summary": str(r)}})
+                    results.append(
+                        {
+                            "id": batch[j].id,
+                            "name": batch[j].name,
+                            "result": {"status": "error", "summary": str(r)},
+                        }
+                    )
                 else:
                     results.append(r)
 
         # Compute aggregate
         total = len(results)
-        passed = sum(1 for r in results if r.get("result", {}).get("status") == "passed")
-        failed = sum(1 for r in results if r.get("result", {}).get("status") == "failed")
-        warnings = sum(1 for r in results if r.get("result", {}).get("status") == "warning")
-        scores = [r.get("result", {}).get("score", 0) for r in results if isinstance(r.get("result", {}).get("score"), (int, float))]
+        passed = sum(
+            1 for r in results if r.get("result", {}).get("status") == "passed"
+        )
+        failed = sum(
+            1 for r in results if r.get("result", {}).get("status") == "failed"
+        )
+        warnings = sum(
+            1 for r in results if r.get("result", {}).get("status") == "warning"
+        )
+        scores = [
+            r.get("result", {}).get("score", 0)
+            for r in results
+            if isinstance(r.get("result", {}).get("score"), (int, float))
+        ]
         avg_score = sum(scores) / max(len(scores), 1)
 
         # Collect all findings
@@ -1052,27 +1103,31 @@ async def handle_scan_command(command: Dict[str, Any]) -> None:
                 all_findings.append(f)
             all_recommendations.extend(result_data.get("recommendations", []))
 
-        send_response(Response(
-            status="success",
-            action="stop",
-            message=f"Scan complete: {passed} passed, {failed} failed, {warnings} warnings",
-            data={
-                "scan": {
-                    "total_tests": total,
-                    "passed": passed,
-                    "failed": failed,
-                    "warnings": warnings,
-                    "avg_score": round(avg_score, 1),
-                    "category": category_filter,
-                    "findings": all_findings[:50],
-                    "recommendations": list(set(all_recommendations))[:20],
-                    "test_results": results
-                }
-            }
-        ))
+        send_response(
+            Response(
+                status="success",
+                action="stop",
+                message=f"Scan complete: {passed} passed, {failed} failed, {warnings} warnings",
+                data={
+                    "scan": {
+                        "total_tests": total,
+                        "passed": passed,
+                        "failed": failed,
+                        "warnings": warnings,
+                        "avg_score": round(avg_score, 1),
+                        "category": category_filter,
+                        "findings": all_findings[:50],
+                        "recommendations": list(set(all_recommendations))[:20],
+                        "test_results": results,
+                    }
+                },
+            )
+        )
     except Exception as e:
         logger.error(f"Scan command error: {e}", exc_info=True)
-        send_response(Response(status="error", action="stop", message=f"Scan failed: {str(e)}"))
+        send_response(
+            Response(status="error", action="stop", message=f"Scan failed: {str(e)}")
+        )
 
 
 async def handle_diff_command(command: Dict[str, Any]) -> None:
@@ -1088,24 +1143,62 @@ async def handle_diff_command(command: Dict[str, Any]) -> None:
         try:
             diff_output = subprocess.run(
                 ["git", "diff", "--name-only", ref_a, ref_b],
-                capture_output=True, text=True, cwd=repo_path, check=True
+                capture_output=True,
+                text=True,
+                cwd=repo_path,
+                check=True,
             )
-            changed_files = [f.strip() for f in diff_output.stdout.strip().split("\n") if f.strip()]
+            changed_files = [
+                f.strip() for f in diff_output.stdout.strip().split("\n") if f.strip()
+            ]
         except subprocess.CalledProcessError as e:
-            send_response(Response(status="error", action="stop", message=f"Git diff failed: {e.stderr}"))
+            send_response(
+                Response(
+                    status="error",
+                    action="stop",
+                    message=f"Git diff failed: {e.stderr}",
+                )
+            )
             return
 
         if not changed_files:
-            send_response(Response(
-                status="success", action="stop",
-                message="No changes detected between the two refs.",
-                data={"diff": {"ref_a": ref_a, "ref_b": ref_b, "changed_files": [], "risk_delta": 0}}
-            ))
+            send_response(
+                Response(
+                    status="success",
+                    action="stop",
+                    message="No changes detected between the two refs.",
+                    data={
+                        "diff": {
+                            "ref_a": ref_a,
+                            "ref_b": ref_b,
+                            "changed_files": [],
+                            "risk_delta": 0,
+                        }
+                    },
+                )
+            )
             return
 
         # Classify changed files by risk
-        high_risk_patterns = ["auth", "login", "password", "secret", "token", "crypto", "sql", "query", "session"]
-        medium_risk_patterns = ["api", "route", "handler", "middleware", "config", "env"]
+        high_risk_patterns = [
+            "auth",
+            "login",
+            "password",
+            "secret",
+            "token",
+            "crypto",
+            "sql",
+            "query",
+            "session",
+        ]
+        medium_risk_patterns = [
+            "api",
+            "route",
+            "handler",
+            "middleware",
+            "config",
+            "env",
+        ]
 
         high_risk = []
         medium_risk = []
@@ -1122,31 +1215,46 @@ async def handle_diff_command(command: Dict[str, Any]) -> None:
         # Get diff stats
         stat_output = subprocess.run(
             ["git", "diff", "--stat", ref_a, ref_b],
-            capture_output=True, text=True, cwd=repo_path
+            capture_output=True,
+            text=True,
+            cwd=repo_path,
         )
 
         risk_delta = len(high_risk) * 3 + len(medium_risk) * 1
-        risk_level = "critical" if risk_delta > 10 else "elevated" if risk_delta > 5 else "low"
+        risk_level = (
+            "critical" if risk_delta > 10 else "elevated" if risk_delta > 5 else "low"
+        )
 
-        send_response(Response(
-            status="success", action="stop",
-            message=f"Diff analysis: {len(changed_files)} files changed, risk level: {risk_level}",
-            data={"diff": {
-                "ref_a": ref_a,
-                "ref_b": ref_b,
-                "total_changed": len(changed_files),
-                "high_risk_files": high_risk,
-                "medium_risk_files": medium_risk,
-                "low_risk_files": low_risk,
-                "risk_delta": risk_delta,
-                "risk_level": risk_level,
-                "stat": stat_output.stdout[-500:] if stat_output.stdout else "",
-                "recommendation": "Run voria scan on changed files before merging." if risk_delta > 3 else "Changes look safe."
-            }}
-        ))
+        send_response(
+            Response(
+                status="success",
+                action="stop",
+                message=f"Diff analysis: {len(changed_files)} files changed, risk level: {risk_level}",
+                data={
+                    "diff": {
+                        "ref_a": ref_a,
+                        "ref_b": ref_b,
+                        "total_changed": len(changed_files),
+                        "high_risk_files": high_risk,
+                        "medium_risk_files": medium_risk,
+                        "low_risk_files": low_risk,
+                        "risk_delta": risk_delta,
+                        "risk_level": risk_level,
+                        "stat": stat_output.stdout[-500:] if stat_output.stdout else "",
+                        "recommendation": (
+                            "Run voria scan on changed files before merging."
+                            if risk_delta > 3
+                            else "Changes look safe."
+                        ),
+                    }
+                },
+            )
+        )
     except Exception as e:
         logger.error(f"Diff command error: {e}", exc_info=True)
-        send_response(Response(status="error", action="stop", message=f"Diff failed: {str(e)}"))
+        send_response(
+            Response(status="error", action="stop", message=f"Diff failed: {str(e)}")
+        )
 
 
 async def handle_benchmark_command(command: Dict[str, Any]) -> None:
@@ -1157,13 +1265,21 @@ async def handle_benchmark_command(command: Dict[str, Any]) -> None:
         concurrency = command.get("concurrency", 10)
 
         if not url:
-            send_response(Response(status="error", action="stop", message="URL is required. Usage: voria benchmark <URL>"))
+            send_response(
+                Response(
+                    status="error",
+                    action="stop",
+                    message="URL is required. Usage: voria benchmark <URL>",
+                )
+            )
             return
 
         import time
         import statistics
 
-        logger.info(f"Benchmarking {url} with {requests_count} requests, concurrency {concurrency}")
+        logger.info(
+            f"Benchmarking {url} with {requests_count} requests, concurrency {concurrency}"
+        )
 
         latencies = []
         errors = 0
@@ -1172,7 +1288,13 @@ async def handle_benchmark_command(command: Dict[str, Any]) -> None:
         try:
             import httpx
         except ImportError:
-            send_response(Response(status="error", action="stop", message="httpx required. pip install httpx"))
+            send_response(
+                Response(
+                    status="error",
+                    action="stop",
+                    message="httpx required. pip install httpx",
+                )
+            )
             return
 
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -1197,7 +1319,13 @@ async def handle_benchmark_command(command: Dict[str, Any]) -> None:
             total_time = time.perf_counter() - start
 
         if not latencies:
-            send_response(Response(status="error", action="stop", message=f"All {requests_count} requests failed. Check URL."))
+            send_response(
+                Response(
+                    status="error",
+                    action="stop",
+                    message=f"All {requests_count} requests failed. Check URL.",
+                )
+            )
             return
 
         sorted_lat = sorted(latencies)
@@ -1217,14 +1345,21 @@ async def handle_benchmark_command(command: Dict[str, Any]) -> None:
             "concurrency": concurrency,
         }
 
-        send_response(Response(
-            status="success", action="stop",
-            message=f"Benchmark complete: {metrics['rps']} req/s, p50={metrics['latency_p50_ms']}ms, p99={metrics['latency_p99_ms']}ms",
-            data={"benchmark": metrics}
-        ))
+        send_response(
+            Response(
+                status="success",
+                action="stop",
+                message=f"Benchmark complete: {metrics['rps']} req/s, p50={metrics['latency_p50_ms']}ms, p99={metrics['latency_p99_ms']}ms",
+                data={"benchmark": metrics},
+            )
+        )
     except Exception as e:
         logger.error(f"Benchmark command error: {e}", exc_info=True)
-        send_response(Response(status="error", action="stop", message=f"Benchmark failed: {str(e)}"))
+        send_response(
+            Response(
+                status="error", action="stop", message=f"Benchmark failed: {str(e)}"
+            )
+        )
 
 
 async def handle_ci_command(command: Dict[str, Any]) -> None:
@@ -1244,14 +1379,18 @@ async def handle_ci_command(command: Dict[str, Any]) -> None:
             env_key = f"{provider_name.upper()}_API_KEY"
             api_key = os.environ.get(env_key)
         if not api_key:
-            send_response(Response(status="error", action="stop", message=f"API key required"))
+            send_response(
+                Response(status="error", action="stop", message=f"API key required")
+            )
             return
 
         from voria.core.testing.runner import TestRunner
         from voria.core.testing.definitions import TEST_DEFINITIONS, TestCategory
 
         runner = TestRunner(provider_name, api_key, model, repo_path)
-        security_tests = [t for t in TEST_DEFINITIONS if t.category == TestCategory.SECURITY]
+        security_tests = [
+            t for t in TEST_DEFINITIONS if t.category == TestCategory.SECURITY
+        ]
 
         # Run top 10 security tests for CI speed
         tests_to_run = security_tests[:10]
@@ -1261,7 +1400,9 @@ async def handle_ci_command(command: Dict[str, Any]) -> None:
                 r = await runner.run_test(t.id)
                 results.append(r)
             except Exception as e:
-                results.append({"id": t.id, "result": {"status": "error", "summary": str(e)}})
+                results.append(
+                    {"id": t.id, "result": {"status": "error", "summary": str(e)}}
+                )
 
         # Build SARIF v2.1.0
         sarif_results = []
@@ -1274,55 +1415,80 @@ async def handle_ci_command(command: Dict[str, Any]) -> None:
                 rule_id = f"voria/{test_id}"
                 if rule_id not in rule_ids:
                     rule_ids.add(rule_id)
-                    sarif_rules.append({
-                        "id": rule_id,
-                        "name": r.get("name", test_id),
-                        "shortDescription": {"text": result_data.get("summary", "")[:200]},
-                        "defaultConfiguration": {"level": "warning" if f.get("severity") != "high" else "error"}
-                    })
-                sarif_results.append({
-                    "ruleId": rule_id,
-                    "level": "error" if f.get("severity") == "high" else "warning",
-                    "message": {"text": f.get("description", "Security finding")},
-                    "locations": [{
-                        "physicalLocation": {
-                            "artifactLocation": {"uri": f.get("file", "unknown")},
-                            "region": {"startLine": f.get("line", 1)}
+                    sarif_rules.append(
+                        {
+                            "id": rule_id,
+                            "name": r.get("name", test_id),
+                            "shortDescription": {
+                                "text": result_data.get("summary", "")[:200]
+                            },
+                            "defaultConfiguration": {
+                                "level": (
+                                    "warning"
+                                    if f.get("severity") != "high"
+                                    else "error"
+                                )
+                            },
                         }
-                    }]
-                })
+                    )
+                sarif_results.append(
+                    {
+                        "ruleId": rule_id,
+                        "level": "error" if f.get("severity") == "high" else "warning",
+                        "message": {"text": f.get("description", "Security finding")},
+                        "locations": [
+                            {
+                                "physicalLocation": {
+                                    "artifactLocation": {
+                                        "uri": f.get("file", "unknown")
+                                    },
+                                    "region": {"startLine": f.get("line", 1)},
+                                }
+                            }
+                        ],
+                    }
+                )
 
         sarif = {
             "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
             "version": "2.1.0",
-            "runs": [{
-                "tool": {
-                    "driver": {
-                        "name": "voria",
-                        "version": "0.0.5",
-                        "informationUri": "https://github.com/Srizdebnath/voria",
-                        "rules": sarif_rules
-                    }
-                },
-                "results": sarif_results
-            }]
+            "runs": [
+                {
+                    "tool": {
+                        "driver": {
+                            "name": "voria",
+                            "version": "0.0.5",
+                            "informationUri": "https://github.com/Srizdebnath/voria",
+                            "rules": sarif_rules,
+                        }
+                    },
+                    "results": sarif_results,
+                }
+            ],
         }
 
-        send_response(Response(
-            status="success", action="stop",
-            message=f"CI scan complete: {len(sarif_results)} findings in SARIF format",
-            data={"sarif": sarif, "findings_count": len(sarif_results)}
-        ))
+        send_response(
+            Response(
+                status="success",
+                action="stop",
+                message=f"CI scan complete: {len(sarif_results)} findings in SARIF format",
+                data={"sarif": sarif, "findings_count": len(sarif_results)},
+            )
+        )
     except Exception as e:
         logger.error(f"CI command error: {e}", exc_info=True)
-        send_response(Response(status="error", action="stop", message=f"CI scan failed: {str(e)}"))
+        send_response(
+            Response(status="error", action="stop", message=f"CI scan failed: {str(e)}")
+        )
 
 
 async def handle_watch_command(command: Dict[str, Any]) -> None:
     """Handle 'watch' — file watcher that re-runs tests on changes."""
     try:
         repo_path = command.get("repo_path") or "."
-        test_ids = command.get("test_ids", ["hardcoded_secrets", "xss", "sql_injection"])
+        test_ids = command.get(
+            "test_ids", ["hardcoded_secrets", "xss", "sql_injection"]
+        )
 
         # Get initial snapshot of file mtimes
         watch_path = Path(repo_path)
@@ -1331,7 +1497,12 @@ async def handle_watch_command(command: Dict[str, Any]) -> None:
         def get_snapshot():
             snap = {}
             for p in watch_path.rglob("*"):
-                if p.suffix in extensions and "node_modules" not in str(p) and ".git" not in str(p) and "venv" not in str(p):
+                if (
+                    p.suffix in extensions
+                    and "node_modules" not in str(p)
+                    and ".git" not in str(p)
+                    and "venv" not in str(p)
+                ):
                     try:
                         snap[str(p)] = p.stat().st_mtime
                     except Exception:
@@ -1339,14 +1510,25 @@ async def handle_watch_command(command: Dict[str, Any]) -> None:
             return snap
 
         initial = get_snapshot()
-        send_response(Response(
-            status="success", action="stop",
-            message=f"Watch mode: monitoring {len(initial)} files. Changes will trigger tests: {', '.join(test_ids)}",
-            data={"watch": {"files_monitored": len(initial), "tests": test_ids, "status": "active"}}
-        ))
+        send_response(
+            Response(
+                status="success",
+                action="stop",
+                message=f"Watch mode: monitoring {len(initial)} files. Changes will trigger tests: {', '.join(test_ids)}",
+                data={
+                    "watch": {
+                        "files_monitored": len(initial),
+                        "tests": test_ids,
+                        "status": "active",
+                    }
+                },
+            )
+        )
     except Exception as e:
         logger.error(f"Watch command error: {e}", exc_info=True)
-        send_response(Response(status="error", action="stop", message=f"Watch failed: {str(e)}"))
+        send_response(
+            Response(status="error", action="stop", message=f"Watch failed: {str(e)}")
+        )
 
 
 async def process_command_async(line: str) -> None:
@@ -1547,10 +1729,14 @@ async def handle_config_command(command: Dict[str, Any]) -> None:
                             message="voria is already configured!",
                             data={
                                 "config": {
-                                    k: (v[:8] + "..." if k in ("llm_api_key", "github_token") and v else v)
+                                    k: (
+                                        v[:8] + "..."
+                                        if k in ("llm_api_key", "github_token") and v
+                                        else v
+                                    )
                                     for k, v in existing.items()
                                 },
-                                "hint": "Use 'voria config set' to update individual fields."
+                                "hint": "Use 'voria config set' to update individual fields.",
                             },
                         )
                     )
@@ -1562,7 +1748,13 @@ async def handle_config_command(command: Dict[str, Any]) -> None:
                             action="stop",
                             message="Welcome to voria! Configure with: voria setup-modal <TOKEN> or set ~/.voria/config.json",
                             data={
-                                "available_providers": ["modal", "openai", "gemini", "claude", "minimax"],
+                                "available_providers": [
+                                    "modal",
+                                    "openai",
+                                    "gemini",
+                                    "claude",
+                                    "minimax",
+                                ],
                                 "setup_instructions": [
                                     "1. Get an API key from your preferred LLM provider",
                                     "2. Run: voria setup-modal <YOUR_TOKEN>",
@@ -1584,10 +1776,17 @@ async def handle_config_command(command: Dict[str, Any]) -> None:
                     status="success",
                     action="stop",
                     message="voria initialized successfully!",
-                    data={"config": {
-                        k: (v[:8] + "..." if k in ("llm_api_key", "github_token") and isinstance(v, str) else v)
-                        for k, v in existing.items()
-                    }},
+                    data={
+                        "config": {
+                            k: (
+                                v[:8] + "..."
+                                if k in ("llm_api_key", "github_token")
+                                and isinstance(v, str)
+                                else v
+                            )
+                            for k, v in existing.items()
+                        }
+                    },
                 )
             )
             return

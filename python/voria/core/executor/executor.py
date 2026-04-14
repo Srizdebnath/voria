@@ -309,7 +309,7 @@ class JestParser:
         )
 
 
-class TestExecutor:
+class VoriaTestExecutor:
     """Execute tests and parse results"""
 
     def __init__(self, repo_path: str = "."):
@@ -420,7 +420,7 @@ class TestExecutor:
 async def test_executor():
     """Test the test executor"""
 
-    executor = TestExecutor("/home/ansh/voria")
+    executor = VoriaTestExecutor(".")
 
     # Detect framework
     framework = await executor.detect_framework()

@@ -46,7 +46,12 @@ class SiliconFlowProvider(BaseLLMProvider):
             data = response.json()
             content = data["choices"][0]["message"]["content"]
             tokens_used = data.get("usage", {}).get("total_tokens", 0)
-            return LLMResponse(content=content, tokens_used=tokens_used, model=self.model, provider="SiliconFlow")
+            return LLMResponse(
+                content=content,
+                tokens_used=tokens_used,
+                model=self.model,
+                provider="SiliconFlow",
+            )
         except Exception as e:
             logger.error(f"SiliconFlow API error: {e}")
             raise
@@ -62,7 +67,9 @@ class SiliconFlowProvider(BaseLLMProvider):
                 "temperature": temperature,
                 "stream": True,
             }
-            async with self.client.stream("POST", self.API_ENDPOINT, json=payload) as response:
+            async with self.client.stream(
+                "POST", self.API_ENDPOINT, json=payload
+            ) as response:
                 response.raise_for_status()
                 async for line in response.aiter_lines():
                     if not line:
@@ -83,27 +90,49 @@ class SiliconFlowProvider(BaseLLMProvider):
             raise
 
     async def plan(self, issue_description: str) -> str:
-        system_message = Message(role="system", content="You are an expert software architect. Create a detailed implementation plan.")
+        system_message = Message(
+            role="system",
+            content="You are an expert software architect. Create a detailed implementation plan.",
+        )
         user_message = Message(role="user", content=f"Issue:\n{issue_description}")
         response = await self.generate([system_message, user_message], max_tokens=2000)
         return response.content
 
-    async def generate_patch(self, issue_description: str, context_files: Dict[str, str], previous_errors: Optional[str] = None) -> str:
-        system_message = Message(role="system", content="Generate a unified diff format patch.")
+    async def generate_patch(
+        self,
+        issue_description: str,
+        context_files: Dict[str, str],
+        previous_errors: Optional[str] = None,
+    ) -> str:
+        system_message = Message(
+            role="system", content="Generate a unified diff format patch."
+        )
         context = f"Issue:\n{issue_description}\n\n"
         for filename, content in context_files.items():
             context += f"\n--- {filename} ---\n{content}\n"
         if previous_errors:
             context += f"\nPrevious Errors:\n{previous_errors}"
         user_message = Message(role="user", content=context)
-        response = await self.generate([system_message, user_message], max_tokens=3000, temperature=0.5)
+        response = await self.generate(
+            [system_message, user_message], max_tokens=3000, temperature=0.5
+        )
         return response.content
 
-    async def analyze_test_failure(self, test_output: str, code_context: str) -> Dict[str, Any]:
-        system_message = Message(role="system", content="Analyze the test failure and suggest fixes.")
-        user_message = Message(role="user", content=f"Test Output:\n{test_output}\n\nCode:\n{code_context}")
+    async def analyze_test_failure(
+        self, test_output: str, code_context: str
+    ) -> Dict[str, Any]:
+        system_message = Message(
+            role="system", content="Analyze the test failure and suggest fixes."
+        )
+        user_message = Message(
+            role="user", content=f"Test Output:\n{test_output}\n\nCode:\n{code_context}"
+        )
         response = await self.generate([system_message, user_message], max_tokens=1500)
-        return {"analysis": response.content, "provider": "SiliconFlow", "tokens_used": response.tokens_used}
+        return {
+            "analysis": response.content,
+            "provider": "SiliconFlow",
+            "tokens_used": response.tokens_used,
+        }
 
     async def close(self):
         await self.client.aclose()

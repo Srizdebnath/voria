@@ -188,6 +188,7 @@ Code Context:
     ):
         """Stream response tokens from Claude"""
         import json as _json
+
         try:
             system_content = ""
             user_messages = []
@@ -207,7 +208,9 @@ Code Context:
             if system_content:
                 payload["system"] = system_content
 
-            async with self.client.stream("POST", self.API_ENDPOINT, json=payload) as response:
+            async with self.client.stream(
+                "POST", self.API_ENDPOINT, json=payload
+            ) as response:
                 response.raise_for_status()
                 async for line in response.aiter_lines():
                     if not line:
@@ -219,7 +222,10 @@ Code Context:
                             event_type = data.get("type", "")
                             if event_type == "content_block_delta":
                                 delta = data.get("delta", {})
-                                if delta.get("type") == "text_delta" and "text" in delta:
+                                if (
+                                    delta.get("type") == "text_delta"
+                                    and "text" in delta
+                                ):
                                     yield delta["text"]
                             elif event_type == "message_stop":
                                 break

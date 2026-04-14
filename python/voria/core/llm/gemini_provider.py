@@ -148,13 +148,16 @@ Code:
     ):
         """Stream response tokens from Gemini"""
         import json as _json
+
         try:
             contents = []
             for msg in messages:
-                contents.append({
-                    "role": "user" if msg.role == "user" else "model",
-                    "parts": [{"text": msg.content}],
-                })
+                contents.append(
+                    {
+                        "role": "user" if msg.role == "user" else "model",
+                        "parts": [{"text": msg.content}],
+                    }
+                )
 
             payload = {
                 "contents": contents,
@@ -177,7 +180,9 @@ Code:
                             data = _json.loads(data_str)
                             candidates = data.get("candidates", [])
                             if candidates:
-                                parts = candidates[0].get("content", {}).get("parts", [])
+                                parts = (
+                                    candidates[0].get("content", {}).get("parts", [])
+                                )
                                 for part in parts:
                                     if "text" in part:
                                         yield part["text"]

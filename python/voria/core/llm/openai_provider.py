@@ -146,6 +146,7 @@ Code:
     ):
         """Stream response tokens from OpenAI"""
         import json as _json
+
         try:
             payload = {
                 "model": self.model,
@@ -154,7 +155,9 @@ Code:
                 "temperature": temperature,
                 "stream": True,
             }
-            async with self.client.stream("POST", self.API_ENDPOINT, json=payload) as response:
+            async with self.client.stream(
+                "POST", self.API_ENDPOINT, json=payload
+            ) as response:
                 response.raise_for_status()
                 async for line in response.aiter_lines():
                     if not line:

@@ -1,7 +1,7 @@
 """Test Executor Module - Run tests and parse results"""
 
 from .executor import (
-    TestExecutor,
+    VoriaTestExecutor,
     TestSuiteResult,
     TestResult,
     TestStatus,
@@ -10,7 +10,7 @@ from .executor import (
 )
 
 __all__ = [
-    "TestExecutor",
+    "VoriaTestExecutor",
     "TestSuiteResult",
     "TestResult",
     "TestStatus",

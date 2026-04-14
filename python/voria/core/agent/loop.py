@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from voria.core.llm import LLMProviderFactory, Message
-from voria.core.executor import TestExecutor, TestSuiteResult
+from voria.core.executor import VoriaTestExecutor, TestSuiteResult
 from voria.core.patcher import CodePatcher
 
 logger = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ class AgentLoop:
         # Initialize components
         self.provider = None
         self.patcher = CodePatcher(repo_path)
-        self.executor = TestExecutor(repo_path)
+        self.executor = VoriaTestExecutor(repo_path)
 
     async def initialize(self, model: str):
         """Initialize LLM provider with specific model"""

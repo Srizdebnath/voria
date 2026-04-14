@@ -11,7 +11,7 @@ import sys
 
 from voria.core.llm import LLMProviderFactory, ModelDiscovery
 from voria.core.patcher import CodePatcher, UnifiedDiffParser
-from voria.core.executor import TestExecutor
+from voria.core.executor import VoriaTestExecutor
 from voria.core.agent import AgentLoop
 
 
@@ -105,7 +105,7 @@ async def test_phase2_integration():
     tests_total += 1
     print("\n4️⃣  Testing Test Executor Framework Detection...\n")
     try:
-        executor = TestExecutor("/home/ansh/voria")
+        executor = VoriaTestExecutor(".")
         framework = await executor.detect_framework()
 
         if framework:
@@ -116,13 +116,12 @@ async def test_phase2_integration():
             tests_passed += 1
     except Exception as e:
         print(f"   ❌ Failed: {e}")
-
     # ========== TEST 5: Agent Loop Initialization ==========
     tests_total += 1
     print("\n5️⃣  Testing Agent Loop Initialization...\n")
     try:
         loop = AgentLoop(
-            provider_name="modal", api_key="test-key", repo_path="/home/ansh/voria"
+            provider_name="modal", api_key="test-key", repo_path="."
         )
 
         # Initialize

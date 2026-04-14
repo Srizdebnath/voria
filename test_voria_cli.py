@@ -99,7 +99,16 @@ class voriaTestSuite:
         # Test provider list
         try:
             providers = LLMProviderFactory.list_providers()
-            expected = {"modal", "openai", "gemini", "claude", "deepseek", "siliconflow", "kimi", "minimax"}
+            expected = {
+                "modal",
+                "openai",
+                "gemini",
+                "claude",
+                "deepseek",
+                "siliconflow",
+                "kimi",
+                "minimax",
+            }
             has_all = expected <= set(providers)
             self.print_test(
                 "All Providers Registered", has_all, f"Providers: {providers}"
@@ -162,7 +171,7 @@ class voriaTestSuite:
         try:
             result = subprocess.run(
                 ["./target/release/voria", "--version"],
-                cwd="/home/ansh/voria",
+                cwd=os.getcwd(),
                 capture_output=True,
                 text=True,
                 timeout=5,
@@ -182,7 +191,7 @@ class voriaTestSuite:
         try:
             result = subprocess.run(
                 ["./target/release/voria", "--help"],
-                cwd="/home/ansh/voria",
+                cwd=os.getcwd(),
                 capture_output=True,
                 text=True,
                 timeout=5,
@@ -206,7 +215,7 @@ class voriaTestSuite:
 
             result = subprocess.run(
                 ["./target/release/voria", "plan", "1"],
-                cwd="/home/ansh/voria",
+                cwd=os.getcwd(),
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -215,14 +224,16 @@ class voriaTestSuite:
 
             combined_output = (result.stdout + result.stderr).lower()
             success = result.returncode == 0 and (
-                "plan generated" in combined_output or 
-                "blueprint" in combined_output or 
-                "plan generation failed" in combined_output or
-                "error" in combined_output
+                "plan generated" in combined_output
+                or "blueprint" in combined_output
+                or "plan generation failed" in combined_output
+                or "error" in combined_output
             )
 
             self.print_test(
-                "CLI Plan Command", success, "Successfully executed (or failed gracefully): voria plan 1"
+                "CLI Plan Command",
+                success,
+                "Successfully executed (or failed gracefully): voria plan 1",
             )
 
             if not success:

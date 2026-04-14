@@ -92,13 +92,17 @@ class MiniMaxProvider(BaseLLMProvider):
 
             import json
 
-            async with self.client.stream("POST", self.API_ENDPOINT, json=payload) as response:
+            async with self.client.stream(
+                "POST", self.API_ENDPOINT, json=payload
+            ) as response:
                 response.raise_for_status()
                 async for line in response.aiter_lines():
-                    if not line: continue
+                    if not line:
+                        continue
                     if line.startswith("data: "):
                         data_str = line[6:]
-                        if data_str == "[DONE]": break
+                        if data_str == "[DONE]":
+                            break
                         try:
                             data = json.loads(data_str)
                             delta = data["choices"][0].get("delta", {})
