@@ -120,9 +120,7 @@ async def test_phase2_integration():
     tests_total += 1
     print("\n5️⃣  Testing Agent Loop Initialization...\n")
     try:
-        loop = AgentLoop(
-            provider_name="modal", api_key="test-key", repo_path="."
-        )
+        loop = AgentLoop(provider_name="modal", api_key="test-key", repo_path=".")
 
         # Initialize
         await loop.initialize("zai-org/GLM-5.1-FP8")
