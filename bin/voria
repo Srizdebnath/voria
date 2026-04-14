@@ -53,114 +53,182 @@ const BANNER = `
 
 const HELP_TEXT = `
 ${BANNER}
-  ${colors.dim("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")}
-  ${colors.dim("┃")}  ${colors.bold("AI-Powered Autonomous Fixer")}  ${colors.dim("┃")}
-  ${colors.dim("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")}
+  ${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
+  ${colors.bold(colors.blue("  AI-Powered Autonomous Fixer v0.0.5"))}
+  ${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
 
   ${colors.bold(colors.blue("USAGE:"))}
     voria [command] [options]
 
-  ${colors.bold(colors.blue("GLOBAL COMMANDS:"))}
-    ${colors.blue("🚀")}  voria --init              ${colors.dim("Initialize project & choose models")}
-    ${colors.blue("⚙️")}  voria --config            ${colors.dim("Configure LLM provider and settings")}
+  ${colors.bold(colors.blue("SETUP:"))}
+    ${colors.blue("🚀")}  voria --init              ${colors.dim("Initialize project & choose LLM provider")}
+    ${colors.blue("⚙️")}   voria --config            ${colors.dim("Configure LLM provider and settings")}
     ${colors.blue("🔑")}  voria --set-github-token  ${colors.dim("Set your GitHub personal access token")}
-    ${colors.blue("📋")}  voria --list-issues <repo>${colors.dim("List issues in a repository")}
-    ${colors.blue("🔭")}  voria --graph             ${colors.dim("Show codebase dependency graph")}
-    ${colors.blue("❓")}  voria --help              ${colors.dim("Show this help message")}
-    ${colors.blue("🏷️")}  voria --version           ${colors.dim("Show current version")}
 
-  ${colors.bold(colors.blue("PROJECT COMMANDS:"))}
-    ${colors.blue("🐞")}  voria issue <repo> <num>  ${colors.dim("Fix a specific GitHub issue")}
+  ${colors.bold(colors.blue("SECURITY & TESTING:"))}
+    ${colors.blue("🛡️")}   voria scan                ${colors.dim("Full security audit — run ALL tests in parallel")}
+    ${colors.blue("🧪")}  voria test <test_id>      ${colors.dim("Run a specific security/performance test")}
+    ${colors.blue("📋")}  voria list-tests          ${colors.dim("List all 25+ available tests")}
+    ${colors.blue("👁️")}   voria watch               ${colors.dim("File watcher — re-runs tests on code changes")}
+    ${colors.blue("📊")}  voria diff [a] [b]        ${colors.dim("Compare security posture between git refs")}
+    ${colors.blue("⚡")}  voria benchmark <url>     ${colors.dim("HTTP benchmarking — p50/p95/p99 latencies")}
+    ${colors.blue("🏗️")}   voria ci                  ${colors.dim("CI/CD scan — outputs SARIF for GitHub Security")}
+
+  ${colors.bold(colors.blue("ISSUE FIXING:"))}
+    ${colors.blue("🐞")}  voria issue <repo> <num>  ${colors.dim("Fix a specific GitHub issue with AI")}
+    ${colors.blue("🔧")}  voria fix --auto <r> <n>  ${colors.dim("Auto-apply patch and run tests")}
+    ${colors.blue("📝")}  voria plan <description>  ${colors.dim("Generate fix plan without applying")}
     ${colors.blue("📦")}  voria apply <patch>       ${colors.dim("Apply a patch file")}
+    ${colors.blue("📋")}  voria --list-issues <r>   ${colors.dim("List issues in a repository")}
+
+  ${colors.bold(colors.blue("PROJECT:"))}
     ${colors.blue("📊")}  voria status              ${colors.dim("Show current project status")}
     ${colors.blue("💰")}  voria token info          ${colors.dim("Show token usage info")}
     ${colors.blue("📝")}  voria logs                ${colors.dim("Show recent activity logs")}
     ${colors.blue("🔄")}  voria reset               ${colors.dim("Reset project configuration")}
+    ${colors.blue("🔭")}  voria --graph             ${colors.dim("Show codebase dependency graph")}
 
   ${colors.bold(colors.blue("OPTIONS:"))}
-    --llm <provider>            ${colors.dim("Use specific LLM (openai, claude, gemini, modal, kimi)")}
-    --model <name>             ${colors.dim("Use specific model")}
+    --category <cat>           ${colors.dim("Filter scan by category (security/performance/stress/quality/all)")}
+    --requests <n>             ${colors.dim("Number of requests for benchmark (default: 100)")}
+    --concurrency <n>          ${colors.dim("Concurrency for benchmark (default: 10)")}
     --apply                    ${colors.dim("Automatically create PR after fixing")}
     --dry-run                  ${colors.dim("Don't create PR, just propose")}
     --verbose, -v              ${colors.dim("Show detailed output")}
 
   ${colors.bold(colors.blue("EXAMPLES:"))}
-    ${colors.cyan("# Initialize a project")}
-    voria --init
+    ${colors.cyan("voria --init")}                          ${colors.dim("# Setup with your LLM provider")}
+    ${colors.cyan("voria scan")}                            ${colors.dim("# Full security audit")}
+    ${colors.cyan("voria scan --category performance")}     ${colors.dim("# Performance tests only")}
+    ${colors.cyan("voria test hardcoded_secrets")}          ${colors.dim("# Run specific test")}
+    ${colors.cyan("voria diff main feature-branch")}       ${colors.dim("# Compare branches")}
+    ${colors.cyan("voria benchmark http://localhost:3000")} ${colors.dim("# HTTP benchmark")}
+    ${colors.cyan("voria issue owner/repo 42 --apply")}    ${colors.dim("# Fix issue and create PR")}
+    ${colors.cyan("voria ci")}                             ${colors.dim("# CI/CD SARIF output")}
 
-    ${colors.cyan("# Fix an issue and create PR")}
-    voria issue owner/repo 42 --apply
-
-    ${colors.cyan("# Propose a fix with specific model")}
-    voria plan "Remove deprecated function" --llm claude --model opus-4.6
-
-  ${colors.bold(colors.blue("DOCUMENTATION:"))}
-    ${colors.dim("Full documentation:")} ${colors.blue("https://github.com/Srizdebnath/voria")}
+  ${colors.bold(colors.blue("DOCS:"))} ${colors.blue("https://github.com/Srizdebnath/voria")}
 `;
 
-const VERSION = '0.0.3';
+const VERSION = '0.0.5';
+
+// ─── Helpers ─────────────────────────────────────────────────────
+
+function log(msg) { console.log(`${colors.blue("│")} ${msg}`); }
+function logHeader(msg) { console.log(`\n${colors.bgBlue(colors.bold(` ${msg} `))}`); }
+function logDivider() { console.log(colors.blue("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")); }
+function logSuccess(msg) { console.log(`${colors.green("✓")} ${msg}`); }
+function logError(msg) { console.error(`${colors.red("✖")} ${msg}`); }
+function logInfo(msg) { console.log(`${colors.blue("ℹ")} ${colors.dim(msg)}`); }
+function logWarn(msg) { console.log(`${colors.yellow("⚠")} ${msg}`); }
 
 // Load configuration
 function loadConfig() {
   const config = {};
-  
   if (fs.existsSync(CONFIG_FILE)) {
     try {
-      const data = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
-      Object.assign(config, data);
+      Object.assign(config, JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8')));
     } catch (e) {
-      console.error('⚠️  Error reading global config:', e.message);
+      logWarn(`Error reading global config: ${e.message}`);
     }
   }
-  
   if (fs.existsSync(PROJECT_CONFIG)) {
     try {
-      const data = JSON.parse(fs.readFileSync(PROJECT_CONFIG, 'utf-8'));
-      Object.assign(config, data);
+      Object.assign(config, JSON.parse(fs.readFileSync(PROJECT_CONFIG, 'utf-8')));
     } catch (e) {
-      console.error('⚠️  Error reading project config:', e.message);
+      logWarn(`Error reading project config: ${e.message}`);
     }
   }
-  
   return config;
 }
 
-// Save configuration
 function saveConfig(config, isGlobal = true) {
   const file = isGlobal ? CONFIG_FILE : PROJECT_CONFIG;
   fs.writeFileSync(file, JSON.stringify(config, null, 2));
 }
 
-/**
- * Dynamically fetch models for a provider using Python backend
- */
+function requireInit() {
+  const config = loadConfig();
+  if (!config.llm_api_key && !config.llm_provider) {
+    logError(`voria not initialized. Run ${colors.cyan("voria --init")}`);
+    process.exit(1);
+  }
+  return config;
+}
+
+function getApiKey(config) {
+  let apiKey = config.llm_api_key;
+  if (!apiKey) {
+    const envKey = `${(config.llm_provider || 'openai').toUpperCase()}_API_KEY`;
+    apiKey = process.env[envKey];
+  }
+  if (!apiKey) {
+    logError(`API key not found. Run ${colors.cyan("voria --config")} or set env var.`);
+    process.exit(1);
+  }
+  return apiKey;
+}
+
 function fetchModels(provider, apiKey) {
   try {
     const scriptPath = path.join(__dirname, '..', 'python', 'voria', 'core', 'llm', 'model_discovery.py');
     const output = execSync(`python3 "${scriptPath}" "${provider}" "${apiKey}"`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
     return JSON.parse(output);
-  } catch (e) {
-    return [];
-  }
+  } catch (e) { return []; }
 }
 
-// Interactive setup
+// ─── Python Engine IPC ───────────────────────────────────────────
+
+async function callPythonEngine(command) {
+  return new Promise((resolve, reject) => {
+    const pythonScript = path.join(__dirname, '..', 'python', 'voria', 'engine.py');
+    const pythonPath = path.join(__dirname, '..', 'python');
+    const venvPath = path.join(__dirname, '..', 'venv', 'bin', 'python');
+    const pythonCmd = fs.existsSync(venvPath) ? venvPath : 'python3';
+    const env = { ...process.env };
+    env.PYTHONPATH = pythonPath + (env.PYTHONPATH ? ':' + env.PYTHONPATH : '');
+
+    const python = spawn(pythonCmd, [pythonScript], {
+      cwd: process.cwd(), stdio: ['pipe', 'pipe', 'pipe'], env
+    });
+
+    let output = '';
+    let errorOutput = '';
+    python.stdout.on('data', (d) => { output += d.toString(); });
+    python.stderr.on('data', (d) => { errorOutput += d.toString(); });
+
+    python.on('close', (code) => {
+      if (code !== 0) logInfo(`Python engine debug: ${errorOutput.slice(-300)}`);
+      try {
+        const lines = output.trim().split('\n').filter(l => l.length > 0);
+        const lastLine = lines[lines.length - 1];
+        resolve(JSON.parse(lastLine));
+      } catch (e) {
+        reject(new Error(`Failed to parse engine response: ${e.message}`));
+      }
+    });
+
+    python.stdin.write(JSON.stringify(command) + '\n');
+    python.stdin.end();
+  });
+}
+
+// ─── Setup & Config ──────────────────────────────────────────────
+
 async function runSetup() {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
 
   try {
     console.log(BANNER);
-    console.log(`  ${colors.dim("┏━━")} ${colors.bold("PROJECT INITIALIZATION")} ${colors.dim("━━┓")}`);
-    console.log(`  ${colors.dim("┃")} ${colors.blue("Configuring your intelligence backend")} ${colors.dim("┃")}`);
-    console.log(`  ${colors.dim("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")}\n`);
-    
+    logHeader("PROJECT INITIALIZATION");
+    log(colors.blue("Configuring your intelligence backend"));
+    logDivider();
+
     if (!fs.existsSync(path.join(process.cwd(), '.git'))) {
-      console.log(`${colors.yellow("⚠")} ${colors.bold("Warning:")} Not in a Git repository.`);
-      console.log(`   voria works best when integrated with Git.\n`);
+      logWarn(`Not in a Git repository. voria works best with Git.`);
     }
 
-    console.log(`${colors.bold("Choose LLM Provider:")}`);
+    console.log(`\n${colors.bold(colors.blue("Choose LLM Provider:"))}`);
     console.log(`  ${colors.blue("1)")} OpenAI (GPT-4o, GPT-4 Mini)`);
     console.log(`  ${colors.blue("2)")} Claude (Anthropic)`);
     console.log(`  ${colors.blue("3)")} Gemini (Google)`);
@@ -175,497 +243,558 @@ async function runSetup() {
     const provider = providers[parseInt(choice) - 1] || 'openai';
 
     const apiKey = await question(`${colors.cyan(provider.toUpperCase() + " API Key")} › `);
-    
-    if (!apiKey) {
-      console.log(`\n${colors.red("✖")} API key is required.`);
-      rl.close();
-      return;
-    }
+    if (!apiKey) { logError("API key is required."); rl.close(); return; }
 
-    console.log(`\n${colors.dim("   Fetching latest models...")}`);
+    logInfo("Fetching latest models...");
     const fetchedModels = fetchModels(provider, apiKey);
     const models = fetchedModels.length > 0 ? fetchedModels.map(m => m.name) : (PROVIDER_MODELS[provider] || ['gpt-4o']);
 
-    console.log(`\n${colors.bold("Select Model:")}`);
-    models.forEach((model, index) => {
-      console.log(`  ${colors.blue((index + 1) + ")")} ${model}`);
-    });
-    
+    console.log(`\n${colors.bold(colors.blue("Select Model:"))}`);
+    models.forEach((m, i) => console.log(`  ${colors.blue((i + 1) + ")")} ${m}`));
     const modelChoice = await question(`\n${colors.cyan("selection")} ${colors.dim("(1)")} › `) || '1';
     const selectedModel = models[parseInt(modelChoice) - 1] || models[0];
 
     const budget = await question(`${colors.cyan("Daily Budget ($)")} ${colors.dim("(10.0)")} › `) || '10.0';
 
-    console.log(`\n${colors.bold("Test Framework:")}`);
+    console.log(`\n${colors.bold(colors.blue("Test Framework:"))}`);
     console.log(`  ${colors.blue("1)")} pytest ${colors.dim("(Python)")}`);
     console.log(`  ${colors.blue("2)")} Jest ${colors.dim("(JavaScript)")}`);
     console.log(`  ${colors.blue("3)")} Go testing`);
-    
     const frameworkChoice = await question(`${colors.cyan("selection")} › `) || '1';
     const frameworks = ['pytest', 'jest', 'go'];
     const framework = frameworks[parseInt(frameworkChoice) - 1] || 'pytest';
 
     const config = {
       llm_provider: provider,
-      model: selectedModel,
+      llm_model: selectedModel,
       daily_budget: parseFloat(budget),
       test_framework: framework,
       created_at: new Date().toISOString()
     };
 
-    saveConfig({ ...config, api_key: apiKey }, true);
+    saveConfig({ ...config, llm_api_key: apiKey }, true);
     saveConfig({ ...config, api_key_env: `${provider.toUpperCase()}_API_KEY` }, false);
 
-    console.log(`\n${colors.green("✓")} ${colors.bold("voria initialized successfully!")}`);
-    console.log(`  ${colors.dim("Project Config:")} ${colors.blue(PROJECT_CONFIG)}`);
-    console.log(`\n${colors.bold("Next Steps:")}`);
-    console.log(`  ${colors.blue("1.")} Run: ${colors.cyan("voria --set-github-token")}`);
-    console.log(`  ${colors.blue("2.")} Run: ${colors.cyan("voria issue owner/repo 42 --apply")}\n`);
-
+    logDivider();
+    logSuccess(colors.bold("voria initialized successfully!"));
+    log(`${colors.dim("Provider:")} ${colors.blue(provider)} | ${colors.dim("Model:")} ${colors.cyan(selectedModel)}`);
+    log(`${colors.dim("Config:")} ${colors.blue(CONFIG_FILE)}`);
+    console.log(`\n${colors.bold(colors.blue("Next Steps:"))}`);
+    log(`Run: ${colors.cyan("voria --set-github-token")}`);
+    log(`Run: ${colors.cyan("voria scan")} or ${colors.cyan("voria test hardcoded_secrets")}\n`);
     rl.close();
   } catch (error) {
-    console.error(colors.red('Error during setup:'), error);
+    logError(`Setup error: ${error.message}`);
     rl.close();
     process.exit(1);
   }
 }
 
-// Configure existing setup
 async function runConfig() {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
 
   try {
-    console.log(`\n  ${colors.dim("┏━━")} ${colors.bold("SETTINGS ENGINE")} ${colors.dim("━━┓")}`);
-    console.log(`  ${colors.dim("┃")} ${colors.blue("Adjusting your local parameters")} ${colors.dim("┃")}`);
-    console.log(`  ${colors.dim("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")}\n`);
-
+    logHeader("SETTINGS ENGINE");
     const config = loadConfig();
-
-    console.log(`  ${colors.dim("Provider:")}  ${colors.blue(config.llm_provider || 'None')}`);
-    console.log(`  ${colors.dim("Budget:")}    ${colors.green("$" + (config.daily_budget || '10.0'))}`);
-    console.log(`  ${colors.dim("Framework:")} ${colors.cyan(config.test_framework || 'None')}\n`);
+    log(`${colors.dim("Provider:")}  ${colors.blue(config.llm_provider || 'None')}`);
+    log(`${colors.dim("Model:")}    ${colors.cyan(config.llm_model || 'None')}`);
+    log(`${colors.dim("Budget:")}   ${colors.green("$" + (config.daily_budget || '10.0'))}`);
+    log(`${colors.dim("Framework:")} ${colors.cyan(config.test_framework || 'None')}\n`);
 
     const change = await question(`${colors.cyan("edit")} ${colors.dim("(provider/budget/framework/none)")} › `);
-
     if (change === 'provider') {
       const provider = await question(`${colors.cyan("new provider")} › `);
       const apiKey = await question(`${colors.cyan("api key")} › `);
       config.llm_provider = provider;
-      saveConfig({ ...config, api_key: apiKey }, true);
-      console.log(`${colors.green("✓")} Provider updated`);
+      saveConfig({ ...config, llm_api_key: apiKey }, true);
+      logSuccess("Provider updated");
     } else if (change === 'budget') {
-      const budget = await question(`${colors.cyan("new budget")} › `);
-      config.daily_budget = parseFloat(budget);
+      config.daily_budget = parseFloat(await question(`${colors.cyan("new budget")} › `));
       saveConfig(config, true);
-      console.log(`${colors.green("✓")} Budget updated`);
+      logSuccess("Budget updated");
     } else if (change === 'framework') {
-      const framework = await question(`${colors.cyan("new framework")} › `);
-      config.test_framework = framework;
+      config.test_framework = await question(`${colors.cyan("new framework")} › `);
       saveConfig(config, false);
-      console.log(`${colors.green("✓")} Test framework updated`);
+      logSuccess("Test framework updated");
     }
-
-    console.log(`\n${colors.green("✓")} Settings saved\n`);
+    logSuccess("Settings saved");
     rl.close();
   } catch (error) {
-    console.error(colors.red('Error during configuration:'), error);
+    logError(`Config error: ${error.message}`);
     rl.close();
   }
 }
 
-// Show status
-function showStatus() {
-  console.log(`\n${colors.bgBlue(colors.bold(" 📊 voria Status "))}`);
-  const config = loadConfig();
-
-  if (Object.keys(config).length === 0) {
-    console.log(`${colors.red("✖")} voria not initialized. Run ${colors.yellow("voria --init")}\n`);
-    return;
-  }
-
-  console.log(`${colors.green("✓")} voria is configured`);
-  console.log(`  ${colors.bold("LLM Provider:")}   ${colors.blue(config.llm_provider)}`);
-  console.log(`  ${colors.bold("Daily Budget:")}   ${colors.green("$" + config.daily_budget)}`);
-  console.log(`  ${colors.bold("Test Framework:")} ${colors.cyan(config.test_framework)}`);
-  console.log(`  ${colors.bold("Global Config:")}  ${colors.dim(CONFIG_FILE)}\n`);
-}
-
-// Show logs
-function showLogs() {
-  const logsFile = path.join(voria_HOME, 'voria.log');
-  
-  if (!fs.existsSync(logsFile)) {
-    console.log('\n📝 No logs yet\n');
-    return;
-  }
-
-  const logs = fs.readFileSync(logsFile, 'utf-8');
-  const lines = logs.split('\n').slice(-50);
-  
-  console.log('\n📝 Recent logs (last 50 lines):\n');
-  console.log(lines.join('\n'));
-}
-
-// Reset configuration
-function reset() {
-  const config = loadConfig();
-  
-  if (Object.keys(config).length === 0) {
-    console.log('\n✅ No configuration to reset\n');
-    return;
-  }
-
-  if (fs.existsSync(PROJECT_CONFIG)) {
-    fs.unlinkSync(PROJECT_CONFIG);
-    console.log(`✅ Removed project config: ${PROJECT_CONFIG}`);
-  }
-
-  console.log('✅ Configuration reset\n');
-}
-
-// Set GitHub token
 async function setGitHubToken() {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const question = (prompt) => new Promise(resolve => rl.question(prompt, resolve));
-
   try {
-    console.log(`\n${colors.bgBlue(colors.bold(" 🔗 GitHub Integration "))}`);
-    console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}\n`);
-    
-    console.log(`${colors.cyan("ℹ")} ${colors.dim("Generate a token at:")} ${colors.blue("https://github.com/settings/tokens")}`);
-    console.log(`${colors.dim("  Required scope: 'repo' (Full control of private repositories)")}\n`);
-
-    const token = await question(`${colors.cyan("GitHub Token")} › `);
-    
-    if (!token) {
-      console.log(`\n${colors.red("✖")} Token is required\n`);
-      rl.close();
-      return;
-    }
-
+    logHeader("GitHub Integration");
+    logInfo(`Generate a token at: ${colors.blue("https://github.com/settings/tokens")}`);
+    logInfo(`Required scope: 'repo' (Full control of private repositories)`);
+    const token = await question(`\n${colors.cyan("GitHub Token")} › `);
+    if (!token) { logError("Token is required"); rl.close(); return; }
     const config = loadConfig();
     config.github_token = token;
     saveConfig(config, true);
-
-    console.log(`\n${colors.green("✓")} ${colors.bold("GitHub token saved successfully!")}\n`);
+    logSuccess(colors.bold("GitHub token saved successfully!"));
     rl.close();
   } catch (error) {
-    console.error(colors.red('Error saving token:'), error);
+    logError(`Error: ${error.message}`);
     rl.close();
-    process.exit(1);
   }
 }
 
-// List issues from a repository
+// ─── Status & Utility ────────────────────────────────────────────
+
+function showStatus() {
+  logHeader("voria Status");
+  const config = loadConfig();
+  if (!config.llm_provider) { logError(`Not initialized. Run ${colors.cyan("voria --init")}\n`); return; }
+  logSuccess("voria is configured");
+  log(`${colors.bold("Provider:")}   ${colors.blue(config.llm_provider)}`);
+  log(`${colors.bold("Model:")}     ${colors.cyan(config.llm_model || 'default')}`);
+  log(`${colors.bold("Budget:")}    ${colors.green("$" + config.daily_budget)}`);
+  log(`${colors.bold("Framework:")} ${colors.cyan(config.test_framework)}`);
+  log(`${colors.bold("Config:")}    ${colors.dim(CONFIG_FILE)}\n`);
+}
+
+function showLogs() {
+  const logsFile = path.join(voria_HOME, 'voria.log');
+  if (!fs.existsSync(logsFile)) { log(colors.dim("No logs yet")); return; }
+  logHeader("Recent Logs");
+  const lines = fs.readFileSync(logsFile, 'utf-8').split('\n').slice(-50);
+  lines.forEach(l => log(colors.dim(l)));
+}
+
+function reset() {
+  if (fs.existsSync(PROJECT_CONFIG)) {
+    fs.unlinkSync(PROJECT_CONFIG);
+    logSuccess(`Removed project config: ${PROJECT_CONFIG}`);
+  }
+  logSuccess("Configuration reset");
+}
+
+// ─── Issue Fixing ────────────────────────────────────────────────
+
 async function listIssues(repoArg, config) {
-  // Parse repo from argument
   let owner, repo;
-  
   if (repoArg.includes('github.com')) {
     const match = repoArg.match(/github\.com[/:]([^/]+)\/([^/\s]+)/);
-    if (!match) {
-      console.log(`\n${colors.red("✖")} Invalid GitHub URL`);
-      return;
-    }
-    owner = match[1];
-    repo = match[2].replace('.git', '');
+    if (!match) { logError("Invalid GitHub URL"); return; }
+    owner = match[1]; repo = match[2].replace('.git', '');
   } else if (repoArg.includes('/')) {
-    const parts = repoArg.split('/');
-    owner = parts[0];
-    repo = parts[1];
-  } else {
-    console.log(`\n${colors.red("✖")} Invalid repository format`);
-    return;
-  }
+    [owner, repo] = repoArg.split('/');
+  } else { logError("Invalid repository format"); return; }
 
   const githubToken = config.github_token || process.env.GITHUB_TOKEN;
-  if (!githubToken) {
-    console.log(`\n${colors.red("✖")} GitHub token not found. Run ${colors.yellow("voria --set-github-token")}`);
-    return;
-  }
+  if (!githubToken) { logError(`GitHub token not found. Run ${colors.cyan("voria --set-github-token")}`); return; }
 
-  console.log(`\n${colors.blue("📋")} Fetching issues from ${colors.cyan(owner + "/" + repo)}...\n`);
-
+  logInfo(`Fetching issues from ${colors.cyan(owner + "/" + repo)}...`);
   try {
-    const response = await callPythonEngine({
-      command: 'list_issues',
-      owner: owner,
-      repo: repo,
-      github_token: githubToken,
-    });
-    
-    if (response.status === 'error') {
-      console.error(`${colors.red("✖")} Error: ${response.message}\n`);
-      return;
-    }
-
+    const response = await callPythonEngine({ command: 'list_issues', owner, repo, github_token: githubToken });
+    if (response.status === 'error') { logError(response.message); return; }
     const issues = response.data?.issues || [];
-    
-    if (issues.length === 0) {
-      console.log(`${colors.yellow("📭")} No open issues found\n`);
-      return;
-    }
-
-    console.log(`${colors.bgBlue(colors.bold(" 📋 Open Issues "))} ${colors.dim("in " + owner + "/" + repo + " (" + issues.length + " total)")}\n`);
-    
+    if (issues.length === 0) { log(colors.dim("No open issues found")); return; }
+    logHeader(`Open Issues in ${owner}/${repo}`);
     for (const issue of issues) {
-      const labels = issue.labels?.length > 0 
-        ? ` ${colors.dim("[")}${colors.yellow(issue.labels.join(", "))}${colors.dim("]")}` 
-        : '';
-      
-      console.log(`${colors.brightBlue("#" + issue.number)} ${colors.bold(issue.title)}${labels}`);
-      console.log(`   ${colors.dim("🔗")} ${colors.blue(issue.url)}`);
-      
-      if (issue.body) {
-        const snippet = issue.body.length > 100 ? issue.body.substring(0, 100) + "..." : issue.body;
-        console.log(`   ${colors.dim("📝")} ${colors.dim(snippet.replace(/\n/g, " "))}`);
-      }
-      console.log('');
+      const labels = issue.labels?.length > 0 ? ` ${colors.yellow("[" + issue.labels.join(", ") + "]")}` : '';
+      log(`${colors.brightBlue("#" + issue.number)} ${colors.bold(issue.title)}${labels}`);
     }
-    
-    console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}`);
-    console.log(`${colors.yellow("💡")} To fix an issue: ${colors.bold("voria issue " + owner + "/" + repo + " <number> --apply")}\n`);
-  } catch (error) {
-    console.error(`${colors.red("✖")} Error: ${error.message}\n`);
-  }
+    logDivider();
+    logInfo(`To fix: ${colors.cyan("voria issue " + owner + "/" + repo + " <number> --apply")}`);
+  } catch (error) { logError(error.message); }
 }
 
-// Run plan command with LLM - Actually call Python engine
-// Enhanced plan command
 async function runPlanCommand(description, config, args) {
   console.log(BANNER);
-  console.log(`${colors.bgBlue(colors.bold(" 📝 voria Plan "))} ${colors.blue("Architecting your fix")}`);
-  console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}`);
-  console.log(`${colors.cyan(description)}`);
-  console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}\n`);
-
-  console.log(`${colors.blue("⏳")} Analyzing codebase...`);
-  console.log(`${colors.blue("⏳")} Designing solution architecture...\n`);
+  logHeader("voria Plan");
+  log(colors.cyan(description));
+  logDivider();
+  logInfo("Analyzing codebase...");
+  logInfo("Designing solution architecture...");
 
   try {
-    let apiKey = config.api_key;
-    if (!apiKey) {
-      const envKey = `${(config.llm_provider || 'openai').toUpperCase()}_API_KEY`;
-      apiKey = process.env[envKey];
-    }
-    
-    if (!apiKey) {
-      console.error(`${colors.red("✖")} Error: API key not found. Run ${colors.yellow("voria --config")}\n`);
-      return;
-    }
-
+    const apiKey = getApiKey(config);
     const response = await callPythonEngine({
-      command: 'plan',
-      description: description,
-      repo_path: process.cwd(),
-      provider: config.llm_provider || 'openai',
-      api_key: apiKey,
-      model: config.model,
+      command: 'plan', description, repo_path: process.cwd(),
+      provider: config.llm_provider || 'openai', api_key: apiKey, model: config.llm_model,
     });
-    
-    if (response.status === 'error') {
-      console.error(`${colors.red("✖")} Error: ${response.message}\n`);
-      return;
+    if (response.status === 'error') { logError(response.message); return; }
+    logSuccess(colors.bold("Strategic Plan Generated!"));
+    if (response.data?.plan) {
+      logHeader("Project Blueprint");
+      console.log(typeof response.data.plan === 'string' ? response.data.plan : JSON.stringify(response.data.plan, null, 2));
     }
-
-    console.log(`${colors.green("✓")} ${colors.bold("Strategic Plan Generated!")}\n`);
-    
-    if (response.data && response.data.plan) {
-      console.log(`${colors.bgBlue(colors.bold(" 📋 Project Blueprint "))}\n`);
-      console.log(response.data.plan);
-      console.log('\n');
-    }
-
-    const isDryRun = args.includes('--dry-run');
-    if (isDryRun) {
-      console.log(`${colors.cyan("🔍")} Dry Run Mode - No changes will be made\n`);
-    } else {
-      console.log(`${colors.green("✨")} Ready to implement!`);
-      console.log(`   Run: ${colors.bold("voria issue <repo> <number> --apply")}\n`);
-    }
-  } catch (error) {
-    console.error(`${colors.red("✖")} Error: ${error.message}\n`);
-  }
+    if (args.includes('--dry-run')) { logInfo("Dry Run Mode — no changes made"); }
+    else { logInfo(`Ready to implement! Run: ${colors.cyan("voria issue <repo> <number> --apply")}`); }
+  } catch (error) { logError(error.message); }
 }
 
-// Enhanced issue command
 async function runIssueCommand(repo, issueNumber, config, args) {
   console.log(BANNER);
-  console.log(`${colors.bgBlue(colors.bold(" 🚀 voria "))} ${colors.blue("Issue Fix Integration")}`);
-  console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}`);
-  console.log(`${colors.bold("🔗 Issue:")}    ${colors.brightBlue("#" + issueNumber)} in ${colors.cyan(repo)}`);
-  console.log(`${colors.bold("🤖 AI:")}       ${colors.yellow(config.llm_provider || 'openai')}`);
-  console.log(`${colors.bold("💰 Budget:")}   ${colors.green("$" + (config.daily_budget || 10.0))}/day`);
-  console.log(`${colors.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}\n`);
-
-  console.log(`${colors.blue("⏳")} Fetching issue details...`);
-  console.log(`${colors.blue("⏳")} Analyzing code context...`);
-  console.log(`${colors.blue("⏳")} Generating optimized fix...\n`);
+  logHeader("voria Issue Fix");
+  log(`${colors.bold("Issue:")}  ${colors.brightBlue("#" + issueNumber)} in ${colors.cyan(repo)}`);
+  log(`${colors.bold("AI:")}     ${colors.blue(config.llm_provider || 'openai')} / ${colors.cyan(config.llm_model || 'default')}`);
+  log(`${colors.bold("Budget:")} ${colors.green("$" + (config.daily_budget || 10.0))}/day`);
+  logDivider();
+  logInfo("Fetching issue details...");
+  logInfo("Analyzing code context...");
+  logInfo("Generating optimized fix...");
 
   try {
-    let apiKey = config.api_key;
-    if (!apiKey) {
-      const envKey = `${(config.llm_provider || 'openai').toUpperCase()}_API_KEY`;
-      apiKey = process.env[envKey];
-    }
-    
-    if (!apiKey) {
-      console.error(`${colors.red("✖")} Error: API key not found. Run ${colors.yellow("voria --config")}\n`);
-      return;
-    }
-
+    const apiKey = getApiKey(config);
     const githubToken = config.github_token || process.env.GITHUB_TOKEN;
-    if (!githubToken) {
-      console.error(`${colors.red("✖")} Error: GitHub token not found. Run ${colors.yellow("voria --set-github-token")}\n`);
-      return;
-    }
+    if (!githubToken) { logError(`GitHub token not found. Run ${colors.cyan("voria --set-github-token")}`); return; }
 
     const response = await callPythonEngine({
-      command: 'issue',
-      issue_number: parseInt(issueNumber),
-      repo: repo,
-      repo_path: process.cwd(),
-      provider: config.llm_provider || 'openai',
-      api_key: apiKey,
-      github_token: githubToken,
-      model: config.model,
+      command: 'issue', issue_number: parseInt(issueNumber), repo, repo_path: process.cwd(),
+      provider: config.llm_provider || 'openai', api_key: apiKey, github_token: githubToken, model: config.llm_model,
     });
-    
-    if (response.status === 'error') {
-      console.error(`${colors.red("✖")} Error: ${response.message}\n`);
-      return;
-    }
+    if (response.status === 'error') { logError(response.message); return; }
+    logSuccess(colors.bold("Solution Generated!"));
+    if (response.data?.issue_title) log(`${colors.bold("Title:")} ${response.data.issue_title}`);
 
-    console.log(`${colors.green("✓")} ${colors.bold("Solution Generated!")}\n`);
-    
-    if (response.data) {
-      console.log(`${colors.bold("📝 Title:")} ${response.data.issue_title}`);
-    }
-
-    const shouldApply = args.includes('--apply');
-    if (shouldApply) {
-      console.log(`\n${colors.blue("⏳")} Creating Pull Request...`);
+    if (args.includes('--apply')) {
+      logInfo("Creating Pull Request...");
       const prResponse = await callPythonEngine({
-        command: 'create_pr',
-        owner: repo.split('/')[0],
-        repo: repo.split('/')[1],
-        issue_number: parseInt(issueNumber),
-        patch: response.data.patch,
-        github_token: githubToken
+        command: 'create_pr', owner: repo.split('/')[0], repo: repo.split('/')[1],
+        issue_number: parseInt(issueNumber), patch: response.data.patch, github_token: githubToken
       });
-
       if (prResponse.status === 'success') {
-        console.log(`\n${colors.green("🎉")} ${colors.bold("Pull Request Created!")}`);
-        console.log(`${colors.bold("🔗 URL:")}    ${colors.brightBlue(prResponse.data.pr_url)}`);
-        console.log(`${colors.bold("🌿 Branch:")} ${colors.cyan(prResponse.data.branch)}\n`);
-      } else {
-        console.error(`${colors.red("✖")} Failed to create PR: ${prResponse.message}\n`);
-      }
+        logSuccess(colors.bold("Pull Request Created!"));
+        log(`${colors.bold("URL:")}    ${colors.brightBlue(prResponse.data.pr_url)}`);
+        log(`${colors.bold("Branch:")} ${colors.cyan(prResponse.data.branch)}`);
+      } else { logError(`Failed to create PR: ${prResponse.message}`); }
     } else {
-      console.log(`\n${colors.yellow("💡")} Solution ready for review.`);
-      console.log(`   Run with ${colors.bold("--apply")} to automatically create a PR.\n`);
+      logInfo(`Solution ready. Run with ${colors.bold("--apply")} to create PR.`);
     }
-  } catch (error) {
-    console.error(`${colors.red("✖")} Error: ${error.message}\n`);
+  } catch (error) { logError(error.message); }
+}
+
+// ─── Tier 1: scan ────────────────────────────────────────────────
+
+async function runScanCommand(config, args) {
+  console.log(BANNER);
+  logHeader("voria Security Scan");
+
+  const categoryIdx = args.indexOf('--category');
+  const category = categoryIdx !== -1 && args[categoryIdx + 1] ? args[categoryIdx + 1] : 'all';
+
+  log(`${colors.bold("Category:")} ${colors.cyan(category)}`);
+  log(`${colors.bold("Provider:")} ${colors.blue(config.llm_provider)} / ${colors.cyan(config.llm_model || 'default')}`);
+  logDivider();
+  logInfo("Running all security tests in parallel...");
+  logInfo("This may take a few minutes depending on codebase size...");
+
+  try {
+    const apiKey = getApiKey(config);
+    const response = await callPythonEngine({
+      command: 'scan', provider: config.llm_provider, api_key: apiKey,
+      model: config.llm_model, repo_path: process.cwd(), category,
+    });
+    if (response.status === 'error') { logError(response.message); return; }
+
+    const scan = response.data?.scan || {};
+    logDivider();
+    logHeader("Scan Results");
+    log(`${colors.bold("Total Tests:")}  ${colors.blue(scan.total_tests)}`);
+    log(`${colors.bold("Passed:")}       ${colors.green(scan.passed)}`);
+    log(`${colors.bold("Failed:")}       ${colors.red(scan.failed)}`);
+    log(`${colors.bold("Warnings:")}     ${colors.yellow(scan.warnings)}`);
+    log(`${colors.bold("Avg Score:")}    ${colors.brightBlue(scan.avg_score + "/100")}`);
+
+    if (scan.findings?.length > 0) {
+      logHeader("Top Findings");
+      scan.findings.slice(0, 10).forEach(f => {
+        const sev = f.severity === 'high' ? colors.red("HIGH") : f.severity === 'medium' ? colors.yellow("MED") : colors.dim("LOW");
+        log(`  ${sev}  ${colors.dim(f.file || '')}  ${f.description || ''}`);
+      });
+    }
+    if (scan.recommendations?.length > 0) {
+      logHeader("Recommendations");
+      scan.recommendations.slice(0, 5).forEach(r => log(`  ${colors.blue("→")} ${r}`));
+    }
+    logDivider();
+    logSuccess(`Scan complete: ${colors.blue(response.message)}`);
+  } catch (error) { logError(error.message); }
+}
+
+// ─── Tier 1: test & list-tests ───────────────────────────────────
+
+async function runTestCommand(testId, config) {
+  logHeader(`Running Test: ${testId}`);
+  logInfo(`Provider: ${colors.blue(config.llm_provider)} | Model: ${colors.cyan(config.llm_model || 'default')}`);
+  logDivider();
+
+  try {
+    const apiKey = getApiKey(config);
+    const response = await callPythonEngine({
+      command: 'test', test_id: testId, provider: config.llm_provider,
+      api_key: apiKey, model: config.llm_model, repo_path: process.cwd(),
+    });
+    if (response.status === 'error') { logError(response.message); return; }
+
+    const result = response.data?.result?.result || response.data?.result || {};
+    logDivider();
+    const status = result.status === 'passed' ? colors.green("PASSED") : result.status === 'failed' ? colors.red("FAILED") : colors.yellow("WARNING");
+    log(`${colors.bold("Status:")} ${status}`);
+    log(`${colors.bold("Score:")}  ${colors.brightBlue((result.score || 0) + "/100")}`);
+    if (result.summary) log(`${colors.bold("Summary:")} ${result.summary}`);
+    if (result.findings?.length > 0) {
+      result.findings.slice(0, 5).forEach(f => {
+        log(`  ${colors.yellow("→")} ${f.description || JSON.stringify(f)}`);
+      });
+    }
+    if (result.recommendations?.length > 0) {
+      result.recommendations.forEach(r => log(`  ${colors.blue("💡")} ${r}`));
+    }
+    logDivider();
+  } catch (error) { logError(error.message); }
+}
+
+async function runListTests(config) {
+  logHeader("Available Tests");
+  try {
+    const response = await callPythonEngine({ command: 'list_tests' });
+    if (response.status === 'error') { logError(response.message); return; }
+    const tests = response.data?.tests || [];
+    const categories = {};
+    tests.forEach(t => {
+      if (!categories[t.category]) categories[t.category] = [];
+      categories[t.category].push(t);
+    });
+    for (const [cat, items] of Object.entries(categories)) {
+      console.log(`\n  ${colors.bold(colors.blue(cat.toUpperCase()))}`);
+      items.forEach(t => {
+        log(`  ${colors.cyan(t.id.padEnd(25))} ${t.name} ${colors.dim("— " + (t.description || '').slice(0, 50))}`);
+      });
+    }
+    logDivider();
+    logInfo(`Run a test: ${colors.cyan("voria test <test_id>")}`);
+    logInfo(`Full scan:  ${colors.cyan("voria scan")}`);
+  } catch (error) { logError(error.message); }
+}
+
+// ─── Tier 1: watch ───────────────────────────────────────────────
+
+async function runWatchCommand(config) {
+  logHeader("voria Watch Mode");
+  logInfo("Monitoring source files for changes...");
+  logInfo("Press Ctrl+C to stop\n");
+
+  const extensions = new Set(['.py', '.js', '.ts', '.go', '.rs', '.java']);
+  const ignore = ['node_modules', '.git', 'venv', '__pycache__', 'target'];
+
+  function getSnapshot(dir) {
+    const snap = {};
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const e of entries) {
+        if (ignore.some(i => e.name.includes(i))) continue;
+        const fp = path.join(dir, e.name);
+        if (e.isDirectory()) Object.assign(snap, getSnapshot(fp));
+        else if (extensions.has(path.extname(e.name))) {
+          try { snap[fp] = fs.statSync(fp).mtimeMs; } catch {} 
+        }
+      }
+    } catch {}
+    return snap;
   }
-}
 
-// Helper function to call Python engine
-async function callPythonEngine(command) {
-  const { spawn } = await import('child_process');
-  const pathMod = await import('path');
-  const fsMod = await import('fs');
-  
-  return new Promise((resolve, reject) => {
-    const pythonScript = pathMod.default.join(__dirname, '..', 'python', 'voria', 'engine.py');
-    const pythonPath = pathMod.default.join(__dirname, '..', 'python');
-    
-    // Check if virtual environment exists
-    const venvPath = pathMod.default.join(__dirname, '..', 'venv', 'bin', 'python');
-    const pythonCmd = fsMod.default.existsSync(venvPath) ? venvPath : 'python3';
-    
-    // Add python directory to PYTHONPATH so voria module can be found
-    const env = { ...process.env };
-    const currentPath = env.PYTHONPATH || '';
-    env.PYTHONPATH = pythonPath + (currentPath ? ':' + currentPath : '');
-    
-    const python = spawn(pythonCmd, [pythonScript], {
-      cwd: process.cwd(),
-      stdio: ['pipe', 'pipe', 'pipe'],
-      env: env
-    });
+  let prev = getSnapshot(process.cwd());
+  logInfo(`Watching ${Object.keys(prev).length} files...`);
 
-    let output = '';
-    let errorOutput = '';
+  const testIds = ['hardcoded_secrets', 'xss', 'sql_injection'];
+  const apiKey = getApiKey(config);
 
-    python.stdout.on('data', (data) => {
-      output += data.toString();
-    });
-
-    python.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-    });
-
-    python.on('close', (code) => {
-      if (code !== 0) {
-        console.debug(`Python engine exit code: ${code}`);
-        console.debug(`Error output: ${errorOutput}`);
-      }
-      
-      try {
-        // Parse NDJSON responses
-        const lines = output.trim().split('\n').filter(l => l.length > 0);
-        const lastLine = lines[lines.length - 1];
-        const response = JSON.parse(lastLine);
-        resolve(response);
-      } catch (e) {
-        reject(new Error(`Failed to parse Python response: ${e.message}`));
-      }
-    });
-
-    // Send command to Python engine
-    python.stdin.write(JSON.stringify(command) + '\n');
-    python.stdin.end();
-  });
-}
-
-// Helper function to call Rust core
-async function runRustCore(args) {
-  const { spawn } = await import('child_process');
-  const pathMod = await import('path');
-  const fsMod = await import('fs');
-  
-  return new Promise((resolve, reject) => {
-    // Try to find the rust binary
-    const possiblePaths = [
-      pathMod.default.join(__dirname, '..', 'target', 'release', 'voria'),
-      pathMod.default.join(__dirname, '..', 'target', 'debug', 'voria'),
-      pathMod.default.join(__dirname, '..', 'rust', 'target', 'release', 'voria'),
-      pathMod.default.join(__dirname, '..', 'rust', 'target', 'debug', 'voria'),
-    ];
-    
-    let rustBin = possiblePaths.find(p => fsMod.default.existsSync(p));
-    
-    if (!rustBin) {
-       // Check if it's in the system path
-       try {
-         execSync('voria --version', { stdio: 'ignore' });
-         rustBin = 'voria';
-       } catch (e) {
-         return reject(new Error('Rust core binary (voria) not found. Please run "cargo build --release" in the rust directory.'));
-       }
+  const interval = setInterval(async () => {
+    const curr = getSnapshot(process.cwd());
+    const changed = [];
+    for (const [fp, mtime] of Object.entries(curr)) {
+      if (!prev[fp] || prev[fp] !== mtime) changed.push(fp);
     }
-    
-    const child = spawn(rustBin, args, { stdio: 'inherit' });
-    child.on('exit', (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`Rust core exited with code ${code}`));
+    if (changed.length > 0) {
+      logInfo(`${colors.yellow(changed.length + " file(s) changed:")} ${changed.map(f => path.basename(f)).join(', ')}`);
+      for (const tid of testIds) {
+        logInfo(`Re-running test: ${colors.cyan(tid)}...`);
+        try {
+          const r = await callPythonEngine({
+            command: 'test', test_id: tid, provider: config.llm_provider,
+            api_key: apiKey, model: config.llm_model, repo_path: process.cwd(),
+          });
+          const st = r.data?.result?.result?.status || r.data?.result?.status || 'unknown';
+          const icon = st === 'passed' ? colors.green("✓") : st === 'failed' ? colors.red("✖") : colors.yellow("⚠");
+          log(`  ${icon} ${tid}: ${st}`);
+        } catch (e) { logError(`${tid}: ${e.message}`); }
+      }
+      prev = curr;
+    }
+  }, 2000);
+
+  process.on('SIGINT', () => { clearInterval(interval); logInfo("Watch mode stopped."); process.exit(0); });
+  // Keep alive
+  await new Promise(() => {});
+}
+
+// ─── Tier 1: diff ────────────────────────────────────────────────
+
+async function runDiffCommand(args, config) {
+  const refA = args[1] || 'HEAD~1';
+  const refB = args[2] || 'HEAD';
+  logHeader("voria Security Diff");
+  log(`${colors.bold("Comparing:")} ${colors.cyan(refA)} → ${colors.cyan(refB)}`);
+  logDivider();
+
+  try {
+    const response = await callPythonEngine({
+      command: 'diff', ref_a: refA, ref_b: refB, repo_path: process.cwd(),
     });
+    if (response.status === 'error') { logError(response.message); return; }
+    const diff = response.data?.diff || {};
+    log(`${colors.bold("Files Changed:")} ${colors.blue(diff.total_changed)}`);
+    log(`${colors.bold("Risk Level:")}    ${diff.risk_level === 'critical' ? colors.red(diff.risk_level) : diff.risk_level === 'elevated' ? colors.yellow(diff.risk_level) : colors.green(diff.risk_level)}`);
+    if (diff.high_risk_files?.length > 0) {
+      log(`${colors.bold(colors.red("High Risk:"))}`);
+      diff.high_risk_files.forEach(f => log(`  ${colors.red("●")} ${f}`));
+    }
+    if (diff.medium_risk_files?.length > 0) {
+      log(`${colors.bold(colors.yellow("Medium Risk:"))}`);
+      diff.medium_risk_files.forEach(f => log(`  ${colors.yellow("●")} ${f}`));
+    }
+    if (diff.recommendation) log(`\n${colors.blue("💡")} ${diff.recommendation}`);
+    logDivider();
+  } catch (error) { logError(error.message); }
+}
+
+// ─── Tier 1: benchmark ──────────────────────────────────────────
+
+async function runBenchmarkCommand(args) {
+  const url = args[1];
+  if (!url) { logError("URL required. Usage: voria benchmark <URL>"); return; }
+
+  const reqIdx = args.indexOf('--requests');
+  const conIdx = args.indexOf('--concurrency');
+  const requests = reqIdx !== -1 ? parseInt(args[reqIdx + 1]) : 100;
+  const concurrency = conIdx !== -1 ? parseInt(args[conIdx + 1]) : 10;
+
+  logHeader("voria HTTP Benchmark");
+  log(`${colors.bold("Target:")}      ${colors.cyan(url)}`);
+  log(`${colors.bold("Requests:")}    ${colors.blue(requests)}`);
+  log(`${colors.bold("Concurrency:")} ${colors.blue(concurrency)}`);
+  logDivider();
+  logInfo("Sending requests...");
+
+  try {
+    const response = await callPythonEngine({
+      command: 'benchmark', url, requests, concurrency,
+    });
+    if (response.status === 'error') { logError(response.message); return; }
+    const bm = response.data?.benchmark || {};
+    logHeader("Benchmark Results");
+    log(`${colors.bold("Requests/sec:")} ${colors.green(bm.rps)}`);
+    log(`${colors.bold("Total Time:")}   ${colors.blue(bm.total_time_sec + "s")}`);
+    log(`${colors.bold("Success:")}      ${colors.green(bm.successful)} | ${colors.bold("Failed:")} ${colors.red(bm.failed)}`);
+    logDivider();
+    log(`${colors.bold("Latency (ms):")}`);
+    log(`  ${colors.dim("avg:")}  ${colors.blue(bm.latency_avg_ms)}`);
+    log(`  ${colors.dim("p50:")}  ${colors.green(bm.latency_p50_ms)}`);
+    log(`  ${colors.dim("p95:")}  ${colors.yellow(bm.latency_p95_ms)}`);
+    log(`  ${colors.dim("p99:")}  ${colors.red(bm.latency_p99_ms)}`);
+    log(`  ${colors.dim("min:")}  ${colors.dim(bm.latency_min_ms)} | ${colors.dim("max:")} ${colors.dim(bm.latency_max_ms)}`);
+    logDivider();
+  } catch (error) { logError(error.message); }
+}
+
+// ─── Tier 1: ci ──────────────────────────────────────────────────
+
+async function runCiCommand(config) {
+  logHeader("voria CI/CD Scan");
+  logInfo("Running security tests and generating SARIF...");
+
+  try {
+    const apiKey = getApiKey(config);
+    const response = await callPythonEngine({
+      command: 'ci', provider: config.llm_provider, api_key: apiKey,
+      model: config.llm_model, repo_path: process.cwd(),
+    });
+    if (response.status === 'error') { logError(response.message); return; }
+
+    const sarif = response.data?.sarif;
+    if (sarif) {
+      const outPath = path.join(process.cwd(), 'voria-results.sarif');
+      fs.writeFileSync(outPath, JSON.stringify(sarif, null, 2));
+      logSuccess(`SARIF report written to: ${colors.cyan(outPath)}`);
+      log(`${colors.bold("Findings:")} ${colors.blue(response.data.findings_count)}`);
+      logInfo(`Upload to GitHub: ${colors.cyan("gh api repos/{owner}/{repo}/code-scanning/sarifs -f sarif=@voria-results.sarif")}`);
+    }
+    logDivider();
+  } catch (error) { logError(error.message); }
+}
+
+// ─── Tier 1: fix --auto ──────────────────────────────────────────
+
+async function runFixAutoCommand(args, config) {
+  const repo = args[1];
+  const issueNumber = args[2];
+  if (!repo || !issueNumber) {
+    logError("Usage: voria fix --auto <owner/repo> <issue_number>");
+    return;
+  }
+  logHeader("voria Auto-Fix");
+  log(`${colors.bold("Issue:")} ${colors.brightBlue("#" + issueNumber)} in ${colors.cyan(repo)}`);
+  logDivider();
+  logInfo("Generating fix, auto-applying, and running tests...");
+
+  try {
+    const apiKey = getApiKey(config);
+    const githubToken = config.github_token || process.env.GITHUB_TOKEN;
+    if (!githubToken) { logError("GitHub token required."); return; }
+
+    const response = await callPythonEngine({
+      command: 'issue', issue_number: parseInt(issueNumber), repo, repo_path: process.cwd(),
+      provider: config.llm_provider, api_key: apiKey, github_token: githubToken, model: config.llm_model, auto: true,
+    });
+    if (response.status === 'error') { logError(response.message); return; }
+    logSuccess("Patch generated and auto-applied!");
+    if (response.data?.files_modified) {
+      log(`${colors.bold("Files modified:")} ${response.data.files_modified.length}`);
+    }
+    logInfo("Running tests to verify fix...");
+    try {
+      const testResult = await callPythonEngine({
+        command: 'test', test_id: 'hardcoded_secrets', provider: config.llm_provider,
+        api_key: apiKey, model: config.llm_model, repo_path: process.cwd(),
+      });
+      logSuccess(`Post-fix test: ${testResult.data?.result?.result?.status || 'completed'}`);
+    } catch (e) { logWarn(`Post-fix test skipped: ${e.message}`); }
+    logDivider();
+  } catch (error) { logError(error.message); }
+}
+
+// ─── Rust Core ───────────────────────────────────────────────────
+
+async function runRustCore(args) {
+  return new Promise((resolve, reject) => {
+    const possiblePaths = [
+      path.join(__dirname, '..', 'target', 'release', 'voria'),
+      path.join(__dirname, '..', 'target', 'debug', 'voria'),
+      path.join(__dirname, '..', 'rust', 'target', 'release', 'voria'),
+      path.join(__dirname, '..', 'rust', 'target', 'debug', 'voria'),
+    ];
+    let rustBin = possiblePaths.find(p => fs.existsSync(p));
+    if (!rustBin) {
+      try { execSync('voria --version', { stdio: 'ignore' }); rustBin = 'voria'; }
+      catch (e) { return reject(new Error('Rust core binary not found.')); }
+    }
+    const child = spawn(rustBin, args, { stdio: 'inherit' });
+    child.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`Exit code ${code}`)));
   });
 }
 
-// Main CLI router
+// ─── Main CLI Router ─────────────────────────────────────────────
+
 async function main() {
   const args = process.argv.slice(2);
 
@@ -678,8 +807,7 @@ async function main() {
 
   switch (command) {
     case '--version':
-    case '-v':
-      console.log(`voria v${VERSION}`);
+      console.log(`${colors.blue("voria")} v${VERSION}`);
       break;
 
     case '--init':
@@ -696,14 +824,8 @@ async function main() {
 
     case '--list-issues': {
       const config = loadConfig();
-      const repoArg = args[1];
-      if (!repoArg) {
-        console.log('\n❌ Please provide a repository');
-        console.log('   Example: voria --list-issues owner/repo');
-        console.log('   Or:      voria --list-issues https://github.com/owner/repo\n');
-        process.exit(1);
-      }
-      await listIssues(repoArg, config);
+      if (!args[1]) { logError("Provide a repo. Example: voria --list-issues owner/repo"); process.exit(1); }
+      await listIssues(args[1], config);
       break;
     }
 
@@ -720,102 +842,119 @@ async function main() {
       break;
 
     case 'plan': {
-      const config = loadConfig();
-      if (Object.keys(config).length === 0) {
-        console.log('\n❌ voria not initialized');
-        console.log('   Run: voria --init\n');
-        process.exit(1);
-      }
-      const description = args.slice(1).join(' ');
-      if (!description) {
-        console.log('\n❌ Please provide a description');
-        console.log('   Example: voria plan "Remove deprecated login() method"\n');
-        process.exit(1);
-      }
-      await runPlanCommand(description, config, args);
+      const config = requireInit();
+      const desc = args.slice(1).filter(a => !a.startsWith('--')).join(' ');
+      if (!desc) { logError('Provide a description. Example: voria plan "Remove deprecated method"'); process.exit(1); }
+      await runPlanCommand(desc, config, args);
       break;
     }
 
     case 'issue': {
-      const config = loadConfig();
-      if (Object.keys(config).length === 0) {
-        console.log('\n❌ voria not initialized');
-        console.log('   Run: voria --init\n');
-        process.exit(1);
-      }
-      
-      // Parse: voria issue owner/repo issue_number
-      const issueArgs = args.slice(1);
-      if (issueArgs.length < 2) {
-        console.log('\n❌ Please provide repository and issue number');
-        console.log('   Example: voria issue owner/repo 42\n');
-        process.exit(1);
-      }
-      
-      const repo = issueArgs[0];
-      const issueNumber = issueArgs[1];
-      
-      await runIssueCommand(repo, issueNumber, config, args);
+      const config = requireInit();
+      if (args.length < 3) { logError("Usage: voria issue owner/repo 42"); process.exit(1); }
+      await runIssueCommand(args[1], args[2], config, args);
       break;
     }
 
     case 'apply': {
-      const config = loadConfig();
-      if (Object.keys(config).length === 0) {
-        console.log('\n❌ voria not initialized');
-        console.log('   Run: voria --init\n');
-        process.exit(1);
-      }
+      requireInit();
       const patchFile = args[1];
-      if (!patchFile) {
-        console.log('\n❌ Please provide a patch file');
-        console.log('   Example: voria apply fix.patch\n');
-        process.exit(1);
-      }
-      
-      if (!fs.existsSync(patchFile)) {
-        console.log(`\n❌ Patch file not found: ${patchFile}\n`);
-        process.exit(1);
-      }
-
-      const patch = fs.readFileSync(patchFile, 'utf-8');
-      console.log(`\n🔧 Applying patch: ${patchFile}`);
-      
+      if (!patchFile) { logError("Provide a patch file. Example: voria apply fix.patch"); process.exit(1); }
+      if (!fs.existsSync(patchFile)) { logError(`Patch file not found: ${patchFile}`); process.exit(1); }
+      logInfo(`Applying patch: ${patchFile}`);
       try {
-        const response = await callPythonEngine({
-          command: 'apply',
-          patch: patch,
-          repo_path: process.cwd()
-        });
-        
-        if (response.status === 'error') {
-          console.error(`❌ Error: ${response.message}\n`);
-        } else {
-          console.log(`✅ ${response.message}\n`);
-        }
-      } catch (error) {
-        console.error(`❌ Error: ${error.message}\n`);
+        const response = await callPythonEngine({ command: 'apply', patch: fs.readFileSync(patchFile, 'utf-8'), repo_path: process.cwd() });
+        response.status === 'error' ? logError(response.message) : logSuccess(response.message);
+      } catch (error) { logError(error.message); }
+      break;
+    }
+
+    // ─── Tier 1 Commands ─────────────────────────────
+
+    case 'scan': {
+      const config = requireInit();
+      await runScanCommand(config, args);
+      break;
+    }
+
+    case 'test': {
+      const config = requireInit();
+      const testId = args[1];
+      if (!testId) { logError("Provide a test ID. Run 'voria list-tests' to see available tests."); process.exit(1); }
+      await runTestCommand(testId, config);
+      break;
+    }
+
+    case 'list-tests': {
+      const config = loadConfig();
+      await runListTests(config);
+      break;
+    }
+
+    case 'watch': {
+      const config = requireInit();
+      await runWatchCommand(config);
+      break;
+    }
+
+    case 'diff': {
+      const config = loadConfig();
+      await runDiffCommand(args, config);
+      break;
+    }
+
+    case 'benchmark': {
+      await runBenchmarkCommand(args);
+      break;
+    }
+
+    case 'ci': {
+      const config = requireInit();
+      await runCiCommand(config);
+      break;
+    }
+
+    case 'fix': {
+      const config = requireInit();
+      if (args.includes('--auto')) {
+        const fixArgs = args.filter(a => a !== 'fix' && a !== '--auto');
+        await runFixAutoCommand(fixArgs.length >= 2 ? fixArgs : args.slice(1), config);
+      } else {
+        logError("Usage: voria fix --auto <owner/repo> <issue_number>");
       }
       break;
     }
 
-    case '--graph':
+    case 'token': {
+      requireInit();
+      logHeader("Token Usage");
       try {
-        await runRustCore(['--graph']);
-      } catch (error) {
-        console.error(`${colors.red("✖")} Error running analysis: ${error.message}`);
-        console.log(`${colors.yellow("💡")} Make sure to build the rust core: ${colors.bold("cargo build --release")}`);
+        const response = await callPythonEngine({ command: 'token', subcommand: args[1] || 'info' });
+        if (response.data?.tokens) {
+          const t = response.data.tokens;
+          log(`${colors.bold("Used:")} ${colors.blue(t.used || 0)} tokens`);
+          log(`${colors.bold("Cost:")} ${colors.green("$" + (t.cost || 0))}`);
+        } else { logInfo(response.message); }
+      } catch (error) { logError(error.message); }
+      break;
+    }
+
+    case '--graph':
+      try { await runRustCore(['--graph']); }
+      catch (error) {
+        logError(`Error running analysis: ${error.message}`);
+        logInfo(`Build rust core: ${colors.cyan("cargo build --release")}`);
       }
       break;
 
     default:
-      console.log(`\n❌ Unknown command: ${command}`);
-      console.log('   Run: voria --help\n');
+      logError(`Unknown command: ${colors.bold(command)}`);
+      logInfo(`Run ${colors.cyan("voria --help")} for usage.`);
       process.exit(1);
   }
 }
 
 main().catch(error => {
-  console.error('Error:', error);
+  logError(error.message);
   process.exit(1);
 });

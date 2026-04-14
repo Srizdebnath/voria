@@ -222,20 +222,49 @@ voria apply fix.patch -v
 
 ---
 
+### `voria test [NAME] [--list]`
+
+Run codebase security audits, stress tests, and performance probes.
+
+**Usage:**
+```bash
+# List all 50+ available tests
+voria test --list
+
+# Run a specific security scan (e.g., SQL Injection)
+voria test sql_injection
+
+# Perform a stress test
+voria test cpu_stress
+```
+
+**Categories Include:**
+- **Security (Pentesting):** SQLi, XSS, CSRF, JWT, SSRF, XXE, and 20+ more.
+- **Production Resilience:** Deadlock detection, Race conditions, Unhandled exceptions.
+- **Performance:** Latency baseline, P99 audits, Throughput benchmarks.
+- **Stress Testing:** CPU/Memory saturation, concurrent user simulation.
+- **Quality:** License compliance, dependency graph health.
+
+**What it does:**
+1. **Identifies** the test type (static analysis or dynamic probing).
+2. **Analyzes** code context using LLMs for security patterns.
+3. **Executes** runtime stress simulations for performance audits.
+4. **Reports** detailed findings, severity, and recommended fixes.
+
+---
+
 ##  Configuration
 
 voria stores configuration in `~/.voria/config.json`:
 
 ```json
 {
-  "llm_provider": "modal",
-  "modal_token": "sk-modal-...",
-  "github_token": "ghp_...",
   "llm_provider": "openai",
   "llm_api_key": "sk-...",
-  "llm_model": "gpt-4",
+  "llm_model": "gpt-4o",
+  "github_token": "ghp_...",
   "daily_budget": 10.0,
-  "max_retries": 1
+  "test_framework": "pytest"
 }
 ```
 

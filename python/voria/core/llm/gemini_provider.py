@@ -143,6 +143,50 @@ Code:
             "tokens_used": response.tokens_used,
         }
 
+    async def stream_generate(
+        self, messages: List[Message], max_tokens: int = 2000, temperature: float = 0.7
+    ):
+        """Stream response tokens from Gemini"""
+        import json as _json
+        try:
+            contents = []
+            for msg in messages:
+                contents.append({
+                    "role": "user" if msg.role == "user" else "model",
+                    "parts": [{"text": msg.content}],
+                })
+
+            payload = {
+                "contents": contents,
+                "generationConfig": {
+                    "maxOutputTokens": max_tokens,
+                    "temperature": temperature,
+                },
+            }
+
+            url = f"{self.API_ENDPOINT}/{self.model}:streamGenerateContent?key={self.api_key}&alt=sse"
+
+            async with self.client.stream("POST", url, json=payload) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if not line:
+                        continue
+                    if line.startswith("data: "):
+                        data_str = line[6:]
+                        try:
+                            data = _json.loads(data_str)
+                            candidates = data.get("candidates", [])
+                            if candidates:
+                                parts = candidates[0].get("content", {}).get("parts", [])
+                                for part in parts:
+                                    if "text" in part:
+                                        yield part["text"]
+                        except Exception:
+                            continue
+        except Exception as e:
+            logger.error(f"Gemini stream error: {e}")
+            raise
+
     async def close(self):
         """Close HTTP client"""
         await self.client.aclose()

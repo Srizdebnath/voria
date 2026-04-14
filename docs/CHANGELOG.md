@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.0.5] - April 14, 2026 ✅ TIER 1: SECURITY, STREAMING & RELIABILITY
+
+### 🛡️ Pentesting CLI (Enhanced)
+- **25+ Security Audits** running in parallel with `voria scan all`
+- **SARIF Support:** Export results for GitHub Security tab integration (`voria ci`)
+- **Security Diff:** Compare posture between git refs (`voria diff`)
+- **Watch Mode:** Automatic re-testing on file changes (`voria watch`)
+
+### ⚡ Performance & Reliability
+- **HTTP Benchmarking:** Real-world load testing with latency distribution (`voria benchmark`)
+- **Improved Stress Tests:** Real-time metrics for CPU, Memory, and Network tests
+- **NVIDIA Integrated API Support:** Native support for MiniMax model v2.7
+
+### 🤖 LLM & UX
+- **Streaming Output:** Real-time token-by-token streaming for plan and fix commands
+- **Auto-Fix:** AI-powered bug fixing with automatic patch application (`voria fix --auto`)
+- **Premium Blue UI:** Completely revamped CLI aesthetic with professional formatting
+- **Daemon-Ready IPC:** Infrastructure for persistent background engine acceleration
+
 ## [v0.0.3] - April 12, 2026 ✅ ADVANCED ANALYSIS & CHINESE MODELS
 
 ### 🔭 Advanced Code Analysis (New)

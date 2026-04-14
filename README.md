@@ -1,439 +1,134 @@
-# voria
+# voria v0.0.5
 
- **AI-Powered Bug Fixing Tool**
+**AI-Powered Security, Reliability & Bug-Fixing Engine**
 
-voria is a CLI tool that automatically fixes bugs and implements features in your codebase. Describe an issue or provide a GitHub issue number, and voria will generate a fix, test it, iterate on failures, and create a pull request - all automatically.
+voria is a next-generation CLI tool that combines advanced AI code analysis with automated security pentesting and production reliability audits. Whether you're fixing a logic bug, generating a pull request, or performing a full security audit, voria handles the heavy lifting with precision and speed.
 
-##  Features
+---
 
-- **Global CLI Tool** - Install once, use anywhere with `npm install -g @voria/cli`
-- **Easy Setup** - One command initialization with `voria --init`
-- **Automatic Code Analysis** - Understand issues and relevant code context
-- **AI-Powered Fixes** - Generate patches using Claude, GPT-4, Gemini, Modal, or other LLMs
-- **Validation & Testing** - Runs your test suite to verify fixes work
-- **Smart Iteration** - Refines failed fixes up to 5 times automatically
-- **GitHub Integration** - Creates pull requests directly, fetches issues
-- **Cost Control** - Set daily budgets, monitor token usage per project
-- **Extensible** - Custom plugins for languages, VCS, CI/CD systems
+## 🚀 Key Features in v0.0.5
 
-##  Installation & Quick Start
+- **⚡ Streaming Output** - Real-time LLM response streaming (token-by-token) for instant feedback.
+- **🛡️ Full Security Scan (`voria scan`)** - Run 25+ security audits (SQLi, XSS, SSRF, etc.) in parallel.
+- **👁️ Watch Mode (`voria watch`)** - Continuous codebase monitoring with automatic security re-validation.
+- **🔥 Performance Benchmarking (`voria benchmark`)** - Real-world HTTP load testing with p95/p99 latency analysis.
+- **🖇️ CI/CD Integration (`voria ci`)** - Export SARIF reports directly to GitHub Security dashboard.
+- **🛠️ Auto-Fix (`voria fix --auto`)** - AI generation and automatic patch application in one command.
+- **🔷 Premium Blue Theme** - Professional, high-contrast CLI interface with rich formatting.
+- **🏗️ Hybrid Architecture** - Blazing fast Rust CLI paired with a flexible Python AI engine.
 
-### Global Installation
+---
+
+## 📦 Installation
 
 ```bash
 npm install -g @voria/cli
 ```
 
-### Initialize a Project
-
+### Initial Setup
 ```bash
-cd your-project
 voria --init
 ```
-
-This will guide you through:
-1. Choose LLM provider (OpenAI, Claude, Gemini, Modal, Kimi)
-2. Enter API key
-3. Set daily budget
-4. Select test framework
-
-### Set Up GitHub Token
-
-```bash
-voria --set-github-token
-```
-
-This stores your GitHub Personal Access Token to access repositories.
-
-## Quick Start Workflow
-
-### Step 1: Setup Your LLM Provider
-
-Choose your preferred LLM provider:
-- **Modal** (FREE): Get your token from [modal.com](https://modal.com)
-- **OpenAI** (paid): Get your token from [openai.com](https://openai.com)
-- **Gemini** (paid): Get your token from [google.com/ai/gemini](https://google.com/ai/gemini)
-- **Claude** (paid): Get your token from [anthropic.com](https://anthropic.com)
-
-```bash
-# Setup with your own token
-voria setup-modal YOUR_MODAL_API_KEY
-
-# Or use interactively (will prompt for token)
-voria setup-modal
-```
-
-### Step 2: Setup GitHub Token
-
-Configure your GitHub Personal Access Token to access your repositories:
-
-```bash
-voria set-github-token
-```
-
-You'll be prompted to enter your GitHub token. This allows voria to:
-- List issues from your repositories
-- Fetch issue details
-- Create pull requests with fixes
-
-### Step 3: List Issues from a Repository
-
-See all open issues in any of your repositories:
-
-```bash
-# From a repo URL
-voria list-issues https://github.com/owner/repo
-
-# Or use owner/repo format
-voria list-issues owner/repo
-
-# Or provide interactively
-voria list-issues  # Will prompt for repo URL
-```
-
-Output shows:
-- Issue number
-- Title
-- Labels
-- Status
-- Link to issue
-
-### Step 4: Fix an Issue with AI
-
-Use the LLM to automatically fix any issue:
-
-```bash
-# Fix issue #42 in a repository
-voria fix 42 https://github.com/owner/repo
-
-# Or use owner/repo format
-voria fix 42 owner/repo
-
-# Or provide the repo interactively
-voria fix 42  # Will prompt for repo URL
-```
-
-voria will:
-1. Fetch the issue details from GitHub
-2. Analyze the issue description
-3. Use Modal LLM to generate a fix
-4. Show you the proposed patch
-5. You can then apply, test, and create a PR
-
-## Complete Example Workflow
-
-```bash
-# 1. First time - setup your LLM provider (get token from modal.com, openai.com, etc.)
-voria setup-modal YOUR_API_KEY
-
-# 2. Setup GitHub once
-voria set-github-token
-
-# 3. List issues in your repo
-voria list-issues owner/my-project
-
-# 4. Fix issue #5
-voria fix 5 owner/my-project
-
-# 5. Fix issue #10 from different repo
-voria fix 10 owner/another-project
-
-# 6. Fix issue #3 with interactive prompts
-voria fix 3
-# Will ask for repo URL
-```
-
-**→ [Full Installation Guide](docs/INSTALL.md)**
-
-## CLI Commands
-
-### Available Commands
-
-```bash
-# Setup Modal API token (do this first!)
-voria setup-modal [TOKEN]
-# Interactive mode if no token provided
-
-# Setup GitHub Personal Access Token
-voria set-github-token
-# Required for accessing repositories
-
-# List all issues in a repository
-voria list-issues [REPO_URL_OR_OWNER/REPO]
-# Shows all open issues with details
-
-# Fix a specific Github issue
-voria fix <ISSUE_NUMBER> [REPO_URL_OR_OWNER/REPO]
-# Uses AI to generate a fix for the issue
-
-# Plan how to fix a GitHub issue
-voria plan <ISSUE_ID>
-# Analyzes issue and proposes solution
-
-# Apply an existing patch
-voria apply <PLAN>
-# Applies previously generated patch
-```
-
-### Command Examples
-
-```bash
-# One-time setup (use your own API key)
-voria setup-modal YOUR_API_KEY
-voria set-github-token
-
-# List issues from different repo formats
-voria list-issues ansh/voria
-voria list-issues https://github.com/ansh/voria
-voria list-issues  # Interactive mode
-
-# Fix issues
-voria fix 42 ansh/voria        # With repo specified
-voria fix 42                     # Interactive mode prompts for repo
-
-# Plan out a fix
-voria plan 123
-```
-
-## Documentation
-
-### For Users
-- **[Quick Start](docs/QUICKSTART.md)** - Get running in 5 minutes
-- **[User Guide](docs/USER_GUIDE.md)** - Complete usage reference
-- **[Examples](docs/EXAMPLES.md)** - 14 real-world usage scenarios
-- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues & solutions
-
-### For Developers
-- **[Architecture](docs/ARCHITECTURE.md)** - System design & data flows
-- **[Design Decisions](docs/DESIGN_DECISIONS.md)** - Why we built it this way
-- **[Modules](docs/MODULES.md)** - Python & Rust API reference
-- **[IPC Protocol](docs/IPC_PROTOCOL.md)** - Inter-process communication spec
-
-### For Contributors
-- **[Contributing](docs/CONTRIBUTING.md)** - How to contribute
-- **[Development](docs/DEVELOPMENT.md)** - Development setup & workflow
-- **[Plugins](docs/PLUGINS.md)** - Custom plugins guide
-- **[LLM Integration](docs/LLM_INTEGRATION.md)** - Add new LLM providers
-
-### Operations & Advanced
-- **[Performance Guide](docs/PERFORMANCE.md)** - Optimization strategies
-- **[Security Best Practices](docs/SECURITY.md)** - Keep your setup secure
-- **[Roadmap](docs/ROADMAP.md)** - Future features & timeline- **[Changelog](docs/CHANGELOG.md)** - Version history & releases
-##  Architecture
-
-voria uses a **hybrid Rust + Python** architecture for performance and flexibility:
-
-- **Node.js CLI** - Global command-line interface (distributed via npm)
-- **Python Engine** - AI logic, LLM integration, code analysis
-- **Rust Components** - Fast CLI binaries, system operations (planned)
-
-**→ [Full Architecture Details](docs/ARCHITECTURE.md)**
-
-1. **Analyze** - Read issue description and relevant code
-2. **Generate** - AI creates a fix using your chosen LLM
-3. **Test** - Runs your test suite to validate the fix
-4. **Iterate** - If tests fail, refine and retry (up to 5 times)
-5. **Create PR** - Submits pull request when tests pass
-
-```mermaid
-graph LR
-    A[Issue] -->|Read| B[Code Analysis]
-    B -->|Generate| C[AI Patch]
-    C -->|Apply| D[Test Suite]
-    D -->|✅ Pass| E[Create PR]
-    D -->|❌ Fail| F[Analyze Failure]
-    F -->|Refine| C
-```
-
-##  Cost Estimates
-
-| Provider | Monthly Cost | Speed | Quality |
-|----------|-------------|-------|---------|
-| Gemini | $1-5 | Fast | Good |
-| Claude | $5-15 | Medium | Excellent |
-| GPT-4 Mini | $10-20 | Medium | Very Good |
-| GPT-4 Turbo | $30-50 | Slow | Best |
-
-**Typical single fix: $0.50 - $3.00**
-
-##  Supported Frameworks
-
-**Languages:** Python, JavaScript, Java, Go, Rust, Ruby, PHP, C++, C#  
-**Test Frameworks:** pytest, Jest, JUnit, Go testing, RSpec, Minitest, Mocha  
-**VCS:** GitHub, GitLab, Gitea  
-**CI/CD:** GitHub Actions, GitLab CI, Jenkins
-
-See [Plugins documentation](docs/PLUGINS.md) for extending to more frameworks.
-
-##  Security
-
-- API keys stored securely in `~/.voria/`
-- Never logs credentials
-- Automatic file backups before modifications
-- Restricted code execution environments
-- HTTPS-only LLM communication
-
-**→ [Security Best Practices](docs/SECURITY.md)**
-
-##  Example Usage
-
-### Fix a GitHub Issue
-```bash
-voria issue owner/repo 42 --llm claude
-```
-
-### List Issues First
-```bash
-voria --list-issues owner/repo
-voria issue owner/repo 42
-```
-
-### Propose a Change Before Applying
-```bash
-voria plan "Add type hints to utils.py" --dry-run
-voria plan "Add type hints to utils.py"  # Apply after review
-```
-
-### Use Different LLM Providers
-```bash
-voria issue owner/repo 42 --llm gemini  # Cheaper ($1-5/month)
-voria issue owner/repo 42 --llm claude  # Better quality ($5-15/month)
-```
-
-### Batch Processing Multiple Issues
-```bash
-voria issue owner/repo 40
-voria issue owner/repo 41
-voria issue owner/repo 42
-```
-
-**→ [See 14 more real examples](docs/EXAMPLES.md)**
-
-##  Contributing
-
-We welcome contributions! See [Contributing Guide](docs/CONTRIBUTING.md) for:
-- Setting up development environment
-- Code style guidelines
-- Testing procedures
-- Pull request process
-
-**Popular contribution areas:**
-- Add new LLM provider support
-- Add language/framework support
-- Improve documentation
-- Report and fix bugs
-
-
-##  Getting Help
- 
- - **[WhatsApp Support Group](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE?mode=gi_t)** - Fastest support
- - **[GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)** - Ask questions
- - **[GitHub Issues](https://github.com/Srizdebnath/voria/issues)** - Report bugs
- - **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues
-
-##  Roadmap
-
-**Phase 1: Core CLI Architecture** ✅ COMPLETE
-- ✅ Rust CLI base structure
-- ✅ Python engine with NDJSON IPC
-- ✅ Process management and communication
-
-**Phase 2: Global CLI Distribution** ✅ COMPLETE
-- ✅ npm package (@voria/cli)
-- ✅ Global installation support
-- ✅ Auto-discovery in PATH
-- ✅ Version management
-
-**Phase 3: Configuration & Setup** ✅ COMPLETE
-- ✅ Interactive setup wizard (`voria --init`)
-- ✅ LLM provider selection
-- ✅ API key management
-- ✅ Budget configuration
-- ✅ Test framework detection
-- ✅ Configuration management (`voria --config`)
-- ✅ Per-project settings (`.voria.json`)
-- ✅ Global settings (`~/.voria/config.json`)
-
-**Phase 4: LLM Integration** ✅ COMPLETE
-- ✅ Python LLM modules created
-- ✅ Support for: OpenAI, Claude, Gemini, Modal, Kimi
-- ✅ Token tracking and budget management
-- ✅ CLI integration with `voria plan/issue` commands
-- ✅ Model discovery and selection
-
-**Phase 5: GitHub Integration** ✅ COMPLETE
-- ✅ GitHub issue fetching via API
-- ✅ PR auto-creation
-- ✅ Commit management
-- ✅ Branch handling
-
-**Phase 6: Code Analysis & Patching** ✅ COMPLETE
-- ✅ Multi-language parsing
-- ✅ Code generation with LLMs
-- ✅ Unified diff generation
-- ✅ Safe patch application with rollback
-
-**Phase 7: Testing & Validation** ✅ COMPLETE
-- ✅ Multi-framework test execution (pytest, jest, go test)
-- ✅ Failure analysis
-- ✅ Iterative refinement (up to 5 iterations)
-- ✅ Test result integration
-
-**Phase 8: Agent Loop & Orchestration** ✅ COMPLETE
-- ✅ Full workflow coordination
-- ✅ Plan → Patch → Apply → Test → Analyze → Iterate
-- ✅ Intelligent iteration and refinement
-- ✅ Error recovery and fallbacks
-
-**Phase 9: Enterprise Features** 📋 PLANNED
-- ⏳ Team management
-- ⏳ Approval workflows
-- ⏳ Audit logging
-- ⏳ Usage analytics
-
-→ [Full Roadmap Details](docs/ROADMAP.md)
-
-##  Why voria?
-
-- **Saves Time** - Fixes bugs in seconds instead of hours
-- **Reduces Errors** - Tests validate every change
-- **Scales Across Repos** - Works with any language/framework
-- **Affordable** - $5-20/month typical cost
-- **Extensible** - Add custom LLMs, languages, and workflows
-- **Open Source** - Transparent, community-driven
-
-##  Stats
-
--  Fixes issues automatically
--  Tests every patch
--  Iterates up to 5 times
--  Cost-controlled with budgets
--  Multi-language support
--  Pluggable architecture
-
-##  What's Next
-
-**Current Status:** All core features complete and production-ready! 
-
-**Now Available in v0.0.3:**
-- ✅ Advanced code dependency analysis (`voria --graph`)
-- ✅ Risk scoring for patches & codebase
-- ✅ Expanded Chinese model support (Kimi, Minimax, DeepSeek)
-- ✅ Enhanced hierarchical structural visualization
-
-**Get involved:** [Contributing Guide](docs/CONTRIBUTING.md)
+Follow the interactive wizard to configure your LLM provider (OpenAI, Claude, Gemini, Modal, DeepSeek, Kimi, MiniMax, or SiliconFlow), set your security budget, and select your test framework.
 
 ---
 
-**Ready to get started?** 
-→ [Installation Guide](docs/INSTALL.md)
+## 🛡️ Pentesting & Security
+
+voria is now a first-class security tool. It analyzes your code and infrastructure to find and optionally fix vulnerabilities.
+
+### Full Project Scan
+```bash
+voria scan all
+```
+Performs a deep audit of your entire project, reporting on SQL Injection, Cross-Site Scripting, Insecure Direct Object References, and more.
+
+### Security Diff
+Compare two branches or commits to ensure no new vulnerabilities were introduced.
+```bash
+voria diff main feature-br
+```
+
+### Watch Mode
+Keep voria running while you code. It will detect file changes and instantly re-run relevant security checks.
+```bash
+voria watch sql_injection,xss
+```
+
+---
+
+## ⚡ Reliability & Performance
+
+Ensure your production code can handle the heat.
+
+### HTTP Benchmarking
+```bash
+voria benchmark https://api.myapp.com --requests 1000 --concurrency 50
+```
+Generates professional reports with latency distribution (Min, Max, P50, P95, P99) and status code counts.
+
+### Resilience Testing
+```bash
+voria test cpu_stress
+voria test mem_stress
+voria test network_latency
+```
+
+---
+
+## 🤖 AI Bug Fixing
+
+The core voria engine for automated issue resolution.
+
+### Fix from GitHub Issue
+```bash
+voria fix 123 ansh/voria --auto
+```
+Fetches issue #123, analyzes the code, generates a patch, applies it, and verified the fix.
+
+### Interactive Planning
+```bash
+voria plan "Implement JWT authentication in the auth module"
+```
+
+---
+
+## 🛠️ Commands Reference
+
+| Command | Action |
+|---------|--------|
+| `voria --init` | Interactive configuration wizard |
+| `voria scan <cat>` | Run full security audit (e.g., `all`, `owasp`, `logic`) |
+| `voria test <id>` | Run a specific test case (e.g., `sql_injection`, `deadlock`) |
+| `voria fix <id>` | AI-power fix for a GitHub issue |
+| `voria fix --auto` | Generate and apply fix immediately |
+| `voria watch` | Monitor files and re-run tests on change |
+| `voria benchmark` | High-performance HTTP load testing |
+| `voria diff <a..b>` | Compare security posture between refs |
+| `voria ci` | Generate SARIF report for CI pipelines |
+| `voria --graph` | Visualize security health distribution |
+
+---
+
+## 📖 Documentation
+
+- **[Installation Guide](docs/INSTALL.md)**
+- **[Full Security Suite](docs/SECURITY_TESTS.md)**
+- **[Architecture Deep-Dive](docs/ARCHITECTURE.md)**
+- **[CI/CD Integration Guide](docs/CICD.md)**
+
+---
+
+## 🤝 Community & Support
+
+- **[WhatsApp Support](https://chat.whatsapp.com/IWude2099NAJmLTs8kgEuE)**
+- **[GitHub Discussions](https://github.com/Srizdebnath/voria/discussions)**
+- **[Bug Reports](https://github.com/Srizdebnath/voria/issues)**
+
+License: MIT | Version: 0.0.5
 
 **Want to contribute?**
 → [Contributor Guide](docs/CONTRIBUTING.md)
 
 **Curious how it works?**
 → [Architecture Guide](docs/ARCHITECTURE.md)
-
----
-
-

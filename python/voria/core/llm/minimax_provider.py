@@ -1,4 +1,4 @@
-"""OpenAI GPT-4 and GPT-3.5 LLM Provider"""
+"""MiniMax LLM Provider via NVIDIA Integrate API"""
 
 import logging
 from typing import List, Dict, Any, Optional
@@ -9,19 +9,19 @@ from .base import BaseLLMProvider, Message, LLMResponse
 logger = logging.getLogger(__name__)
 
 
-class OpenAIProvider(BaseLLMProvider):
-    """OpenAI GPT-4 and GPT-3.5-turbo Provider"""
+class MiniMaxProvider(BaseLLMProvider):
+    """MiniMax LLM Provider using NVIDIA's OpenAI-compatible API"""
 
-    API_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-    DEFAULT_MODEL = "gpt-4"
+    API_ENDPOINT = "https://integrate.api.nvidia.com/v1/chat/completions"
+    DEFAULT_MODEL = "minimaxai/minimax-m2.7"
 
     def __init__(self, api_key: str, model: str = DEFAULT_MODEL):
         """
-        Initialize OpenAI provider
+        Initialize MiniMax provider
 
         Args:
-            api_key: OpenAI API key
-            model: Model (gpt-4, gpt-3.5-turbo, etc)
+            api_key: NVIDIA API key
+            model: Model (minimaxai/minimax-m2.7, etc)
         """
         super().__init__(api_key, model)
         self.client = httpx.AsyncClient(
@@ -35,7 +35,7 @@ class OpenAIProvider(BaseLLMProvider):
     async def generate(
         self, messages: List[Message], max_tokens: int = 2000, temperature: float = 0.7
     ) -> LLMResponse:
-        """Generate response using OpenAI"""
+        """Generate response using MiniMax"""
         try:
             payload = {
                 "model": self.model,
@@ -44,9 +44,12 @@ class OpenAIProvider(BaseLLMProvider):
                 ],
                 "max_tokens": max_tokens,
                 "temperature": temperature,
+                "top_p": 0.95,
+                "stream": False,
             }
 
-            logger.debug(f"Calling OpenAI API with {len(messages)} messages")
+            logger.debug(f"Calling MiniMax API with {len(messages)} messages")
+            logger.info(f"Sending generation request to MiniMax model {self.model}...")
 
             response = await self.client.post(self.API_ENDPOINT, json=payload)
             response.raise_for_status()
@@ -55,20 +58,58 @@ class OpenAIProvider(BaseLLMProvider):
             content = data["choices"][0]["message"]["content"]
             tokens_used = data.get("usage", {}).get("total_tokens", 0)
 
-            logger.info(f"OpenAI API response: {tokens_used} tokens used")
+            logger.info(f"MiniMax API response: {tokens_used} tokens used")
 
             return LLMResponse(
                 content=content,
                 tokens_used=tokens_used,
                 model=self.model,
-                provider="OpenAI",
+                provider="MiniMax",
             )
 
         except httpx.HTTPError as e:
-            logger.error(f"OpenAI API error: {e}")
+            logger.error(f"MiniMax API error: {e}")
             raise
         except Exception as e:
-            logger.error(f"Error generating with OpenAI: {e}")
+            logger.error(f"Error generating with MiniMax: {e}")
+            raise
+
+    async def stream_generate(
+        self, messages: List[Message], max_tokens: int = 2000, temperature: float = 0.7
+    ):
+        """Stream generation from MiniMax"""
+        try:
+            payload = {
+                "model": self.model,
+                "messages": [
+                    {"role": msg.role, "content": msg.content} for msg in messages
+                ],
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": 0.95,
+                "stream": True,
+            }
+
+            import json
+
+            async with self.client.stream("POST", self.API_ENDPOINT, json=payload) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if not line: continue
+                    if line.startswith("data: "):
+                        data_str = line[6:]
+                        if data_str == "[DONE]": break
+                        try:
+                            data = json.loads(data_str)
+                            delta = data["choices"][0].get("delta", {})
+                            if "content" in delta:
+                                yield delta["content"]
+                        except Exception as e:
+                            logger.error(f"Error parsing stream chunk: {e}")
+                            continue
+
+        except Exception as e:
+            logger.error(f"Error in MiniMax stream: {e}")
             raise
 
     async def plan(self, issue_description: str) -> str:
@@ -137,42 +178,9 @@ Code:
 
         return {
             "analysis": response.content,
-            "provider": "OpenAI",
+            "provider": "MiniMax",
             "tokens_used": response.tokens_used,
         }
-
-    async def stream_generate(
-        self, messages: List[Message], max_tokens: int = 2000, temperature: float = 0.7
-    ):
-        """Stream response tokens from OpenAI"""
-        import json as _json
-        try:
-            payload = {
-                "model": self.model,
-                "messages": [{"role": m.role, "content": m.content} for m in messages],
-                "max_tokens": max_tokens,
-                "temperature": temperature,
-                "stream": True,
-            }
-            async with self.client.stream("POST", self.API_ENDPOINT, json=payload) as response:
-                response.raise_for_status()
-                async for line in response.aiter_lines():
-                    if not line:
-                        continue
-                    if line.startswith("data: "):
-                        data_str = line[6:]
-                        if data_str == "[DONE]":
-                            break
-                        try:
-                            data = _json.loads(data_str)
-                            delta = data["choices"][0].get("delta", {})
-                            if "content" in delta:
-                                yield delta["content"]
-                        except Exception:
-                            continue
-        except Exception as e:
-            logger.error(f"OpenAI stream error: {e}")
-            raise
 
     async def close(self):
         """Close HTTP client"""

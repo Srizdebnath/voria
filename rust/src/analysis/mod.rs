@@ -343,8 +343,8 @@ impl CodeAnalyzer {
     }
 
     fn render_meter(&self, score: f32) -> String {
-        let filled = (score * 2.0) as usize;
-        let empty = 20 - filled;
+        let filled = ((score.clamp(0.0, 10.0)) * 2.0) as usize;
+        let empty = 20_usize.saturating_sub(filled);
         let mut meter = String::from("[");
         let color_func = if score > 7.0 {
             |s: &str| style(s).red().bold().to_string()

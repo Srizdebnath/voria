@@ -247,6 +247,10 @@ class JestParser:
         """Parse jest JSON output"""
 
         results = []
+        passed = 0
+        failed = 0
+        skipped = 0
+        duration = 0.0
 
         try:
             # Jest outputs JSON
@@ -289,6 +293,7 @@ class JestParser:
             # Fallback: parse text output
             passed = len(re.findall(r"✓", stdout))
             failed = len(re.findall(r"✕", stdout))
+            # skipped and duration keep their default values (0, 0.0)
 
         return TestSuiteResult(
             framework="jest",

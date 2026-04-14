@@ -5,6 +5,10 @@ Supports multiple LLM providers with dynamic model discovery:
 - OpenAI GPT-4 / GPT-3.5-turbo
 - Google Gemini Pro
 - Anthropic Claude 3
+- DeepSeek
+- SiliconFlow
+- Kimi (Moonshot AI)
+- MiniMax
 
 Dynamic Model Discovery:
     from voria.core.llm import LLMProviderFactory
@@ -34,12 +38,20 @@ from .modal_provider import ModalProvider
 from .openai_provider import OpenAIProvider
 from .gemini_provider import GeminiProvider
 from .claude_provider import ClaudeProvider
+from .minimax_provider import MiniMaxProvider
+from .deepseek_provider import DeepSeekProvider
+from .siliconflow_provider import SiliconFlowProvider
+from .kimi_provider import KimiProvider
 
 # Register all providers
 LLMProviderFactory.register("modal", ModalProvider)
 LLMProviderFactory.register("openai", OpenAIProvider)
 LLMProviderFactory.register("gemini", GeminiProvider)
 LLMProviderFactory.register("claude", ClaudeProvider)
+LLMProviderFactory.register("minimax", MiniMaxProvider)
+LLMProviderFactory.register("deepseek", DeepSeekProvider)
+LLMProviderFactory.register("siliconflow", SiliconFlowProvider)
+LLMProviderFactory.register("kimi", KimiProvider)
 
 __all__ = [
     "BaseLLMProvider",
@@ -52,4 +64,8 @@ __all__ = [
     "OpenAIProvider",
     "GeminiProvider",
     "ClaudeProvider",
+    "MiniMaxProvider",
+    "DeepSeekProvider",
+    "SiliconFlowProvider",
+    "KimiProvider",
 ]

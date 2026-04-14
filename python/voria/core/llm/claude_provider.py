@@ -183,6 +183,52 @@ Code Context:
             "tokens_used": response.tokens_used,
         }
 
+    async def stream_generate(
+        self, messages: List[Message], max_tokens: int = 2000, temperature: float = 0.7
+    ):
+        """Stream response tokens from Claude"""
+        import json as _json
+        try:
+            system_content = ""
+            user_messages = []
+            for msg in messages:
+                if msg.role == "system":
+                    system_content = msg.content
+                else:
+                    user_messages.append({"role": msg.role, "content": msg.content})
+
+            payload = {
+                "model": self.model,
+                "max_tokens": max_tokens,
+                "messages": user_messages,
+                "temperature": temperature,
+                "stream": True,
+            }
+            if system_content:
+                payload["system"] = system_content
+
+            async with self.client.stream("POST", self.API_ENDPOINT, json=payload) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if not line:
+                        continue
+                    if line.startswith("data: "):
+                        data_str = line[6:]
+                        try:
+                            data = _json.loads(data_str)
+                            event_type = data.get("type", "")
+                            if event_type == "content_block_delta":
+                                delta = data.get("delta", {})
+                                if delta.get("type") == "text_delta" and "text" in delta:
+                                    yield delta["text"]
+                            elif event_type == "message_stop":
+                                break
+                        except Exception:
+                            continue
+        except Exception as e:
+            logger.error(f"Claude stream error: {e}")
+            raise
+
     async def close(self):
         """Close HTTP client"""
         await self.client.aclose()

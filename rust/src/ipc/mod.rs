@@ -30,6 +30,8 @@ pub struct Response {
     pub logs: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub token_usage: Option<TokenUsage>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub chunk: Option<String>,
     #[serde(flatten)]
     pub extra: Value,
 }
@@ -129,10 +131,38 @@ impl ProcessManager {
     }
 
     pub async fn stop(&self) -> Result<()> {
+        // BUG-05 FIX: Graceful shutdown — close stdin (sends EOF), wait, then kill
+        // Drop the stdin handle to send EOF to Python, triggering clean exit
+        {
+            let mut stdin_guard = self.stdin.lock().await;
+            if let Some(stdin) = stdin_guard.take() {
+                drop(stdin);
+                debug!("Closed Python stdin (sent EOF)");
+            }
+        }
+
         if let Some(mut child) = self.process.lock().await.take() {
             info!("Stopping Python process");
-            child.kill().await?;
-            debug!("Python process stopped");
+
+            // Wait up to 3 seconds for graceful exit
+            match tokio::time::timeout(
+                std::time::Duration::from_secs(3),
+                child.wait(),
+            )
+            .await
+            {
+                Ok(Ok(status)) => {
+                    debug!("Python process exited gracefully: {}", status);
+                }
+                Ok(Err(e)) => {
+                    debug!("Error waiting for Python process: {}, force killing", e);
+                    let _ = child.kill().await;
+                }
+                Err(_) => {
+                    debug!("Python process didn't exit in time, force killing");
+                    let _ = child.kill().await;
+                }
+            }
         }
         Ok(())
     }

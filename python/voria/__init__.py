@@ -1,6 +1,6 @@
 """voria: AI-powered CLI tool for open source contributors."""
 
-__version__ = "0.1.0"
+__version__ = "0.0.5"
 __author__ = "voria Contributors"
 
 from . import engine

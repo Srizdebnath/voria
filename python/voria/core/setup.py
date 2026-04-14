@@ -80,6 +80,8 @@ class ProviderSetup:
                 models = await ModelDiscovery._get_gemini_fallback()
             elif provider_name == "claude":
                 models = await ModelDiscovery._get_claude_fallback()
+            elif provider_name == "minimax":
+                models = await ModelDiscovery._get_minimax_fallback()
 
         # Step 4: Choose model
         chosen_model = await self._choose_model(models)
@@ -117,7 +119,7 @@ class ProviderSetup:
 
         while True:
             try:
-                choice = input("\nEnter number (1-4): ").strip()
+                choice = input(f"\nEnter number (1-{len(providers)}): ").strip()
                 idx = int(choice) - 1
                 if 0 <= idx < len(providers):
                     return providers[idx]
@@ -133,6 +135,7 @@ class ProviderSetup:
             "openai": ["OPENAI_API_KEY"],
             "gemini": ["GOOGLE_API_KEY", "GEMINI_API_KEY"],
             "claude": ["ANTHROPIC_API_KEY", "CLAUDE_API_KEY"],
+            "minimax": ["MINIMAX_API_KEY", "NVIDIA_API_KEY"],
         }
 
         for env_var in env_vars.get(provider_name, []):

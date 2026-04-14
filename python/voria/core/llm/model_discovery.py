@@ -166,14 +166,28 @@ class ModelDiscovery:
         ]
 
     @staticmethod
-    async def fetch_claude_models(api_key: str) -> List[ModelInfo]:
-        # Anthropic doesn't have a models endpoint, just return hardcoded
+    async def _get_claude_fallback() -> List[ModelInfo]:
         return [
             ModelInfo(
                 name="claude-3-5-sonnet-20240620", display_name="Claude 3.5 Sonnet"
             ),
             ModelInfo(name="claude-3-opus-20240229", display_name="Claude 3 Opus"),
             ModelInfo(name="claude-3-haiku-20240307", display_name="Claude 3 Haiku"),
+        ]
+
+    @staticmethod
+    async def fetch_claude_models(api_key: str) -> List[ModelInfo]:
+        # Anthropic doesn't have a models endpoint, just return hardcoded
+        return await ModelDiscovery._get_claude_fallback()
+
+    @staticmethod
+    async def _get_minimax_fallback() -> List[ModelInfo]:
+        return [
+            ModelInfo(
+                name="minimaxai/minimax-m2.7",
+                display_name="MiniMax M2.7",
+                description="MiniMax M2.7 via NVIDIA",
+            ),
         ]
 
     @staticmethod
@@ -197,7 +211,7 @@ class ModelDiscovery:
             )
         elif provider == "minimax":
             return await ModelDiscovery.fetch_generic_openai_compatible(
-                api_key, "https://api.minimax.chat/v1", "Minimax"
+                api_key, "https://integrate.api.nvidia.com/v1", "MiniMax"
             )
         elif provider == "siliconflow":
             return await ModelDiscovery.fetch_generic_openai_compatible(

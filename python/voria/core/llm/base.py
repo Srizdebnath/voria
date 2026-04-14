@@ -60,6 +60,18 @@ class BaseLLMProvider(ABC):
         pass
 
     @abstractmethod
+    async def stream_generate(
+        self, messages: List[Message], max_tokens: int = 2000, temperature: float = 0.7
+    ):
+        """
+        Stream response tokens from LLM
+
+        Returns:
+            Async generator yielding string tokens
+        """
+        pass
+
+    @abstractmethod
     async def plan(self, issue_description: str) -> str:
         """Generate implementation plan from issue"""
         pass

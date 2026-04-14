@@ -5,18 +5,35 @@ use std::path::PathBuf;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[allow(dead_code)]
 pub struct Config {
+    #[serde(default = "default_python_path")]
     pub python_path: String,
+    #[serde(default = "default_engine_module")]
     pub engine_module: String,
+    #[serde(default = "default_process_timeout")]
     pub process_timeout: u64,
+    #[serde(default = "default_max_retries")]
     pub max_retries: u32,
+    #[serde(default)]
     pub github_token: Option<String>,
+    #[serde(default)]
     pub modal_token: Option<String>,
+    #[serde(default)]
     pub llm_provider: Option<String>,
+    #[serde(default)]
     pub llm_api_key: Option<String>,
+    #[serde(default)]
     pub llm_model: Option<String>,
+    #[serde(default = "default_daily_budget")]
     pub daily_budget: Option<f64>,
+    #[serde(default)]
     pub test_framework: Option<String>,
 }
+
+fn default_python_path() -> String { "python3".to_string() }
+fn default_engine_module() -> String { "voria.engine".to_string() }
+fn default_process_timeout() -> u64 { 30 }
+fn default_max_retries() -> u32 { 1 }
+fn default_daily_budget() -> Option<f64> { Some(10.0) }
 
 impl Default for Config {
     fn default() -> Self {

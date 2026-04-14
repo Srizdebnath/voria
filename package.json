@@ -1,6 +1,6 @@
 {
   "name": "@voria/cli",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "AI-powered CLI tool for automated bug fixing - initialize with voria --init",
   "main": "bin/voria",
   "type": "module",

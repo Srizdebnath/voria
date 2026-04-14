@@ -28,6 +28,10 @@ struct Args {
     /// Show dependency graph and risk analysis
     #[arg(long)]
     graph: bool,
+
+    /// List available resources (e.g., tests)
+    #[arg(long, short = 'l')]
+    list: Option<String>,
 }
 
 #[tokio::main]
@@ -41,11 +45,11 @@ async fn main() -> Result<()> {
 
     tracing_subscriber::fmt().with_env_filter(env_filter).init();
 
-    // Load config if provided
+    // Load config if provided, otherwise try global, otherwise default
     let config = if let Some(config_path) = args.config {
         config::Config::load(config_path)?
     } else {
-        config::Config::default()
+        config::Config::load_global().unwrap_or_else(|_| config::Config::default())
     };
 
     if args.graph {
@@ -54,6 +58,14 @@ async fn main() -> Result<()> {
         analyzer.visualize_graph(&result);
         analyzer.display_risk_report(&result);
         return Ok(());
+    }
+
+    if let Some(ref list_type) = args.list {
+        if list_type == "tests" || list_type == "-tests" {
+            let mut orchestrator = orchestrator::Orchestrator::new(config.clone()).await?;
+            orchestrator.list_tests().await?;
+            return Ok(());
+        }
     }
 
     // Execute command

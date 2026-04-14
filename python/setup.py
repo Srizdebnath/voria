@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="voria",
-    version="0.0.2",
+    version="0.0.5",
     description="AI-powered CLI tool for open source contributors",
     author="voria Contributors",
     packages=find_packages(),

@@ -124,14 +124,18 @@ cd ..
 ### Step 4: Verify Installation
 
 ```bash
-# Test Rust CLI
+# Test Node.js CLI
+node bin/voria --help
+node bin/voria --version
+
+# Test listing available tests (uses Python engine)
+node bin/voria list-tests
+
+# Test Rust CLI (if built)
 ./target/debug/voria --help
 
-# Test Python engine
-python3 -m voria.engine --help
-
-# Run integration test
-echo '{"command":"plan","issue_id":1}' | python3 -m voria.engine
+# Test security scan (requires LLM API key configured)
+node bin/voria scan --category performance
 ```
 
 ## Project Structure
@@ -152,25 +156,26 @@ voria/
 │   │   └── ui/mod.rs
 │   ├── Cargo.toml
 │   └── tests/
+├── bin/
+│   └── voria               # Node.js CLI entry point
 ├── python/
 │   ├── voria/
 │   │   ├── core/
-│   │   │   ├── llm/        # LLM providers
+│   │   │   ├── llm/        # LLM providers (OpenAI, Claude, Gemini, Modal,
+│   │   │   │               #   DeepSeek, SiliconFlow, Kimi, MiniMax)
+│   │   │   ├── testing/    # 50+ security & perf test definitions
 │   │   │   ├── github/     # GitHub integration
 │   │   │   ├── patcher/    # Code patching
 │   │   │   ├── executor/   # Test execution
 │   │   │   └── agent/      # Main loop
-│   │   ├── plugins/
-│   │   ├── engine.py       # Main entry point
+│   │   ├── engine.py       # Main Python engine (IPC over NDJSON)
 │   │   └── __init__.py
 │   ├── setup.py
 │   └── tests/
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── CONTRIBUTING.md
-│   ├── DEVELOPMENT.md
-│   ├── README.md
-│   └── ...
+├── rust/
+│   ├── src/                # Rust-based analysis engine
+│   └── Cargo.toml
+├── docs/                   # 18 documentation files
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTORS.md
 ├── README.md

@@ -214,6 +214,39 @@ Code Context:
             "tokens_used": response.tokens_used,
         }
 
+    async def stream_generate(
+        self, messages: List[Message], max_tokens: int = 2000, temperature: float = 0.7
+    ):
+        """Stream response tokens from Modal"""
+        import json as _json
+        try:
+            payload = {
+                "model": self.model,
+                "messages": [{"role": m.role, "content": m.content} for m in messages],
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "stream": True,
+            }
+            async with self.client.stream("POST", self.API_ENDPOINT, json=payload) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if not line:
+                        continue
+                    if line.startswith("data: "):
+                        data_str = line[6:]
+                        if data_str == "[DONE]":
+                            break
+                        try:
+                            data = _json.loads(data_str)
+                            delta = data["choices"][0].get("delta", {})
+                            if "content" in delta:
+                                yield delta["content"]
+                        except Exception:
+                            continue
+        except Exception as e:
+            logger.error(f"Modal stream error: {e}")
+            raise
+
     async def close(self):
         """Close HTTP client"""
         await self.client.aclose()
