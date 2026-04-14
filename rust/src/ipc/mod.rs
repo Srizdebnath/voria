@@ -145,12 +145,7 @@ impl ProcessManager {
             info!("Stopping Python process");
 
             // Wait up to 3 seconds for graceful exit
-            match tokio::time::timeout(
-                std::time::Duration::from_secs(3),
-                child.wait(),
-            )
-            .await
-            {
+            match tokio::time::timeout(std::time::Duration::from_secs(3), child.wait()).await {
                 Ok(Ok(status)) => {
                     debug!("Python process exited gracefully: {}", status);
                 }

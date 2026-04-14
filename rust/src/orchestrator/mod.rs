@@ -22,7 +22,7 @@ impl Orchestrator {
         loop {
             let response = self.pm.read_response().await?;
             self.handle_response(&response).await?;
-            
+
             if response.status == "success" || response.status == "error" {
                 return Ok(response);
             }
@@ -222,14 +222,20 @@ impl Orchestrator {
         let report = &data["result"];
         let status = report["status"].as_str().unwrap_or("unknown");
 
-        println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "\n{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
         println!(
             "  {}",
             format!("📊 VORIA TEST REPORT: {}", test_id.to_uppercase())
                 .blue()
                 .bold()
         );
-        println!("{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
 
         let status_display = match status {
             "passed" => "✓ PASSED".green().bold().to_string(),
@@ -248,7 +254,11 @@ impl Orchestrator {
             } else {
                 score_str.red().bold().to_string()
             };
-            println!("  {:<15} : {}", "Security Score".blue().bold(), score_colored);
+            println!(
+                "  {:<15} : {}",
+                "Security Score".blue().bold(),
+                score_colored
+            );
         }
 
         if let Some(summary) = report["summary"].as_str() {
@@ -268,9 +278,16 @@ impl Orchestrator {
                     let line = f["line"].as_u64().unwrap_or(0);
 
                     let sev_display = match severity {
-                        "high" | "critical" => format!("[{}]", severity.to_uppercase()).red().bold().to_string(),
-                        "medium" => format!("[{}]", severity.to_uppercase()).yellow().to_string(),
-                        _ => format!("[{}]", severity.to_uppercase()).dimmed().to_string(),
+                        "high" | "critical" => format!("[{}]", severity.to_uppercase())
+                            .red()
+                            .bold()
+                            .to_string(),
+                        "medium" => format!("[{}]", severity.to_uppercase())
+                            .yellow()
+                            .to_string(),
+                        _ => format!("[{}]", severity.to_uppercase())
+                            .dimmed()
+                            .to_string(),
                     };
                     println!(
                         "    {} {} {}",
@@ -291,13 +308,27 @@ impl Orchestrator {
             }
         }
 
-        println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "\n{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
     }
 
     pub async fn scan(&mut self, category: &str) -> Result<()> {
-        println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
-        println!("  {}", format!("🛡️  VORIA FULL SECURITY SCAN [{}]", category.to_uppercase()).blue().bold());
-        println!("{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "\n{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
+        println!(
+            "  {}",
+            format!("🛡️  VORIA FULL SECURITY SCAN [{}]", category.to_uppercase())
+                .blue()
+                .bold()
+        );
+        println!(
+            "{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
         println!("  {} Scanning codebase...\n", "⏳".dimmed());
 
         let request = Request {
@@ -321,26 +352,33 @@ impl Orchestrator {
                 let warnings = scan["warnings"].as_u64().unwrap_or(0);
                 let avg_score = scan["avg_score"].as_f64().unwrap_or(0.0);
 
-                println!("  {}", "╔════════════════════════════════════════════════════════╗".blue());
-                println!("  {}  {:<18}: {}{}",
+                println!(
+                    "  {}",
+                    "╔════════════════════════════════════════════════════════╗".blue()
+                );
+                println!(
+                    "  {}  {:<18}: {}{}",
                     "║".blue(),
                     "Total Tests".blue().bold(),
                     total.to_string().white().bold(),
                     " ".repeat(35 - total.to_string().len()) + &"║".blue().to_string(),
                 );
-                println!("  {}  {:<18}: {}{}",
+                println!(
+                    "  {}  {:<18}: {}{}",
                     "║".blue(),
                     "Passed".green().bold(),
                     passed.to_string().green().bold(),
                     " ".repeat(35 - passed.to_string().len()) + &"║".blue().to_string(),
                 );
-                println!("  {}  {:<18}: {}{}",
+                println!(
+                    "  {}  {:<18}: {}{}",
                     "║".blue(),
                     "Failed".red().bold(),
                     failed.to_string().red().bold(),
                     " ".repeat(35 - failed.to_string().len()) + &"║".blue().to_string(),
                 );
-                println!("  {}  {:<18}: {}{}",
+                println!(
+                    "  {}  {:<18}: {}{}",
                     "║".blue(),
                     "Warnings".yellow().bold(),
                     warnings.to_string().yellow().bold(),
@@ -355,13 +393,18 @@ impl Orchestrator {
                 } else {
                     score_str.red().bold().to_string()
                 };
-                println!("  {}  {:<18}: {}{}",
+                println!(
+                    "  {}  {:<18}: {}{}",
                     "║".blue(),
                     "Average Score".blue().bold(),
                     score_disp,
-                    " ".repeat(35 - format!("{:.1}/100", avg_score).len()) + &"║".blue().to_string(),
+                    " ".repeat(35 - format!("{:.1}/100", avg_score).len())
+                        + &"║".blue().to_string(),
                 );
-                println!("  {}", "╚════════════════════════════════════════════════════════╝".blue());
+                println!(
+                    "  {}",
+                    "╚════════════════════════════════════════════════════════╝".blue()
+                );
 
                 // Show findings
                 if let Some(findings) = scan["findings"].as_array() {
@@ -372,11 +415,23 @@ impl Orchestrator {
                             let desc = f["description"].as_str().unwrap_or("");
                             let test = f["test"].as_str().unwrap_or("");
                             let sev_display = match severity {
-                                "high" | "critical" => format!("[{}]", severity.to_uppercase()).red().bold().to_string(),
-                                "medium" => format!("[{}]", severity.to_uppercase()).yellow().to_string(),
-                                _ => format!("[{}]", severity.to_uppercase()).dimmed().to_string(),
+                                "high" | "critical" => format!("[{}]", severity.to_uppercase())
+                                    .red()
+                                    .bold()
+                                    .to_string(),
+                                "medium" => format!("[{}]", severity.to_uppercase())
+                                    .yellow()
+                                    .to_string(),
+                                _ => format!("[{}]", severity.to_uppercase())
+                                    .dimmed()
+                                    .to_string(),
                             };
-                            println!("    {} {} {}", sev_display, desc, format!("({})", test).dimmed());
+                            println!(
+                                "    {} {} {}",
+                                sev_display,
+                                desc,
+                                format!("({})", test).dimmed()
+                            );
                         }
                     }
                 }
@@ -391,7 +446,10 @@ impl Orchestrator {
                     }
                 }
 
-                println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+                println!(
+                    "\n{}",
+                    "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+                );
             } else {
                 ui::print_success(&response.message);
             }
@@ -404,9 +462,20 @@ impl Orchestrator {
     }
 
     pub async fn diff(&mut self, ref_a: &str, ref_b: &str) -> Result<()> {
-        println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
-        println!("  {}", format!("🔀 SECURITY DIFF: {} → {}", ref_a, ref_b).blue().bold());
-        println!("{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "\n{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
+        println!(
+            "  {}",
+            format!("🔀 SECURITY DIFF: {} → {}", ref_a, ref_b)
+                .blue()
+                .bold()
+        );
+        println!(
+            "{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
 
         let request = Request {
             command: "diff".to_string(),
@@ -434,13 +503,25 @@ impl Orchestrator {
                     _ => "🟢 LOW".green().bold().to_string(),
                 };
 
-                println!("\n  {:<20}: {}", "Files Changed".blue().bold(), total.to_string().white().bold());
+                println!(
+                    "\n  {:<20}: {}",
+                    "Files Changed".blue().bold(),
+                    total.to_string().white().bold()
+                );
                 println!("  {:<20}: {}", "Risk Level".blue().bold(), risk_display);
-                println!("  {:<20}: {}", "Risk Score".blue().bold(), risk_delta.to_string().white());
+                println!(
+                    "  {:<20}: {}",
+                    "Risk Score".blue().bold(),
+                    risk_delta.to_string().white()
+                );
 
                 if let Some(high) = diff["high_risk_files"].as_array() {
                     if !high.is_empty() {
-                        println!("\n  {} {}", "🔴 HIGH RISK FILES:".red().bold(), format!("({})", high.len()).dimmed());
+                        println!(
+                            "\n  {} {}",
+                            "🔴 HIGH RISK FILES:".red().bold(),
+                            format!("({})", high.len()).dimmed()
+                        );
                         for f in high {
                             println!("    {} {}", "⚠".red(), f.as_str().unwrap_or("").red());
                         }
@@ -449,7 +530,11 @@ impl Orchestrator {
 
                 if let Some(med) = diff["medium_risk_files"].as_array() {
                     if !med.is_empty() {
-                        println!("\n  {} {}", "🟡 MEDIUM RISK FILES:".yellow().bold(), format!("({})", med.len()).dimmed());
+                        println!(
+                            "\n  {} {}",
+                            "🟡 MEDIUM RISK FILES:".yellow().bold(),
+                            format!("({})", med.len()).dimmed()
+                        );
                         for f in med {
                             println!("    {} {}", "●".yellow(), f.as_str().unwrap_or("").yellow());
                         }
@@ -458,7 +543,11 @@ impl Orchestrator {
 
                 if let Some(low) = diff["low_risk_files"].as_array() {
                     if !low.is_empty() {
-                        println!("\n  {} {}", "🟢 LOW RISK FILES:".green().bold(), format!("({})", low.len()).dimmed());
+                        println!(
+                            "\n  {} {}",
+                            "🟢 LOW RISK FILES:".green().bold(),
+                            format!("({})", low.len()).dimmed()
+                        );
                         for f in low.iter().take(10) {
                             println!("    {} {}", "·".dimmed(), f.as_str().unwrap_or(""));
                         }
@@ -479,16 +568,28 @@ impl Orchestrator {
             ui::print_error(&response.message);
         }
 
-        println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "\n{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
         self.pm.stop().await?;
         Ok(())
     }
 
     pub async fn benchmark(&mut self, url: &str, requests: u32, concurrency: u32) -> Result<()> {
-        println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "\n{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
         println!("  {}", format!("⚡ HTTP BENCHMARK: {}", url).blue().bold());
-        println!("  {}", format!("  {} requests, {} concurrency", requests, concurrency).dimmed());
-        println!("{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "  {}",
+            format!("  {} requests, {} concurrency", requests, concurrency).dimmed()
+        );
+        println!(
+            "{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
         println!("  {} Benchmarking...\n", "⏳".dimmed());
 
         let request = Request {
@@ -519,20 +620,93 @@ impl Orchestrator {
                 let failed = bm["failed"].as_u64().unwrap_or(0);
                 let total_time = bm["total_time_sec"].as_f64().unwrap_or(0.0);
 
-                println!("  {}", "╔═══════════════════════════════════════════╗".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "Requests/sec".blue().bold(), format!("{:.1}", rps).green().bold(), "║".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "Total Time".blue().bold(), format!("{:.2}s", total_time).white(), "║".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "Successful".blue().bold(), successful.to_string().green(), "║".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "Failed".blue().bold(), failed.to_string().red(), "║".blue());
-                println!("  {}", "╠═══════════════════════════════════════════╣".blue());
-                println!("  {}  {}", "║".blue(), "  LATENCY DISTRIBUTION".blue().bold());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "Min".dimmed(), format!("{:.2}ms", min).white(), "║".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "Average".dimmed(), format!("{:.2}ms", avg).white(), "║".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "P50 (median)".blue().bold(), format!("{:.2}ms", p50).green().bold(), "║".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "P95".yellow().bold(), format!("{:.2}ms", p95).yellow().bold(), "║".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "P99".red().bold(), format!("{:.2}ms", p99).red().bold(), "║".blue());
-                println!("  {}  {:<20}: {:<20} {}", "║".blue(), "Max".dimmed(), format!("{:.2}ms", max).white(), "║".blue());
-                println!("  {}", "╚═══════════════════════════════════════════╝".blue());
+                println!(
+                    "  {}",
+                    "╔═══════════════════════════════════════════╗".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "Requests/sec".blue().bold(),
+                    format!("{:.1}", rps).green().bold(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "Total Time".blue().bold(),
+                    format!("{:.2}s", total_time).white(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "Successful".blue().bold(),
+                    successful.to_string().green(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "Failed".blue().bold(),
+                    failed.to_string().red(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}",
+                    "╠═══════════════════════════════════════════╣".blue()
+                );
+                println!(
+                    "  {}  {}",
+                    "║".blue(),
+                    "  LATENCY DISTRIBUTION".blue().bold()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "Min".dimmed(),
+                    format!("{:.2}ms", min).white(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "Average".dimmed(),
+                    format!("{:.2}ms", avg).white(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "P50 (median)".blue().bold(),
+                    format!("{:.2}ms", p50).green().bold(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "P95".yellow().bold(),
+                    format!("{:.2}ms", p95).yellow().bold(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "P99".red().bold(),
+                    format!("{:.2}ms", p99).red().bold(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}  {:<20}: {:<20} {}",
+                    "║".blue(),
+                    "Max".dimmed(),
+                    format!("{:.2}ms", max).white(),
+                    "║".blue()
+                );
+                println!(
+                    "  {}",
+                    "╚═══════════════════════════════════════════╝".blue()
+                );
 
                 // Status codes
                 if let Some(codes) = bm["status_codes"].as_object() {
@@ -557,7 +731,10 @@ impl Orchestrator {
             ui::print_error(&response.message);
         }
 
-        println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "\n{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
         self.pm.stop().await?;
         Ok(())
     }
@@ -582,21 +759,39 @@ impl Orchestrator {
 
                 if let Some(ref path) = output {
                     std::fs::write(path, &sarif_json)?;
-                    println!("{}", format!("  ✓ SARIF report written to: {}", path).green().bold());
+                    println!(
+                        "{}",
+                        format!("  ✓ SARIF report written to: {}", path)
+                            .green()
+                            .bold()
+                    );
                 } else {
                     // Write to default path
                     let default_path = "voria-results.sarif";
                     std::fs::write(default_path, &sarif_json)?;
-                    println!("{}", format!("  ✓ SARIF report written to: {}", default_path).green().bold());
+                    println!(
+                        "{}",
+                        format!("  ✓ SARIF report written to: {}", default_path)
+                            .green()
+                            .bold()
+                    );
                 }
 
-                let count = response.extra.get("data")
+                let count = response
+                    .extra
+                    .get("data")
                     .and_then(|d| d.get("findings_count"))
                     .and_then(|c| c.as_u64())
                     .unwrap_or(0);
 
-                println!("{}", format!("  📊 {} findings exported for GitHub Security tab", count).blue());
-                println!("{}", "  💡 Upload with: gh sarif upload voria-results.sarif".bright_cyan());
+                println!(
+                    "{}",
+                    format!("  📊 {} findings exported for GitHub Security tab", count).blue()
+                );
+                println!(
+                    "{}",
+                    "  💡 Upload with: gh sarif upload voria-results.sarif".bright_cyan()
+                );
             } else {
                 ui::print_success(&response.message);
             }
@@ -609,12 +804,26 @@ impl Orchestrator {
     }
 
     pub async fn watch(&mut self, test_ids: Vec<String>) -> Result<()> {
-        println!("\n{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "\n{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
         println!("  {}", "👁️  VORIA WATCH MODE".blue().bold());
-        println!("{}", "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue());
+        println!(
+            "{}",
+            "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".blue()
+        );
         println!("  {} Monitoring for file changes...", "⏳".dimmed());
-        println!("  {} Tests: {}", "🧪".dimmed(), test_ids.join(", ").bright_cyan());
-        println!("  {} Press {} to stop\n", "·".dimmed(), "Ctrl+C".yellow().bold());
+        println!(
+            "  {} Tests: {}",
+            "🧪".dimmed(),
+            test_ids.join(", ").bright_cyan()
+        );
+        println!(
+            "  {} Press {} to stop\n",
+            "·".dimmed(),
+            "Ctrl+C".yellow().bold()
+        );
 
         // Initial setup via Python
         let request = Request {
@@ -633,7 +842,11 @@ impl Orchestrator {
         if response.status == "success" {
             if let Some(watch_data) = response.extra.get("data").and_then(|d| d.get("watch")) {
                 let files = watch_data["files_monitored"].as_u64().unwrap_or(0);
-                println!("  {} {} files indexed and monitored", "✓".green().bold(), files.to_string().blue().bold());
+                println!(
+                    "  {} {} files indexed and monitored",
+                    "✓".green().bold(),
+                    files.to_string().blue().bold()
+                );
             }
             ui::print_success(&response.message);
         } else {
@@ -643,7 +856,11 @@ impl Orchestrator {
         // Rust-side file watching loop
         let watch_path = std::env::current_dir()?;
         let mut snapshot = self.get_file_snapshot(&watch_path);
-        println!("  {} Watching {} files for changes...\n", "👁️".blue(), snapshot.len().to_string().blue().bold());
+        println!(
+            "  {} Watching {} files for changes...\n",
+            "👁️".blue(),
+            snapshot.len().to_string().blue().bold()
+        );
 
         self.pm.stop().await?;
 
@@ -658,7 +875,11 @@ impl Orchestrator {
                 .collect();
 
             if !changed.is_empty() {
-                println!("\n  {} Detected {} file change(s):", "🔄".blue().bold(), changed.len().to_string().yellow());
+                println!(
+                    "\n  {} Detected {} file change(s):",
+                    "🔄".blue().bold(),
+                    changed.len().to_string().yellow()
+                );
                 for f in &changed {
                     println!("    {} {}", "→".blue(), f.bright_cyan());
                 }
@@ -685,9 +906,21 @@ impl Orchestrator {
         use std::collections::HashMap;
         let mut snap = HashMap::new();
         let extensions = ["py", "js", "ts", "go", "rs", "java", "tsx", "jsx"];
-        let excludes = ["node_modules", "target", ".git", "venv", "__pycache__", ".next", "dist"];
+        let excludes = [
+            "node_modules",
+            "target",
+            ".git",
+            "venv",
+            "__pycache__",
+            ".next",
+            "dist",
+        ];
 
-        for entry in walkdir::WalkDir::new(path).into_iter().filter_map(|e| e.ok()).take(5000) {
+        for entry in walkdir::WalkDir::new(path)
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .take(5000)
+        {
             let p = entry.path();
             let p_str = p.to_string_lossy();
             if excludes.iter().any(|e| p_str.contains(e)) {
@@ -697,7 +930,10 @@ impl Orchestrator {
                 if extensions.contains(&ext) {
                     if let Ok(meta) = p.metadata() {
                         if let Ok(modified) = meta.modified() {
-                            let secs = modified.duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs();
+                            let secs = modified
+                                .duration_since(std::time::UNIX_EPOCH)
+                                .unwrap_or_default()
+                                .as_secs();
                             snap.insert(p_str.to_string(), secs);
                         }
                     }

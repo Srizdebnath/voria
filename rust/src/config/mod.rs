@@ -29,11 +29,21 @@ pub struct Config {
     pub test_framework: Option<String>,
 }
 
-fn default_python_path() -> String { "python3".to_string() }
-fn default_engine_module() -> String { "voria.engine".to_string() }
-fn default_process_timeout() -> u64 { 30 }
-fn default_max_retries() -> u32 { 1 }
-fn default_daily_budget() -> Option<f64> { Some(10.0) }
+fn default_python_path() -> String {
+    "python3".to_string()
+}
+fn default_engine_module() -> String {
+    "voria.engine".to_string()
+}
+fn default_process_timeout() -> u64 {
+    30
+}
+fn default_max_retries() -> u32 {
+    1
+}
+fn default_daily_budget() -> Option<f64> {
+    Some(10.0)
+}
 
 impl Default for Config {
     fn default() -> Self {

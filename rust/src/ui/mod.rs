@@ -19,7 +19,9 @@ pub fn print_warning(msg: &str) {
 
 #[allow(dead_code)]
 pub fn print_banner() {
-    println!("{}", "
+    println!(
+        "{}",
+        "
   ╔══════════════════════════════════════════════════════╗
   ║                                                      ║
   ║   ██╗   ██╗ ██████╗ ██████╗ ██╗ █████╗               ║
@@ -32,5 +34,8 @@ pub fn print_banner() {
   ║   AI-Powered Security & Reliability Engine  v0.0.5   ║
   ║                                                      ║
   ╚══════════════════════════════════════════════════════╝
-".blue().bold());
+"
+        .blue()
+        .bold()
+    );
 }

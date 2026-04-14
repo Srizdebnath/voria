@@ -100,7 +100,11 @@ pub enum Command {
     /// Watch mode — monitor files and re-run tests on changes
     Watch {
         /// Comma-separated list of test IDs to run
-        #[arg(long, short = 't', default_value = "hardcoded_secrets,xss,sql_injection")]
+        #[arg(
+            long,
+            short = 't',
+            default_value = "hardcoded_secrets,xss,sql_injection"
+        )]
         tests: String,
     },
 }
@@ -112,8 +116,13 @@ impl Command {
             Command::Init | Command::Setup => self.handle_setup(config).await,
             Command::SetGithubToken => self.handle_set_github_token(config).await,
             Command::ListIssues { repo } => self.handle_list_issues(repo.clone(), config).await,
-            Command::Fix { issue_number, repo, auto } => {
-                self.handle_fix(*issue_number, repo.clone(), *auto, config).await
+            Command::Fix {
+                issue_number,
+                repo,
+                auto,
+            } => {
+                self.handle_fix(*issue_number, repo.clone(), *auto, config)
+                    .await
             }
             Command::Plan { issue_id } => self.handle_plan(*issue_id, config).await,
             Command::Issue { issue_id } => self.handle_issue(*issue_id, config).await,
@@ -121,8 +130,13 @@ impl Command {
             Command::Test { name, list } => self.handle_test(name.clone(), *list, config).await,
             Command::Scan { category } => self.handle_scan(category, config).await,
             Command::Diff { ref_a, ref_b } => self.handle_diff(ref_a, ref_b, config).await,
-            Command::Benchmark { url, requests, concurrency } => {
-                self.handle_benchmark(url, *requests, *concurrency, config).await
+            Command::Benchmark {
+                url,
+                requests,
+                concurrency,
+            } => {
+                self.handle_benchmark(url, *requests, *concurrency, config)
+                    .await
             }
             Command::Ci { output } => self.handle_ci(output.clone(), config).await,
             Command::Watch { tests } => self.handle_watch(tests, config).await,
@@ -150,7 +164,10 @@ impl Command {
         new_config.llm_provider = Some("modal".to_string());
         new_config.save_global()?;
 
-        println!("{}", "  ✓ Modal API token saved successfully!".blue().bold());
+        println!(
+            "{}",
+            "  ✓ Modal API token saved successfully!".blue().bold()
+        );
         Ok(())
     }
 
@@ -171,7 +188,10 @@ impl Command {
     }
 
     async fn handle_set_github_token(&self, config: &Config) -> Result<()> {
-        print!("{}", "  🔑 Enter your GitHub Personal Access Token: ".blue());
+        print!(
+            "{}",
+            "  🔑 Enter your GitHub Personal Access Token: ".blue()
+        );
         io::stdout().flush()?;
         let mut token = String::new();
         io::stdin().read_line(&mut token)?;
@@ -187,7 +207,10 @@ impl Command {
 
     async fn handle_list_issues(&self, repo: Option<String>, config: &Config) -> Result<()> {
         if config.github_token.is_none() {
-            eprintln!("{}", "  ✗ GitHub token not configured. Run: voria set-github-token".red());
+            eprintln!(
+                "{}",
+                "  ✗ GitHub token not configured. Run: voria set-github-token".red()
+            );
             return Ok(());
         }
 
@@ -201,7 +224,10 @@ impl Command {
             input.trim().to_string()
         };
 
-        println!("{}", format!("  📋 Fetching issues from: {}", repo_url).blue());
+        println!(
+            "{}",
+            format!("  📋 Fetching issues from: {}", repo_url).blue()
+        );
         let (owner, repo_name) = self.parse_repo_url(&repo_url)?;
         let mut orchestrator = Orchestrator::new(config.clone()).await?;
         orchestrator.list_issues(&owner, &repo_name).await?;
@@ -216,12 +242,18 @@ impl Command {
         config: &Config,
     ) -> Result<()> {
         if config.github_token.is_none() {
-            eprintln!("{}", "  ✗ GitHub token not configured. Run: voria set-github-token".red());
+            eprintln!(
+                "{}",
+                "  ✗ GitHub token not configured. Run: voria set-github-token".red()
+            );
             return Ok(());
         }
 
         if config.modal_token.is_none() && config.llm_api_key.is_none() {
-            eprintln!("{}", "  ✗ LLM not configured. Run: voria setup-modal <token>".red());
+            eprintln!(
+                "{}",
+                "  ✗ LLM not configured. Run: voria setup-modal <token>".red()
+            );
             return Ok(());
         }
 
@@ -238,16 +270,36 @@ impl Command {
         let (owner, repo_name) = self.parse_repo_url(&repo_url)?;
 
         if auto {
-            println!("{}", format!("  🤖 Auto-fixing issue #{} from {}/{}", issue_number, owner, repo_name).blue().bold());
+            println!(
+                "{}",
+                format!(
+                    "  🤖 Auto-fixing issue #{} from {}/{}",
+                    issue_number, owner, repo_name
+                )
+                .blue()
+                .bold()
+            );
         } else {
-            println!("{}", format!("  🔧 Fixing issue #{} from {}/{}", issue_number, owner, repo_name).blue());
+            println!(
+                "{}",
+                format!(
+                    "  🔧 Fixing issue #{} from {}/{}",
+                    issue_number, owner, repo_name
+                )
+                .blue()
+            );
         }
 
         let mut orchestrator = Orchestrator::new(config.clone()).await?;
-        orchestrator.fix_issue(&owner, &repo_name, issue_number).await?;
+        orchestrator
+            .fix_issue(&owner, &repo_name, issue_number)
+            .await?;
 
         if auto {
-            println!("{}", "  ⚡ Auto mode: applying patch and running tests...".blue());
+            println!(
+                "{}",
+                "  ⚡ Auto mode: applying patch and running tests...".blue()
+            );
             // The fix handler in Python already applies the patch
             // Run a quick test suite afterwards
             orchestrator = Orchestrator::new(config.clone()).await?;
@@ -319,7 +371,13 @@ impl Command {
         orchestrator.diff(ref_a, ref_b).await
     }
 
-    async fn handle_benchmark(&self, url: &str, requests: u32, concurrency: u32, config: &Config) -> Result<()> {
+    async fn handle_benchmark(
+        &self,
+        url: &str,
+        requests: u32,
+        concurrency: u32,
+        config: &Config,
+    ) -> Result<()> {
         let mut orchestrator = Orchestrator::new(config.clone()).await?;
         orchestrator.benchmark(url, requests, concurrency).await
     }
