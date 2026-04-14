@@ -870,7 +870,7 @@ impl Orchestrator {
 
             let changed: Vec<String> = new_snapshot
                 .iter()
-                .filter(|(k, v)| snapshot.get(k.as_str()).map_or(true, |old| old != *v))
+                .filter(|(k, v)| snapshot.get(k.as_str()) != Some(*v))
                 .map(|(k, _)| k.clone())
                 .collect();
 
