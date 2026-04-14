@@ -5,18 +5,16 @@ import { TerminalCommands } from './components/TerminalCommands';
 
 export default async function Home() {
   const commands = [
-    { cmd: 'voria --init', desc: 'Initialize voria in your project' },
-    { cmd: 'voria setup-modal [TOKEN]', desc: 'Setup Modal LLM (free tier)' },
-    { cmd: 'voria setup-openai [TOKEN]', desc: 'Setup OpenAI GPT-4' },
-    { cmd: 'voria setup-claude [TOKEN]', desc: 'Setup Anthropic Claude' },
-    { cmd: 'voria setup-gemini [TOKEN]', desc: 'Setup Google Gemini' },
-    { cmd: 'voria set-github-token', desc: 'Configure GitHub access token' },
-    { cmd: 'voria list-issues [REPO]', desc: 'List all issues in a repository' },
-    { cmd: 'voria fix <ISSUE> [REPO]', desc: 'Fix a GitHub issue automatically' },
-    { cmd: 'voria plan <ISSUE>', desc: 'Plan how to fix an issue' },
-    { cmd: 'voria apply <PLAN>', desc: 'Apply a previously generated patch' },
-    { cmd: 'voria --config', desc: 'View/edit configuration' },
-    { cmd: 'voria --version', desc: 'Check installed version' },
+    { cmd: 'voria --init', desc: 'Initialize project & choose LLM provider' },
+    { cmd: 'voria scan', desc: 'Full security audit (XSS, SQLi, secrets)' },
+    { cmd: 'voria benchmark <url>', desc: 'HTTP benchmarking (p95/p99 analysis)' },
+    { cmd: 'voria watch', desc: 'Monitor files & re-run tests on change' },
+    { cmd: 'voria fix <id> --auto', desc: 'Auto-apply fix and verify with tests' },
+    { cmd: 'voria ci', desc: 'CI/CD scan — outputs SARIF for GitHub' },
+    { cmd: 'voria --graph', desc: 'Visualize codebase dependency graph' },
+    { cmd: 'voria status', desc: 'Show current project security health' },
+    { cmd: 'voria --config', desc: 'Configure LLM providers and settings' },
+    { cmd: 'voria --version', desc: 'Check installed version (v0.0.5)' },
   ];
 
   let docsFiles: string[] = [];
@@ -59,9 +57,9 @@ export default async function Home() {
       <section className="brutal-box">
         <h2 className="brutal-title">About</h2>
         <p>
-          <strong>Voria</strong> is an AI-powered CLI tool that automatically fixes bugs and implements features in your codebase. 
-          Describe an issue or provide a GitHub issue number, and Voria will generate a fix, test it, iterate on failures, 
-          and create a pull request - all automatically.
+          <strong>Voria</strong> is an AI-powered autonomous engine for codebase security, reliability, and bug-fixing. 
+          It performs deep security audits (`voria scan`), high-performance benchmarking, and fully automated issue resolution 
+          by generating patches, running tests, and managing PRs—powered by advanced LLMs like Claude 3.5, GPT-4o, and DeepSeek.
         </p>
         <div className="terminal-window rounded-xl overflow-hidden mt-6 shadow-xl" style={{ background: '#1c1c1e', border: '1px solid #333' }}>
           <div className="terminal-header flex items-center px-4 py-3" style={{ background: '#2d2d30' }}>
@@ -89,6 +87,35 @@ export default async function Home() {
       </section>
 
       <section className="brutal-box">
+        <h2 className="brutal-title">Security & Reliability Suite</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div className="p-4 border-2 border-black bg-emerald-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-black text-lg mb-2">🔒 SECURITY</h3>
+            <p className="text-xs font-bold leading-tight">SQLi, XSS, CSRF, JWT, SSRF, Hardcoded Secrets, XXE, and more.</p>
+            <div className="mt-4 text-[10px] font-black uppercase tracking-tighter">24 SCANS AVAILABLE</div>
+          </div>
+          <div className="p-4 border-2 border-black bg-blue-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-black text-lg mb-2">🏭 RELIABILITY</h3>
+            <p className="text-xs font-bold leading-tight">Deadlocks, Race Conditions, Memory Leaks, Connection Exhaustion.</p>
+            <div className="mt-4 text-[10px] font-black uppercase tracking-tighter">10 SCANS AVAILABLE</div>
+          </div>
+          <div className="p-4 border-2 border-black bg-purple-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-black text-lg mb-2">⚡ PERFORMANCE</h3>
+            <p className="text-xs font-bold leading-tight">P99 Latency, Concurrency, Throughput, Cold Starts, DB Indexing.</p>
+            <div className="mt-4 text-[10px] font-black uppercase tracking-tighter">11 SCANS AVAILABLE</div>
+          </div>
+          <div className="p-4 border-2 border-black bg-yellow-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-black text-lg mb-2">💎 QUALITY</h3>
+            <p className="text-xs font-bold leading-tight">License Compliance, Coverage Gaps, Complexity Drift, Linting.</p>
+            <div className="mt-4 text-[10px] font-black uppercase tracking-tighter">7 SCANS AVAILABLE</div>
+          </div>
+        </div>
+        <p className="mt-8 text-sm font-bold text-center italic">
+          Run <code className="bg-gray-200 px-1">voria scan --category all</code> to execute the full 52-test audit.
+        </p>
+      </section>
+
+      <section className="brutal-box">
         <h2 className="brutal-title">Commands</h2>
         <TerminalCommands commands={commands} />
       </section>
@@ -96,48 +123,37 @@ export default async function Home() {
       <section className="brutal-box">
         <h2 className="brutal-title">Visual Architecture</h2>
         <div className="code-block" style={{ whiteSpace: 'pre', fontSize: '0.75rem', lineHeight: '1.4' }}>
-{`┌───────────────────────────────────────────────────────────────┐
-│                      VORIA CLI                                │
-│                  (Node.js - Entry Point)                      │
-│  ┌────────────────────────────────────────────────────────┐   │
-│  │ Command Dispatcher (--init, --config, fix, plan)       │   │
-│  ├────────────────────────────────────────────────────────┤   │
-│  │ UI Layer (Neo-brutalism Theme, ANSI styling)           │   │
-│  ├────────────────────────────────────────────────────────┤   │
-│  │ IPC Manager (Process orchestration, NDJSON)            │   |
-│  └────────────────────────────────────────────────────────┘   │
-│                      │                                        │
-│                      │ NDJSON (stdin/stdout)                  │
-│                      ▼                                        │
-└───────────────────────────────────────────────────────────────┘
+{`┌─────────────────────────────────────────────────────────────────┐
+│                      VORIA CLI (Rust)                           │
+│                  (Performance Orchestrator)                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Commands (scan, fix, benchmark, watch, ci, --graph)     │    │
+│  ├─────────────────────────────────────────────────────────┤    │
+│  │ High-Speed FS Operations & Parallel Execution           │    │
+│  ├─────────────────────────────────────────────────────────┤    │
+│  │ IPC Manager (Process orchestration via NDJSON)          │    |
+│  └─────────────────────────────────────────────────────────┘    │
+│                      │                                          │
+│                      │ NDJSON (stdin/stdout)                    │
+│                      ▼                                          │
+└─────────────────────────────────────────────────────────────────┘
                          │
-                         │ Persistent Child Process
+                         │ Persistent Engine Hook
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    VORIA ENGINE                             │
-│                  (Python - AI Core)                         │
+│                    VORIA ENGINE (Python)                    │
+│                  (Autonomous AI Logic)                      │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │ Agent Loop (Plan → Patch → Apply → Test → Iterate)    │  │
 │  ├───────────────────────────────────────────────────────┤  │
-│  │ LLM Adapters (Claude, OpenAI, Gemini, Modal, Kimi)    │  │
+│  │ 🛡️ Security Audit Engine (SQli, XSS, Logic Scans)     │  │
 │  ├───────────────────────────────────────────────────────┤  │
-│  │ GitHub Client (Issues, PRs, Comments)                 │  │
-│  ├───────────────────────────────────────────────────────┤  |
-│  │ Code Patcher & Test Executor                          │  │
+│  │ ⚡ Performance Probes & Benchmarking Logic             │  │
+│  ├───────────────────────────────────────────────────────┤  │
+│  │ 🤖 Multi-LLM Adapters (Claude, OpenAI, Gemini, etc.)  │  │
 │  └───────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
-                         │
-                         │ (Optional / Future)
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    VORIA HUB                                │
-│                  (Rust - High Perf)                         │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ Fast FS Operations                                    │  │
-│  ├───────────────────────────────────────────────────────┤  │
-│  │ Parallel Computation                                  │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘`}
+`}
         </div>
       </section>
 

@@ -222,36 +222,65 @@ voria apply fix.patch -v
 
 ---
 
-### `voria test [NAME] [--list]`
+## 🛡️ Security & Reliability Test Suite
 
-Run codebase security audits, stress tests, and performance probes.
+Voria v0.0.5 introduces a massive suite of 50+ specialized tests categorized into 5 major domains.
 
-**Usage:**
+### 1. Categories Overview
+- **Security (24 tests):** SQLi, XSS, CSRF, JWT, SSRF, XXE, Hardcoded Secrets, Command Injection, etc.
+- **Reliability (10 tests):** Deadlocks, Race Conditions, Memory Leaks, Connection Exhaustion, Timeouts.
+- **Performance (11 tests):** P99 Latency, Concurrency, Throughput, Cold Starts, Asset Bundle Size.
+- **Stress (Included in Performance):** CPU/Memory saturation simulations.
+- **Quality (7 tests):** License Compliance, Coverage Gap, Complexity Drift, Linting.
+
+### 2. Running a Project Scan
+Perform a high-level audit of your entire codebase:
 ```bash
-# List all 50+ available tests
-voria test --list
-
-# Run a specific security scan (e.g., SQL Injection)
-voria test sql_injection
-
-# Perform a stress test
-voria test cpu_stress
+voria scan all
+```
+Or target a specific category:
+```bash
+voria scan --category security
+voria scan --category performance
 ```
 
-**Categories Include:**
-- **Security (Pentesting):** SQLi, XSS, CSRF, JWT, SSRF, XXE, and 20+ more.
-- **Production Resilience:** Deadlock detection, Race conditions, Unhandled exceptions.
-- **Performance:** Latency baseline, P99 audits, Throughput benchmarks.
-- **Stress Testing:** CPU/Memory saturation, concurrent user simulation.
-- **Quality:** License compliance, dependency graph health.
+### 3. Running Specific Tests
+Target a specific vulnerability or reliability probe:
+```bash
+voria test sql_injection
+voria test deadlock_detection
+voria test hardcoded_secrets
+```
 
-**What it does:**
-1. **Identifies** the test type (static analysis or dynamic probing).
-2. **Analyzes** code context using LLMs for security patterns.
-3. **Executes** runtime stress simulations for performance audits.
-4. **Reports** detailed findings, severity, and recommended fixes.
+### 4. Continuous Monitoring (Watch Mode)
+Re-validate your security posture in real-time as you code:
+```bash
+voria watch
+# Or watch specific vulnerabilities
+voria watch xss,sql_injection
+```
 
 ---
+
+## ⚡ High-Performance Benchmarking
+
+Audit your production services for latency and throughput limits.
+
+### 1. HTTP Benchmark
+Measure p50, p95, and p99 latencies under heavy load:
+```bash
+voria benchmark https://api.yourservice.com --requests 1000 --concurrency 50
+```
+
+### 2. CI/CD Integration
+Generate SARIF reports for the GitHub Security dashboard:
+```bash
+voria ci
+```
+This command scans the codebase and outputs a standard `voria-security-report.sarif` file compatible with GitHub Code Scanning.
+
+---
+
 
 ##  Configuration
 
